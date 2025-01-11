@@ -1,5 +1,5 @@
 //
-//  FITRecord+parse.swift
+//  FITRecord+decode.swift
 //  PureFIT
 //
 //  Created by Peter Compernolle on 1/11/25.
@@ -8,12 +8,12 @@
 import Foundation
 
 extension FITRecord {
-    public enum ParserError: Error {
+    public enum DecodeError: Error {
         case recordLengthError, definitionLengthError, definitionNotFound, dataLengthError
     }
 
     internal init(data: Data, offset: inout Int, definitions: inout [UInt16: FITDefinitionRecord]) throws {
-        guard offset < data.count else { throw ParserError.recordLengthError }
+        guard offset < data.count else { throw DecodeError.recordLengthError }
 
         let header = data[offset]
         let localMessageNumber = UInt16(header & 0x0F)
@@ -25,7 +25,7 @@ extension FITRecord {
 
         if header & 0x40 == 0x40 {
             // Definition record
-            guard offset + 5 <= data.count else { throw ParserError.definitionLengthError }
+            guard offset + 5 <= data.count else { throw DecodeError.definitionLengthError }
 
             let _ = data[offset] // reserved
             let architecture: FITArchitecture = data[offset + 1] == 0 ? .littleEndian : .bigEndian
@@ -41,7 +41,7 @@ extension FITRecord {
 
             var fields: [FITFieldDefinition] = []
             for _ in 0..<fieldCount {
-                guard offset + 3 <= data.count else { throw ParserError.definitionLengthError }
+                guard offset + 3 <= data.count else { throw DecodeError.definitionLengthError }
                 let fieldDefinitionNumber = data[offset]
                 let size = data[offset + 1]
                 let baseType = data[offset + 2]
@@ -55,12 +55,12 @@ extension FITRecord {
 
             var developerFields: [FITFieldDefinition] = []
             if hasDeveloperData {
-                guard offset < data.count else { throw ParserError.definitionLengthError }
+                guard offset < data.count else { throw DecodeError.definitionLengthError }
                 let developerFieldCount = data[offset]
                 offset += 1
 
                 for _ in 0..<developerFieldCount {
-                    guard offset + 3 <= data.count else { throw ParserError.definitionLengthError }
+                    guard offset + 3 <= data.count else { throw DecodeError.definitionLengthError }
                     let fieldDefinitionNumber = data[offset]
                     let size = data[offset + 1]
                     let developerDataIndex = data[offset + 2]
@@ -88,16 +88,16 @@ extension FITRecord {
         }
 
         // Data record
-        guard let definition = definitions[localMessageNumber] else { throw ParserError.definitionNotFound }
+        guard let definition = definitions[localMessageNumber] else { throw DecodeError.definitionNotFound }
 
         let fieldSize = definition.fields.reduce(0) { $0 + Int($1.size) }
-        guard offset + fieldSize <= data.count else { throw ParserError.dataLengthError }
+        guard offset + fieldSize <= data.count else { throw DecodeError.dataLengthError }
 
         let fieldData = Array(data[offset..<(offset + fieldSize)])
         offset += fieldSize
 
         let developerFieldSize = definition.developerFields.reduce(0) { $0 + Int($1.size) }
-        guard offset + developerFieldSize <= data.count else { throw ParserError.dataLengthError }
+        guard offset + developerFieldSize <= data.count else { throw DecodeError.dataLengthError }
 
         let developerFieldsData = Array(data[offset..<(offset + developerFieldSize)])
         offset += developerFieldSize

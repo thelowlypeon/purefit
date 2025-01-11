@@ -20,18 +20,8 @@ struct ParseFITFileTests {
 
     @Test func parseInvalidFile() async throws {
         let url = Bundle.module.url(forResource: "not-a-fit-file", withExtension: "fit", subdirectory: "Fixtures")!
-        do {
+        #expect(throws: FITHeader.DecodeError.invalidLength) {
             let _ = try FITFile(url: url)
-            Issue.record("expected error when parsing invalid FIT file")
-            return
-        } catch {
-            switch error {
-            case FITHeader.ParserError.invalidLength:
-                break
-            default:
-                Issue.record("raised unexpected parsing error when parsing invalid FIT file: \(error)")
-                return
-            }
         }
     }
 

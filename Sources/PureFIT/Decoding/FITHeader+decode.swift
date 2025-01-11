@@ -1,5 +1,5 @@
 //
-//  FITHeader+parse.swift
+//  FITHeader+decode.swift
 //  PureFIT
 //
 //  Created by Peter Compernolle on 1/11/25.
@@ -8,15 +8,15 @@
 import Foundation
 
 extension FITHeader {
-    public enum ParserError: Error {
+    public enum DecodeError: Error {
         case invalidLength, malformedHeader, invalidCRC
     }
 
     internal init(data: Data, offset: inout Int, validationMethod: FITCRC.ValidationMethod = .validateCRCIfPresent) throws {
-        guard data.count >= 12 else { throw ParserError.invalidLength }
+        guard data.count >= 12 else { throw DecodeError.invalidLength }
 
         let headerSize = data[offset]
-        guard headerSize == 12 || headerSize == 14 else { throw ParserError.invalidLength } // FIT headers are 12 or 14 bytes
+        guard headerSize == 12 || headerSize == 14 else { throw DecodeError.invalidLength } // FIT headers are 12 or 14 bytes
         offset += 1
 
         let protocolVersion = data[offset]
@@ -32,7 +32,7 @@ extension FITHeader {
         offset += 4
 
         guard dataType == ".FIT" else {
-            throw ParserError.malformedHeader
+            throw DecodeError.malformedHeader
         }
 
         let crc: FITCRC?
@@ -55,10 +55,10 @@ extension FITHeader {
         let headerData = data.subdata(in: 0..<12)
         switch validationMethod {
         case .requireValidCRC:
-            guard isCRCValid(headerData: headerData) == true else { throw ParserError.invalidCRC }
+            guard isCRCValid(headerData: headerData) == true else { throw DecodeError.invalidCRC }
         case .validateCRCIfPresent:
             if let valid = isCRCValid(headerData: headerData) {
-                guard valid else { throw ParserError.invalidCRC }
+                guard valid else { throw DecodeError.invalidCRC }
             }
         case .skipCRCValidation:
             break

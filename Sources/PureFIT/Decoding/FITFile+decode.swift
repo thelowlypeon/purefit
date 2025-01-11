@@ -1,5 +1,5 @@
 //
-//  FITFile+parse.swift
+//  FITFile+decode.swift
 //  PureFIT
 //
 //  Created by Peter Compernolle on 1/11/25.
@@ -8,7 +8,7 @@
 import Foundation
 
 extension FITFile {
-    enum ParserError: Error {
+    enum DecodeError: Error {
         case invalidHeaderCRC, invalidCRC
     }
 
@@ -48,11 +48,11 @@ extension FITFile {
         switch validationMethod {
         case .requireValidCRC:
             if isCRCValid(fileData: data) != true {
-                throw ParserError.invalidCRC
+                throw DecodeError.invalidCRC
             }
         case .validateCRCIfPresent:
             if isCRCValid(fileData: data) == false {
-                throw ParserError.invalidCRC
+                throw DecodeError.invalidCRC
             }
         case .skipCRCValidation:
             break
