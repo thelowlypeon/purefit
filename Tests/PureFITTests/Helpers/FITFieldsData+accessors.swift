@@ -37,7 +37,7 @@ extension FITFieldsData {
     }
 
     func uint16(at index: Int, architecture: FITArchitecture) -> UInt16? {
-        guard bytes.count >= index + 4 else { return nil }
+        guard bytes.count >= index + 2 else { return nil }
 
         let byte1 = bytes[index]
         let byte2 = bytes[index + 1]
