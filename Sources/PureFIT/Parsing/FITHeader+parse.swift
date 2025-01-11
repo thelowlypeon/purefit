@@ -8,11 +8,15 @@
 import Foundation
 
 extension FITHeader {
-    internal init?(data: Data, offset: inout Int) {
-        guard data.count >= 12 else { return nil }
+    public enum ParserError: Error {
+        case invalidLength, malformedHeader, invalidCRC
+    }
+
+    internal init(data: Data, offset: inout Int, validationMethod: FITCRC.ValidationMethod = .validateCRCIfPresent) throws {
+        guard data.count >= 12 else { throw ParserError.invalidLength }
 
         let headerSize = data[offset]
-        guard headerSize == 12 || headerSize == 14 else { return nil } // FIT headers are 12 or 14 bytes
+        guard headerSize == 12 || headerSize == 14 else { throw ParserError.invalidLength } // FIT headers are 12 or 14 bytes
         offset += 1
 
         let protocolVersion = data[offset]
@@ -26,6 +30,10 @@ extension FITHeader {
 
         let dataType = String(bytes: data[offset..<offset + 4], encoding: .ascii) ?? ""
         offset += 4
+
+        guard dataType == ".FIT" else {
+            throw ParserError.malformedHeader
+        }
 
         let crc: FITCRC?
         if headerSize == 14 {
@@ -42,6 +50,19 @@ extension FITHeader {
         self.dataSize = dataSize
         self.dataType = dataType
         self.crc = crc
+
+        // header data has a fixed length of 12, ie, excluding 2 CRC bytes if they exist
+        let headerData = data.subdata(in: 0..<12)
+        switch validationMethod {
+        case .requireValidCRC:
+            guard isCRCValid(headerData: headerData) == true else { throw ParserError.invalidCRC }
+        case .validateCRCIfPresent:
+            if let valid = isCRCValid(headerData: headerData) {
+                guard valid else { throw ParserError.invalidCRC }
+            }
+        case .skipCRCValidation:
+            break
+        }
     }
 
 }

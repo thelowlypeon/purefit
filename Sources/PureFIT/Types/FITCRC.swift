@@ -8,6 +8,10 @@
 import Foundation
 
 public struct FITCRC {
+    public enum ValidationMethod {
+        case requireValidCRC, validateCRCIfPresent, skipCRCValidation
+    }
+
     public let checksum: UInt16
 
     static private let crc_table: [UInt16] = [

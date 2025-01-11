@@ -93,8 +93,7 @@ struct ParseFITRecordTests {
 
         var records = [FITRecord]()
         for _ in 0..<50 {
-            guard let record = FITRecord(data: data, offset: &offset, definitions: &definitions)
-            else { Issue.record("failed to parse record at offset \(offset)"); return }
+            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions)
             records.append(record)
         }
         // 23: device info

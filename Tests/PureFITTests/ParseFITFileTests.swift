@@ -13,7 +13,7 @@ struct ParseFITFileTests {
     @Test func parseFITFileTest() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
-        let fit = try #require(FITFile(data: data))
+        let fit = try FITFile(data: data)
         let crcSize = fit.header.crc == nil ? 0 : 2
         #expect(Int(fit.header.dataSize) + Int(fit.header.headerSize) + crcSize == 193162)
         #expect(fit.records.count == 4301)
@@ -22,14 +22,25 @@ struct ParseFITFileTests {
     @Test func parseInvalidFile() async throws {
         let url = Bundle.module.url(forResource: "not-a-fit-file", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
-        let fit = FITFile(data: data)
-        #expect(fit == nil) // TODO: this should throw
+        do {
+            let fit = try FITFile(data: data)
+            Issue.record("expected error when parsing invalid FIT file")
+            return
+        } catch {
+            switch error {
+            case FITHeader.ParserError.invalidLength:
+                break
+            default:
+                Issue.record("raised unexpected parsing error when parsing invalid FIT file: \(error)")
+                return
+            }
+        }
     }
 
     @Test func makingSenseOfAParsedFITFileTest() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
-        let fit = try #require(FITFile(data: data))
+        let fit = try FITFile(data: data)
         var definitionRecords = [UInt16: FITDefinitionRecord]()
         struct ParsedDataRecord {
             let definition: FITDefinitionRecord
