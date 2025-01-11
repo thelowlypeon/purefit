@@ -18,7 +18,11 @@ let package = Package(
             name: "PureFIT"),
         .testTarget(
             name: "PureFITTests",
-            dependencies: ["PureFIT"]
+            dependencies: ["PureFIT"],
+            resources: [
+                .copy("Fixtures")
+                //, .copy("Fixtures/not-a-fit-file.fit")
+            ]
         ),
     ]
 )
