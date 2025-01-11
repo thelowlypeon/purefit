@@ -21,11 +21,14 @@ Simply pass your `Data` instance into `PureFIT.FITFile(data: data)`:
 
 ```swift
 let fitFileURL = URL(...)!
-let data = try Data(contentsOf: url)
-if let fitFile = FITFile(data: data) {
+if let fitFile = FITFile(url: url) {
   let protocolVersion = fitFile.header.protocolVersion
   //...
 }
+
+// or from Data
+if let fitFile = FITFile(data: data) {
+  //...
 ```
 
 ### CRC Validation

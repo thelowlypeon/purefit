@@ -12,8 +12,7 @@ import Foundation
 struct ParseFITFileTests {
     @Test func parseFITFileTest() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
-        let data = try Data(contentsOf: url)
-        let fit = try FITFile(data: data)
+        let fit = try FITFile(url: url)
         let crcSize = fit.header.crc == nil ? 0 : 2
         #expect(Int(fit.header.dataSize) + Int(fit.header.headerSize) + crcSize == 193162)
         #expect(fit.records.count == 4301)
@@ -21,9 +20,8 @@ struct ParseFITFileTests {
 
     @Test func parseInvalidFile() async throws {
         let url = Bundle.module.url(forResource: "not-a-fit-file", withExtension: "fit", subdirectory: "Fixtures")!
-        let data = try Data(contentsOf: url)
         do {
-            let fit = try FITFile(data: data)
+            let _ = try FITFile(url: url)
             Issue.record("expected error when parsing invalid FIT file")
             return
         } catch {
@@ -39,8 +37,7 @@ struct ParseFITFileTests {
 
     @Test func makingSenseOfAParsedFITFileTest() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
-        let data = try Data(contentsOf: url)
-        let fit = try FITFile(data: data)
+        let fit = try FITFile(url: url)
         var definitionRecords = [UInt16: FITDefinitionRecord]()
         struct ParsedDataRecordGroup {
             let definition: FITDefinitionRecord
