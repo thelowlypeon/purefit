@@ -12,7 +12,7 @@ extension FITFile {
         case invalidHeaderCRC, invalidCRC
     }
 
-    internal init(data: Data, validationMethod: FITCRC.ValidationMethod = .validateCRCIfPresent) throws {
+    public init(data: Data, validationMethod: FITCRC.ValidationMethod = .validateCRCIfPresent) throws {
         var offset = 0
 
         let header = try FITHeader(data: data, offset: &offset)
