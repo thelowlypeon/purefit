@@ -34,8 +34,8 @@ By default, CRCs (both header and file) are validated if they are present, and i
 Optionally pass in `validationMethod: .requireValidCRC` to raise if the CRC is invalid or not present,
 or `validationMethod: .skipCRCValidation` if you want to skip CRC validation entirely.
 
-You can manually validate the CRC with `FITFile.isHeaderCRCValid(fileData: data)` or `FITFile.isCRCValid(fileData: data)` if you skip during parsing.
-Note that the data passed in to either of these functions must be the entire file data, not the header or record message slice.
+You can manually validate the CRC with `fitFile.isHeaderCRCValid(fileData: data)` or `fitFile.isCRCValid(fileData: data)` if you skip during parsing.
+Note that the data passed in to either of these functions must be the entire file data, not the header or record message slice; this data is not retained after parsing.
 
 ## Contribution guidelines
 
