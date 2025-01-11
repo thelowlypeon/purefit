@@ -12,6 +12,11 @@ extension FITFile {
         case invalidHeaderCRC, invalidCRC
     }
 
+    public init(url: URL, validationMethod: FITCRC.ValidationMethod = .validateCRCIfPresent) throws {
+        let data = try Data(contentsOf: url)
+        try self.init(data: data, validationMethod: validationMethod)
+    }
+
     public init(data: Data, validationMethod: FITCRC.ValidationMethod = .validateCRCIfPresent) throws {
         var offset = 0
 
