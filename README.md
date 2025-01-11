@@ -9,7 +9,7 @@ but none allow showing _all_ values, known or unknown. For example, the [Garmin 
 will only show messages that have a known global message number, and lumps the rest into an invalid UInt16 value.
 (The garmin library also requires a file URL for streaming the file, which is slow if you have an instance of `Data` to parse.)
 
-## Desgin
+## Design
 
 PureFIT aims to provide a Swift-friendly representation of a FIT file, which is not necessarily the most useful representation
 if you want to, for example, get a speed `Measurement<UnitSpeed>` for each record message.
