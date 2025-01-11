@@ -28,6 +28,15 @@ if let fitFile = FITFile(data: data) {
 }
 ```
 
+### CRC Validation
+
+By default, CRCs (both header and file) are validated if they are present, and if they are absent, parsing works fine.
+Optionally pass in `validationMethod: .requireValidCRC` to raise if the CRC is invalid or not present,
+or `validationMethod: .skipCRCValidation` if you want to skip CRC validation entirely.
+
+You can manually validate the CRC with `FITFile.isHeaderCRCValid(fileData: data)` or `FITFile.isCRCValid(fileData: data)` if you skip during parsing.
+Note that the data passed in to either of these functions must be the entire file data, not the header or record message slice.
+
 ## Contribution guidelines
 
 Feel free to fork and pull request, or create an issue if something isn't working right.
