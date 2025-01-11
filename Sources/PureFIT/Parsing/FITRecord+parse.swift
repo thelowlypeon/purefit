@@ -27,15 +27,14 @@ extension FITRecord {
             // Definition record
             guard offset + 5 <= data.count else { throw ParserError.definitionLengthError }
 
-            let reserved = data[offset] // reserved
-            //print("reserved: \(reserved)")
-            let architecture = data[offset + 1]
+            let _ = data[offset] // reserved
+            let architecture: FITArchitecture = data[offset + 1] == 0 ? .littleEndian : .bigEndian
             let globalMessageNumber: UInt16
-            //print("architecture is \(architecture == 0 ? "little endian" : "big endian")")
-            if architecture == 0 {
-                globalMessageNumber = UInt16(data[offset + 2]) | (UInt16(data[offset + 3]) << 8) // Little-endian
-            } else {
-                globalMessageNumber = (UInt16(data[offset + 2]) << 8) | UInt16(data[offset + 3]) // Big-endian
+            switch architecture {
+            case .littleEndian:
+                globalMessageNumber = UInt16(data[offset + 2]) | (UInt16(data[offset + 3]) << 8)
+            case .bigEndian:
+                globalMessageNumber = (UInt16(data[offset + 2]) << 8) | UInt16(data[offset + 3])
             }
             let fieldCount = data[offset + 4]
             offset += 5
@@ -75,7 +74,7 @@ extension FITRecord {
             }
 
             let definition = FITDefinitionRecord(
-                architecture: architecture == 0 ? .littleEndian : .bigEndian,
+                architecture: architecture,
                 globalMessageNumber: globalMessageNumber,
                 fieldCount: fieldCount,
                 fields: fields,

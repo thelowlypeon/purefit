@@ -20,28 +20,33 @@ struct ParseFITRecordTests {
         let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
         let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
 
-        if case .definition(let definition) = definitionRecord {
-            #expect(definition.architecture == .littleEndian)
-            #expect(definition.globalMessageNumber == 0) // fileId
-            #expect(definition.fieldCount == 4)
-            #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,1,4,3])
-            #expect(definition.fields.map { $0.size } == [1,2,4,4])
-            #expect(definition.fields.map { $0.baseType.rawValue } == [0,132,134,140])
-        } else {
+        guard case .definition(let definition) = definitionRecord
+        else {
             Issue.record("definition record incorrectly parsed as data record")
+            return
         }
-        if case .data(let data) = dataRecord {
-            #expect(data.globalMessageNumber == 0)
-            #expect(data.fieldsData.bytes[0] == 4) // file type 4 = workout file
-            let manufacturer = data.fieldsData.uint16(at: 1)
-            #expect(manufacturer == 255) // 255 is development manufacturer id
-            let timeCreated = data.fieldsData.uint32(at: 3)
-            #expect(timeCreated == 1100201060) // seconds since garmin epoch
-            let serial = data.fieldsData.uint32(at: 7)
-            #expect(serial == 282475249)
-        } else {
+
+        #expect(definition.architecture == .littleEndian)
+        #expect(definition.globalMessageNumber == 0) // fileId
+        #expect(definition.fieldCount == 4)
+        #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,1,4,3])
+        #expect(definition.fields.map { $0.size } == [1,2,4,4])
+        #expect(definition.fields.map { $0.baseType.rawValue } == [0,132,134,140])
+
+        guard case .data(let data) = dataRecord
+        else {
             Issue.record("data record incorrectly parsed as definition record")
+            return
         }
+
+        #expect(data.globalMessageNumber == 0)
+        #expect(data.fieldsData.bytes[0] == 4) // file type 4 = workout file
+        let manufacturer = data.fieldsData.uint16(at: 1, architecture: definition.architecture)
+        #expect(manufacturer == 255) // 255 is development manufacturer id
+        let timeCreated = data.fieldsData.uint32(at: 3, architecture: definition.architecture)
+        #expect(timeCreated == 1100201060) // seconds since garmin epoch
+        let serial = data.fieldsData.uint32(at: 7, architecture: definition.architecture)
+        #expect(serial == 282475249)
     }
 
     @Test func parseSecondDefinitionAndSubsequentDataRecord() async throws {
@@ -54,34 +59,37 @@ struct ParseFITRecordTests {
         let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
         let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
 
-        if case .definition(let definition) = definitionRecord {
-            #expect(definition.architecture == .littleEndian)
-            #expect(definition.globalMessageNumber == 23) // deviceInfo
-            #expect(definition.fieldCount == 6)
-            // 0: device index, 2: manufacturer, 27: product name, 3: serial, 5: software version, 253: timestamp
-            #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,2,27,3,5,253])
-            #expect(definition.fields.map { $0.size } == [1,2,13,4,2,4]) // strings are variable, this one is 13
-            #expect(definition.fields.map { $0.baseType.rawValue } == [2,132,7,140,132,134])
-        } else {
+        guard case .definition(let definition) = definitionRecord
+        else {
             Issue.record("definition record incorrectly parsed as data record")
+            return
         }
-        if case .data(let data) = dataRecord {
-            #expect(data.fieldsData.bytes.count == 26)
-            #expect(data.globalMessageNumber == 23)
-            #expect(data.fieldsData.bytes[0] == 0) // deviceIndex 0
-            let manufacturer = data.fieldsData.uint16(at: 1)
-            #expect(manufacturer == 255) // 255 is development manufacturer id
-            let productName = data.fieldsData.string(at: 3)
-            #expect(productName == "WorkOutDoors") // Shoutout to WorkOutDoors!
-            let serial = data.fieldsData.uint32(at: 16)
-            #expect(serial == 282475249)
-            let softwareVersion = data.fieldsData.uint16(at: 20)
-            #expect(softwareVersion == nil)
-            let timestamp = data.fieldsData.uint32(at: 22)
-            #expect(timestamp == 1100201060) // seconds since garmin epoch
-        } else {
+        #expect(definition.architecture == .littleEndian)
+        #expect(definition.globalMessageNumber == 23) // deviceInfo
+        #expect(definition.fieldCount == 6)
+        // 0: device index, 2: manufacturer, 27: product name, 3: serial, 5: software version, 253: timestamp
+        #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,2,27,3,5,253])
+        #expect(definition.fields.map { $0.size } == [1,2,13,4,2,4]) // strings are variable, this one is 13
+        #expect(definition.fields.map { $0.baseType.rawValue } == [2,132,7,140,132,134])
+
+        guard case .data(let data) = dataRecord
+        else {
             Issue.record("data record incorrectly parsed as definition record")
+            return
         }
+        #expect(data.fieldsData.bytes.count == 26)
+        #expect(data.globalMessageNumber == 23)
+        #expect(data.fieldsData.bytes[0] == 0) // deviceIndex 0
+        let manufacturer = data.fieldsData.uint16(at: 1, architecture: definition.architecture)
+        #expect(manufacturer == 255) // 255 is development manufacturer id
+        let productName = data.fieldsData.string(at: 3)
+        #expect(productName == "WorkOutDoors") // Shoutout to WorkOutDoors!
+        let serial = data.fieldsData.uint32(at: 16, architecture: definition.architecture)
+        #expect(serial == 282475249)
+        let softwareVersion = data.fieldsData.uint16(at: 20, architecture: definition.architecture)
+        #expect(softwareVersion == nil)
+        let timestamp = data.fieldsData.uint32(at: 22, architecture: definition.architecture)
+        #expect(timestamp == 1100201060) // seconds since garmin epoch
     }
 
     @Test func parseManyRecordsTest() async throws {

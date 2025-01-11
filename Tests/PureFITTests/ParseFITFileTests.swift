@@ -75,10 +75,10 @@ struct ParseFITFileTests {
                             let byte = UInt8(record.data.fieldsData.bytes[offset])
                             print("    \(byte)")
                         case .uint16:
-                            let uint16 = record.data.fieldsData.uint16(at: offset)
+                            let uint16 = record.data.fieldsData.uint16(at: offset, architecture: definition.architecture)
                             print("    \(uint16)")
                         case .uint32, .uint32z:
-                            let uint32 = record.data.fieldsData.uint32(at: offset)
+                            let uint32 = record.data.fieldsData.uint32(at: offset, architecture: definition.architecture)
                             print("    \(uint32)")
                         case .string:
                             let str = record.data.fieldsData.string(at: offset)
