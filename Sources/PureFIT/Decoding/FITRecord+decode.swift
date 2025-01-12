@@ -12,7 +12,7 @@ extension FITRecord {
         case recordLengthError, definitionLengthError, definitionNotFound, dataLengthError
     }
 
-    internal init(data: Data, offset: inout Int, definitions: inout [UInt16: FITDefinitionRecord]) throws {
+    internal init(data: Data, offset: inout Int, definitions: inout [UInt16: FITDefinitionRecord], developerFieldDefinitions: inout [FITFieldDefinitionNumber: FITDeveloperFieldDefinition]) throws {
         guard offset < data.count else { throw DecodeError.recordLengthError }
 
         let header = data[offset]
@@ -53,7 +53,7 @@ extension FITRecord {
                 offset += 3
             }
 
-            var developerFields: [FITFieldDefinition] = []
+            var developerFields: [FITDeveloperFieldDefinition] = []
             if hasDeveloperData {
                 guard offset < data.count else { throw DecodeError.definitionLengthError }
                 let developerFieldCount = data[offset]
@@ -61,13 +61,13 @@ extension FITRecord {
 
                 for _ in 0..<developerFieldCount {
                     guard offset + 3 <= data.count else { throw DecodeError.definitionLengthError }
-                    let fieldDefinitionNumber = data[offset]
+                    let developerFieldDefinitionNumber = data[offset]
                     let size = data[offset + 1]
                     let developerDataIndex = data[offset + 2]
                     developerFields.append(.init(
-                        fieldDefinitionNumber: fieldDefinitionNumber,
+                        developerFieldDefinitionNumber: developerFieldDefinitionNumber,
                         size: size,
-                        baseType: FITBaseType(rawValue: developerDataIndex)!
+                        developerDataIndex: developerDataIndex
                     ))
                     offset += 3
                 }

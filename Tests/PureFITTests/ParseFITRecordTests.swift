@@ -15,10 +15,11 @@ struct ParseFITRecordTests {
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
         var offset = 14 // skip the header
 
-        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
-        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
+        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
+        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
 
         guard case .definition(let definition) = definitionRecord
         else {
@@ -54,10 +55,11 @@ struct ParseFITRecordTests {
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
         var offset = 14 + 30 // header + fileId header and record
 
-        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
-        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
+        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
+        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
 
         guard case .definition(let definition) = definitionRecord
         else {
@@ -97,11 +99,12 @@ struct ParseFITRecordTests {
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
         var offset = 14
 
         var records = [FITRecord]()
         for _ in 0..<50 {
-            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions)
+            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions)
             records.append(record)
         }
         // 23: device info
@@ -158,6 +161,30 @@ struct ParseFITRecordTests {
         switch records[9] {
         case .data(let data):
             #expect(data.globalMessageNumber == 206)
+        default: Issue.record("expected second record to be a data message")
+        }
+        // ...
+        let definition: FITDefinitionRecord
+        switch records[18] {
+        case .definition(let def):
+            definition = def
+            #expect(def.globalMessageNumber == 20)
+            #expect(def.developerFields.count == 5)
+            #expect(def.developerFields.first?.developerDataIndex == 0)
+            #expect(def.developerFields.first?.developerFieldDefinitionNumber == 11)
+            #expect(def.developerFields.first?.size == 2)
+        default:
+            Issue.record("expected second record to be a data message")
+            return
+        }
+        switch records[25] {
+        case .data(let data):
+            #expect(data.globalMessageNumber == 20)
+            let size: Int = definition.developerFields.reduce(into: 0) { $0 += Int($1.size) }
+            #expect(data.developerFieldsData.bytes.count == size)
+
+            let formPower = data.developerFieldsData.uint16(at: 2, architecture: .littleEndian)
+            #expect(formPower == 61)
         default: Issue.record("expected second record to be a data message")
         }
 

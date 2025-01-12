@@ -25,93 +25,42 @@ struct ParseFITFileTests {
         }
     }
 
-    @Test func makingSenseOfAParsedFITFileTest() async throws {
+    @Test func parsingFITFile() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try FITFile(url: url)
-        var definitionRecords = [UInt16: FITDefinitionRecord]()
-        struct ParsedDataRecordGroup {
-            let definition: FITDefinitionRecord
-            var dataRecords: [FITDataRecord]
-        }
-        let recordRecords = fit.records.filter {
-            switch $0 {
-            case .definition(let definitionRecord):
-                return definitionRecord.globalMessageNumber == 20
-            case .data(let dataRecord):
-                return dataRecord.globalMessageNumber == 20
-            }
-        }
+        let parsed = FITParsedFile(fitFile: fit)
 
-        // group records together by their definition because definitions can change within a single file
-        var parsedDataRecords = [ParsedDataRecordGroup]()
-        var parsedDataRecordGroup: ParsedDataRecordGroup? = nil
-        for record in recordRecords {
-            switch record {
-            case .definition(let definitionRecord):
-                if let existingGroup = parsedDataRecordGroup {
-                    parsedDataRecords.append(existingGroup)
-                }
-                parsedDataRecordGroup = ParsedDataRecordGroup(definition: definitionRecord, dataRecords: [])
-            case .data(let dataRecord):
-                parsedDataRecordGroup?.dataRecords.append(dataRecord)
-            }
-        }
-        if let parsedDataRecordGroup {
-            parsedDataRecords.append(parsedDataRecordGroup)
-        }
-        // end grouping by definition
+        // fileId message
+        #expect(parsed.messages[0]?.count == 1)
+        let fileIdMessage = try #require(parsed.messages[0]?.first)
+        #expect(fileIdMessage.fields.keys.sorted() == [0,1,3,4])
+        #expect(fileIdMessage.fields[0] == .enum(4)) // file type
+        #expect(fileIdMessage.fields[1] == .uint16(255)) // manufacturer
+        #expect(fileIdMessage.fields[3] == .uint32z(282475249)) // serial
+        #expect(fileIdMessage.fields[4] == .uint32(1100201060)) // time created
 
-        guard let firstRecordGroup = parsedDataRecords.first
-        else {
-            Issue.record("no grouped records")
-            return
-        }
-        let definition = firstRecordGroup.definition
-        guard firstRecordGroup.dataRecords.count > 1
-        else {
-            Issue.record("no record in group")
-            return
-        }
-        let record = firstRecordGroup.dataRecords[1] // this one is more interesting than the first
-        var offset = 0
-        for field in definition.fields {
-            switch field.fieldDefinitionNumber {
-            case 253: // timestamp
-                let value = record.fieldsData.uint32(at: offset, architecture: definition.architecture)
-                #expect(value == 1096542999)
-            case 0: // latitude, sint32
-                break
-            case 1: // longitude, sint32
-                break
-            case 2: // altitude, uint32
-                let value = record.fieldsData.uint16(at: offset, architecture: definition.architecture)
-                #expect(value == 3415)
-            case 5: // distance, uint32
-                let value = record.fieldsData.uint32(at: offset, architecture: definition.architecture)
-                #expect(value == 1400)
-            case 6: // speed, uint32
-                let value = record.fieldsData.uint16(at: offset, architecture: definition.architecture)
-                #expect(value == 2434)
-            case 3: // heart rate, uint8
-                let value = record.fieldsData.bytes[offset]
-                #expect(value == 118)
-            case 4: // cadence, uint8
-                let value = record.fieldsData.bytes[offset]
-                #expect(value == 86)
-            case 39: // verticaloscillation, uint16
-                let value = record.fieldsData.uint16(at: offset, architecture: definition.architecture)
-                #expect(value == 540)
-            case 41: // stance time duration, uint16
-                let value = record.fieldsData.uint16(at: offset, architecture: definition.architecture)
-                #expect(value == 2520)
-            case 7: // power, uint16
-                let value = record.fieldsData.uint16(at: offset, architecture: definition.architecture)
-                #expect(value == 190)
-            default:
-                break
-            }
+        // record messages
+        #expect(parsed.messages[20]?.count == 4257)
+        let secondRecordMessage = try #require(parsed.messages[20]?[1])
+        #expect(secondRecordMessage.fields.keys.sorted() == [0,1,2,3,4,5,6,7,39,41,253])
+        #expect(secondRecordMessage.fields[253] == .uint32(1096542999))
+        #expect(secondRecordMessage.fields[0] == .sint32(500395805))
+        #expect(secondRecordMessage.fields[1] == .sint32(-1045723574))
+        #expect(secondRecordMessage.fields[2] == .uint16(3415))
+        #expect(secondRecordMessage.fields[5] == .uint32(1400))
+        #expect(secondRecordMessage.fields[6] == .uint16(2434))
+        #expect(secondRecordMessage.fields[3] == .uint8(118))
+        #expect(secondRecordMessage.fields[4] == .uint8(86))
+        #expect(secondRecordMessage.fields[39] == .uint16(540))
+        #expect(secondRecordMessage.fields[41] == .uint16(2520))
+        #expect(secondRecordMessage.fields[7] == .uint16(190))
 
-            offset += Int(field.size)
-        }
+        // developer fields
+        #expect(secondRecordMessage.developerFields.keys.sorted() == [5,6,8,9,11])
+        #expect(secondRecordMessage.developerFields[5] == .float32(2.43359375))
+        #expect(secondRecordMessage.developerFields[6] == .uint32(14))
+        #expect(secondRecordMessage.developerFields[8] == .uint16(61))
+        #expect(secondRecordMessage.developerFields[9] == .float32(11.25))
+        #expect(secondRecordMessage.developerFields[11] == .uint16(5))
     }
 }
