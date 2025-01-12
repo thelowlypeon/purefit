@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 1/11/25.
 //
 
-public enum FITFieldValue {
+public enum InterpretedFITValue {
     case `enum`(UInt8)       // Enum type, associated value: UInt8
     case sint8(Int8)         // Signed 8-bit integer, associated value: Int8
     case uint8(UInt8)        // Unsigned 8-bit integer, associated value: UInt8
@@ -47,9 +47,9 @@ public enum FITFieldValue {
     }
 }
 
-extension FITFieldValue: Equatable {}
+extension InterpretedFITValue: Equatable {}
 
-extension FITFieldValue {
+extension InterpretedFITValue {
     var value: Any {
         switch self {
         case .enum(let value): return value
@@ -73,7 +73,7 @@ extension FITFieldValue {
     }
 }
 
-extension FITFieldValue {
+extension InterpretedFITValue {
     /// Creates a `FITFieldValue` from `[UInt8]` using a specified `FITBaseType` and architecture.
     /// - Parameters:
     ///   - bytes: The array of bytes from which the value will be extracted.
@@ -85,7 +85,7 @@ extension FITFieldValue {
         bytes: [UInt8],
         baseType: FITBaseType,
         architecture: FITArchitecture
-    ) -> FITFieldValue? {
+    ) -> InterpretedFITValue? {
         // Ensure there are enough bytes for the specified type
         guard bytes.count >= (baseType.size ?? 1) else { return nil }
 

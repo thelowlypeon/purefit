@@ -28,7 +28,7 @@ struct ParseFITFileTests {
     @Test func parsingFITFile() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try FITFile(url: url)
-        let parsed = FITParsedFile(fitFile: fit)
+        let parsed = InterpretedFITFile(fitFile: fit)
 
         // fileId message
         #expect(parsed.messages[0]?.count == 1)

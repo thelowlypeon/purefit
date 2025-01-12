@@ -7,14 +7,14 @@
 
 import Foundation
 
-public struct FITParsedFile {
+public struct InterpretedFITFile {
     public let header: FITHeader
-    public let messages: [FITGlobalMessageNumber: [FITMessage]]
+    public let messages: [FITGlobalMessageNumber: [InterpretedFITMessage]]
 
     public init(fitFile: FITFile) {
-        var messages = [FITMessage]()
+        var messages = [InterpretedFITMessage]()
         var definitionsByMessageNumber = [FITGlobalMessageNumber: FITDefinitionRecord]()
-        var developerFieldDefinitions = [FITFieldDefinitionNumber: FITMessage]()
+        var developerFieldDefinitions = [FITFieldDefinitionNumber: InterpretedFITMessage]()
         for record in fitFile.records {
             switch record {
             case .definition(let definitionRecord):
@@ -25,7 +25,7 @@ public struct FITParsedFile {
                     print("No definition record found for \(dataRecord.globalMessageNumber)")
                     continue
                 }
-                let message = FITMessage(
+                let message = InterpretedFITMessage(
                     dataRecord: dataRecord,
                     definitionRecord: definition,
                     developerFieldDefinitions: developerFieldDefinitions
