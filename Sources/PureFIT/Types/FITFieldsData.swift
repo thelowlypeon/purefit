@@ -6,5 +6,5 @@
 //
 
 public struct FITFieldsData {
-    let bytes: [UInt8]        // Raw data bytes
+    public let bytes: [UInt8]        // Raw data bytes
 }

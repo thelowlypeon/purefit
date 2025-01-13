@@ -24,7 +24,7 @@ public enum FITBaseType: UInt8 {
     case uint64 = 0x8F       // Unsigned 64-bit integer, invalid value: 0xFFFFFFFFFFFFFFFF, size: 8 bytes
     case uint64z = 0x90      // Unsigned 64-bit integer with zero invalid, invalid value: 0x0000000000000000, size: 8 bytes
 
-    var isEndianCapable: Bool {
+    public var isEndianCapable: Bool {
         switch self {
         case .sint16, .uint16, .sint32, .uint32, .float32, .float64, .uint16z, .uint32z, .sint64, .uint64, .uint64z:
             return true
@@ -33,7 +33,7 @@ public enum FITBaseType: UInt8 {
         }
     }
 
-    var invalidValue: Any {
+    public var invalidValue: Any {
         switch self {
         case .enum, .uint8, .byte: return 0xFF
         case .sint8: return 0x7F
@@ -49,7 +49,7 @@ public enum FITBaseType: UInt8 {
         }
     }
 
-    var size: Int? {
+    public var size: Int? {
         switch self {
         case .enum, .sint8, .uint8, .uint8z, .byte: return 1
         case .sint16, .uint16, .uint16z: return 2

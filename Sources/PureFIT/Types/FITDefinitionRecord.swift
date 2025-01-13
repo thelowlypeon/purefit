@@ -8,9 +8,9 @@
 public typealias FITGlobalMessageNumber = UInt16
 
 public struct FITDefinitionRecord {
-    let architecture: FITArchitecture
-    let globalMessageNumber: FITGlobalMessageNumber
-    let fieldCount: UInt8
-    let fields: [FITFieldDefinition]
-    let developerFields: [FITDeveloperFieldDefinition]
+    public let architecture: FITArchitecture
+    public let globalMessageNumber: FITGlobalMessageNumber
+    public let fieldCount: UInt8
+    public let fields: [FITFieldDefinition]
+    public let developerFields: [FITDeveloperFieldDefinition]
 }

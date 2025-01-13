@@ -6,7 +6,7 @@
 //
 
 public struct FITDataRecord {
-    let globalMessageNumber: FITGlobalMessageNumber
-    let fieldsData: FITFieldsData
-    let developerFieldsData: FITFieldsData
+    public let globalMessageNumber: FITGlobalMessageNumber
+    public let fieldsData: FITFieldsData
+    public let developerFieldsData: FITFieldsData
 }
