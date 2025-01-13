@@ -104,8 +104,8 @@ extension FITRecord {
 
         self = .data(FITDataRecord(
             globalMessageNumber: definition.globalMessageNumber,
-            fieldsData: .init(bytes: fieldData),
-            developerFieldsData: .init(bytes: developerFieldsData)
+            fieldsData: fieldData,
+            developerFieldsData: developerFieldsData
         ))
     }
 }
