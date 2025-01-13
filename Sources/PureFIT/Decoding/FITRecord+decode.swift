@@ -48,7 +48,7 @@ extension FITRecord {
                 fields.append(.init(
                     fieldDefinitionNumber: fieldDefinitionNumber,
                     size: size,
-                    baseType: FITBaseType(rawValue: baseType)!
+                    baseType: baseType
                 ))
                 offset += 3
             }
