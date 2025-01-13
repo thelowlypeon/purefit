@@ -10,7 +10,7 @@ public typealias FITFieldDefinitionNumber = UInt8
 public struct FITFieldDefinition {
     public let fieldDefinitionNumber: FITFieldDefinitionNumber
     public let size: UInt8 // in bytes
-    public let baseType: FITBaseType
+    public let baseType: UInt8
 }
 
 public struct FITDeveloperFieldDefinition {
