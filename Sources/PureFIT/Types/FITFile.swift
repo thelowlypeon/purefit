@@ -6,7 +6,7 @@
 //
 
 public struct FITFile {
-    let header: FITHeader
-    let records: [FITRecord]
-    let crc: FITCRC?
+    public let header: FITHeader
+    public let records: [FITRecord]
+    public let crc: FITCRC?
 }
