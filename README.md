@@ -22,6 +22,14 @@ As such, this library tries to understand as little about the FIT profile as pos
 correspond with which message types, which field numbers correspond to which fields, etc.
 Broadly speaking, it knows only what is defined in the FIT file.
 
+### FIT Profile Types
+
+While the aim of this library is to _not_ depend on the FIT profile, ie the _meaning_ of various values,
+there are some practical exceptions to make it more useful.
+
+* `FITBaseType`, an enum, defines the type of data for a given field, eg, `.uint8`, or `.enum`
+* `FITValue` is derived by `FITBaseType`, and is vastly more useful than dealing with raw bytes. The raw byte array remains available in a `RawFITFile`'s `RawFITRecord`
+
 ## Usage
 
 Simply pass your `Data` instance into `RawFITFile(data: data)`:

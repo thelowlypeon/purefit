@@ -31,7 +31,7 @@ struct ParseFITRecordTests {
         #expect(definition.fieldCount == 4)
         #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,1,4,3])
         #expect(definition.fields.map { $0.size } == [1,2,4,4])
-        #expect(definition.fields.map { $0.baseType } == [0,132,134,140])
+        #expect(definition.fields.map { $0.baseType } == [.enum, .uint16, .uint32, .uint32z])
 
         guard case .data(let data) = dataRecord
         else {
@@ -70,7 +70,7 @@ struct ParseFITRecordTests {
         // 0: device index, 2: manufacturer, 27: product name, 3: serial, 5: software version, 253: timestamp
         #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,2,27,3,5,253])
         #expect(definition.fields.map { $0.size } == [1,2,13,4,2,4]) // strings are variable, this one is 13
-        #expect(definition.fields.map { $0.baseType } == [2,132,7,140,132,134])
+        #expect(definition.fields.map { $0.baseType } == [.uint8, .uint16, .string, .uint32z, .uint16, .uint32])
 
         guard case .data(let data) = dataRecord
         else {
@@ -156,19 +156,19 @@ struct ParseFITRecordTests {
             #expect(def.architecture == .littleEndian)
             #expect(def.fields.count == 5) // dev data index, field def, base type, field name, units
             #expect(def.fields[0].fieldDefinitionNumber == 0) // developer data index
-            #expect(def.fields[0].baseType == 2)
+            #expect(def.fields[0].baseType == .uint8)
             #expect(def.fields[0].size == 1)
             #expect(def.fields[1].fieldDefinitionNumber == 1) // field definition number
-            #expect(def.fields[1].baseType == 2)
+            #expect(def.fields[1].baseType == .uint8)
             #expect(def.fields[1].size == 1)
             #expect(def.fields[2].fieldDefinitionNumber == 2) // base type
-            #expect(def.fields[2].baseType == 2)
+            #expect(def.fields[2].baseType == .uint8)
             #expect(def.fields[2].size == 1)
             #expect(def.fields[3].fieldDefinitionNumber == 3) // field name
-            #expect(def.fields[3].baseType == 7)
+            #expect(def.fields[3].baseType == .string)
             #expect(def.fields[3].size == 10) // null byte terminated
             #expect(def.fields[4].fieldDefinitionNumber == 8) // units
-            #expect(def.fields[4].baseType == 7)
+            #expect(def.fields[4].baseType == .string)
             #expect(def.fields[4].size == 6) // null byte terminated
         default: Issue.record("expected second record to be a definition message")
         }
@@ -188,19 +188,19 @@ struct ParseFITRecordTests {
             #expect(def.architecture == .littleEndian)
             #expect(def.fields.count == 5) // dev data index, field def, base type, field name, units
             #expect(def.fields[0].fieldDefinitionNumber == 0) // developer data index
-            #expect(def.fields[0].baseType == 2)
+            #expect(def.fields[0].baseType == .uint8)
             #expect(def.fields[0].size == 1)
             #expect(def.fields[1].fieldDefinitionNumber == 1) // field definition number
-            #expect(def.fields[1].baseType == 2)
+            #expect(def.fields[1].baseType == .uint8)
             #expect(def.fields[1].size == 1)
             #expect(def.fields[2].fieldDefinitionNumber == 2) // base type
-            #expect(def.fields[2].baseType == 2)
+            #expect(def.fields[2].baseType == .uint8)
             #expect(def.fields[2].size == 1)
             #expect(def.fields[3].fieldDefinitionNumber == 3) // field name
-            #expect(def.fields[3].baseType == 7)
+            #expect(def.fields[3].baseType == .string)
             #expect(def.fields[3].size == 21) // null byte terminated
             #expect(def.fields[4].fieldDefinitionNumber == 8) // units
-            #expect(def.fields[4].baseType == 7)
+            #expect(def.fields[4].baseType == .string)
             #expect(def.fields[4].size == 5) // null byte terminated
         default: Issue.record("expected second record to be a definition message")
         }

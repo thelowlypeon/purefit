@@ -44,7 +44,7 @@ extension RawFITRecord {
                 guard offset + 3 <= data.count else { throw DecodeError.definitionLengthError }
                 let fieldDefinitionNumber = data[offset]
                 let size = data[offset + 1]
-                let baseType = data[offset + 2]
+                let baseType = FITBaseType(rawValue: data[offset + 2]) ?? .bytes
                 fields.append(.init(
                     fieldDefinitionNumber: fieldDefinitionNumber,
                     size: size,
