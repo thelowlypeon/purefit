@@ -25,10 +25,9 @@ extension FITFile {
         // Parse records
         var records: [FITRecord] = []
         var definitions: [UInt16: FITDefinitionRecord] = [:]
-        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
 
         while offset < data.count - (header.crc != nil ? 2 : 0) {
-            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions)
+            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions)
             records.append(record)
         }
 

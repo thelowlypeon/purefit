@@ -12,7 +12,7 @@ extension FITRecord {
         case recordLengthError, definitionLengthError, definitionNotFound, dataLengthError
     }
 
-    internal init(data: Data, offset: inout Int, definitions: inout [UInt16: FITDefinitionRecord], developerFieldDefinitions: inout [FITFieldDefinitionNumber: FITDeveloperFieldDefinition]) throws {
+    internal init(data: Data, offset: inout Int, definitions: inout [UInt16: FITDefinitionRecord]) throws {
         guard offset < data.count else { throw DecodeError.recordLengthError }
 
         let header = data[offset]

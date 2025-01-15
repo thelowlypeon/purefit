@@ -15,11 +15,10 @@ struct ParseFITRecordTests {
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: FITDefinitionRecord] = [:]
-        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
         var offset = 14 // skip the header
 
-        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
-        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
+        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
+        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
 
         guard case .definition(let definition) = definitionRecord
         else {
@@ -55,11 +54,10 @@ struct ParseFITRecordTests {
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: FITDefinitionRecord] = [:]
-        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
         var offset = 14 + 30 // header + fileId header and record
 
-        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
-        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions))
+        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
+        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
 
         guard case .definition(let definition) = definitionRecord
         else {
@@ -99,12 +97,11 @@ struct ParseFITRecordTests {
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: FITDefinitionRecord] = [:]
-        var developerFieldDefinitions: [FITFieldDefinitionNumber: FITDeveloperFieldDefinition] = [:]
         var offset = 14
 
         var records = [FITRecord]()
         for _ in 0..<50 {
-            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions, developerFieldDefinitions: &developerFieldDefinitions)
+            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions)
             records.append(record)
         }
         // 23: device info
