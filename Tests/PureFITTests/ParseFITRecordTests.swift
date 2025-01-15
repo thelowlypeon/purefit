@@ -32,7 +32,7 @@ struct ParseFITRecordTests {
         #expect(definition.fieldCount == 4)
         #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,1,4,3])
         #expect(definition.fields.map { $0.size } == [1,2,4,4])
-        #expect(definition.fields.map { $0.baseType.rawValue } == [0,132,134,140])
+        #expect(definition.fields.map { $0.baseType } == [0,132,134,140])
 
         guard case .data(let data) = dataRecord
         else {
@@ -41,7 +41,7 @@ struct ParseFITRecordTests {
         }
 
         #expect(data.globalMessageNumber == 0)
-        #expect(data.fieldsData.bytes[0] == 4) // file type 4 = workout file
+        #expect(data.fieldsData[0] == 4) // file type 4 = workout file
         let manufacturer = data.fieldsData.uint16(at: 1, architecture: definition.architecture)
         #expect(manufacturer == 255) // 255 is development manufacturer id
         let timeCreated = data.fieldsData.uint32(at: 3, architecture: definition.architecture)
@@ -72,16 +72,16 @@ struct ParseFITRecordTests {
         // 0: device index, 2: manufacturer, 27: product name, 3: serial, 5: software version, 253: timestamp
         #expect(definition.fields.map { $0.fieldDefinitionNumber } == [0,2,27,3,5,253])
         #expect(definition.fields.map { $0.size } == [1,2,13,4,2,4]) // strings are variable, this one is 13
-        #expect(definition.fields.map { $0.baseType.rawValue } == [2,132,7,140,132,134])
+        #expect(definition.fields.map { $0.baseType } == [2,132,7,140,132,134])
 
         guard case .data(let data) = dataRecord
         else {
             Issue.record("data record incorrectly parsed as definition record")
             return
         }
-        #expect(data.fieldsData.bytes.count == 26)
+        #expect(data.fieldsData.count == 26)
         #expect(data.globalMessageNumber == 23)
-        #expect(data.fieldsData.bytes[0] == 0) // deviceIndex 0
+        #expect(data.fieldsData[0] == 0) // deviceIndex 0
         let manufacturer = data.fieldsData.uint16(at: 1, architecture: definition.architecture)
         #expect(manufacturer == 255) // 255 is development manufacturer id
         let productName = data.fieldsData.string(at: 3)
@@ -181,7 +181,7 @@ struct ParseFITRecordTests {
         case .data(let data):
             #expect(data.globalMessageNumber == 20)
             let size: Int = definition.developerFields.reduce(into: 0) { $0 += Int($1.size) }
-            #expect(data.developerFieldsData.bytes.count == size)
+            #expect(data.developerFieldsData.count == size)
 
             let formPower = data.developerFieldsData.uint16(at: 2, architecture: .littleEndian)
             #expect(formPower == 61)

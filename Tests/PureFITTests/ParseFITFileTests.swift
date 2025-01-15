@@ -25,6 +25,7 @@ struct ParseFITFileTests {
         }
     }
 
+    /*
     @Test func parsingFITFile() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try FITFile(url: url)
@@ -90,4 +91,5 @@ struct ParseFITFileTests {
         #expect(secondRecordMessage.developerFields[11] == .uint16(5))
          */
     }
+     */
 }

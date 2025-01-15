@@ -7,22 +7,22 @@
 
 @testable import PureFIT
 
-extension FITFieldsData {
+extension Array where Element == UInt8 {
     func string(at index: Int) -> String? {
-        guard bytes.count > index else { return nil }
+        guard self.count > index else { return nil }
 
         // important: strings are terminated with a null byte
-        let stringBytes = bytes[index...].prefix { $0 != 0 }
+        let stringBytes = self[index...].prefix { $0 != 0 }
         return String(bytes: Array(stringBytes), encoding: .ascii)
     }
 
     func uint32(at index: Int, architecture: FITArchitecture) -> UInt32? {
-        guard bytes.count >= index + 4 else { return nil }
+        guard self.count >= index + 4 else { return nil }
 
-        let byte1 = bytes[index]
-        let byte2 = bytes[index + 1]
-        let byte3 = bytes[index + 2]
-        let byte4 = bytes[index + 3]
+        let byte1 = self[index]
+        let byte2 = self[index + 1]
+        let byte3 = self[index + 2]
+        let byte4 = self[index + 3]
 
         switch architecture {
         case .littleEndian:
@@ -37,10 +37,10 @@ extension FITFieldsData {
     }
 
     func uint16(at index: Int, architecture: FITArchitecture) -> UInt16? {
-        guard bytes.count >= index + 2 else { return nil }
+        guard self.count >= index + 2 else { return nil }
 
-        let byte1 = bytes[index]
-        let byte2 = bytes[index + 1]
+        let byte1 = self[index]
+        let byte2 = self[index + 1]
 
         switch architecture {
         case .littleEndian:
