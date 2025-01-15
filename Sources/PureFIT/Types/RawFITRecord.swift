@@ -5,9 +5,9 @@
 //  Created by Peter Compernolle on 1/11/25.
 //
 
-public enum FITRecord {
-    case definition(FITDefinitionRecord)
-    case data(FITDataRecord)
+public enum RawFITRecord {
+    case definition(RawFITDefinitionRecord)
+    case data(RawFITDataRecord)
 
     public var globalMessageNumber: UInt16 {
         switch self {

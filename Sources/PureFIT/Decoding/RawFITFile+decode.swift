@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension FITFile {
+extension RawFITFile {
     enum DecodeError: Error {
         case invalidHeaderCRC, invalidCRC
     }
@@ -23,11 +23,11 @@ extension FITFile {
         let header = try FITHeader(data: data, offset: &offset)
 
         // Parse records
-        var records: [FITRecord] = []
-        var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var records: [RawFITRecord] = []
+        var definitions: [UInt16: RawFITDefinitionRecord] = [:]
 
         while offset < data.count - (header.crc != nil ? 2 : 0) {
-            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions)
+            let record = try RawFITRecord(data: data, offset: &offset, definitions: &definitions)
             records.append(record)
         }
 

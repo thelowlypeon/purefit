@@ -21,14 +21,14 @@ struct CRCValidationTests {
     @Test func validateHeaderCRCFromFITFileTest() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
-        let fit = try FITFile(data: data)
+        let fit = try RawFITFile(data: data)
         #expect(fit.isHeaderCRCValid(fileData: data) == true)
     }
 
     @Test func validateCRCTests() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
-        let fit = try FITFile(data: data)
+        let fit = try RawFITFile(data: data)
         #expect(fit.isCRCValid(fileData: data) == true)
     }
 }

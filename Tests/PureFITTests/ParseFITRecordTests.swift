@@ -14,11 +14,11 @@ struct ParseFITRecordTests {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
 
-        var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var definitions: [UInt16: RawFITDefinitionRecord] = [:]
         var offset = 14 // skip the header
 
-        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
-        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
+        let definitionRecord = try #require(RawFITRecord(data: data, offset: &offset, definitions: &definitions))
+        let dataRecord = try #require(RawFITRecord(data: data, offset: &offset, definitions: &definitions))
 
         guard case .definition(let definition) = definitionRecord
         else {
@@ -53,11 +53,11 @@ struct ParseFITRecordTests {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
 
-        var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var definitions: [UInt16: RawFITDefinitionRecord] = [:]
         var offset = 14 + 30 // header + fileId header and record
 
-        let definitionRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
-        let dataRecord = try #require(FITRecord(data: data, offset: &offset, definitions: &definitions))
+        let definitionRecord = try #require(RawFITRecord(data: data, offset: &offset, definitions: &definitions))
+        let dataRecord = try #require(RawFITRecord(data: data, offset: &offset, definitions: &definitions))
 
         guard case .definition(let definition) = definitionRecord
         else {
@@ -96,12 +96,12 @@ struct ParseFITRecordTests {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
 
-        var definitions: [UInt16: FITDefinitionRecord] = [:]
+        var definitions: [UInt16: RawFITDefinitionRecord] = [:]
         var offset = 14
 
-        var records = [FITRecord]()
+        var records = [RawFITRecord]()
         for _ in 0..<50 {
-            let record = try FITRecord(data: data, offset: &offset, definitions: &definitions)
+            let record = try RawFITRecord(data: data, offset: &offset, definitions: &definitions)
             records.append(record)
         }
         // 23: device info
@@ -215,7 +215,7 @@ struct ParseFITRecordTests {
         default: Issue.record("expected second record to be a data message")
         }
         // ...
-        let definition: FITDefinitionRecord
+        let definition: RawFITDefinitionRecord
         switch records[18] {
         case .definition(let def):
             definition = def

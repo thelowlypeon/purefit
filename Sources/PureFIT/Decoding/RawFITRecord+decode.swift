@@ -7,12 +7,12 @@
 
 import Foundation
 
-extension FITRecord {
+extension RawFITRecord {
     public enum DecodeError: Error {
         case recordLengthError, definitionLengthError, definitionNotFound, dataLengthError
     }
 
-    internal init(data: Data, offset: inout Int, definitions: inout [UInt16: FITDefinitionRecord]) throws {
+    internal init(data: Data, offset: inout Int, definitions: inout [UInt16: RawFITDefinitionRecord]) throws {
         guard offset < data.count else { throw DecodeError.recordLengthError }
 
         let header = data[offset]
@@ -73,7 +73,7 @@ extension FITRecord {
                 }
             }
 
-            let definition = FITDefinitionRecord(
+            let definition = RawFITDefinitionRecord(
                 architecture: architecture,
                 globalMessageNumber: globalMessageNumber,
                 fieldCount: fieldCount,
@@ -102,7 +102,7 @@ extension FITRecord {
         let developerFieldsData = Array(data[offset..<(offset + developerFieldSize)])
         offset += developerFieldSize
 
-        self = .data(FITDataRecord(
+        self = .data(RawFITDataRecord(
             globalMessageNumber: definition.globalMessageNumber,
             fieldsData: fieldData,
             developerFieldsData: developerFieldsData

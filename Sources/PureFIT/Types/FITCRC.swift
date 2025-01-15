@@ -50,7 +50,7 @@ extension FITHeader {
     }
 }
 
-extension FITFile {
+extension RawFITFile {
     public func isHeaderCRCValid(fileData: Data) -> Bool? {
         guard header.crc != nil else { return nil }
         let headerSizeWithoutCRC = Int(header.headerSize) - 2

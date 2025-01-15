@@ -7,7 +7,7 @@
 
 public typealias FITGlobalMessageNumber = UInt16
 
-public struct FITDefinitionRecord {
+public struct RawFITDefinitionRecord {
     public let architecture: FITArchitecture
     public let globalMessageNumber: FITGlobalMessageNumber
     public let fieldCount: UInt8
