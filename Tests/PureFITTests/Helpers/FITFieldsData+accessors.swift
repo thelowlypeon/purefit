@@ -53,4 +53,39 @@ extension Array where Element == UInt8 {
             return uint16
         }
     }
+
+    func float32(at index: Int, architecture: FITArchitecture) -> Float32? {
+        // We need at least 4 bytes
+        guard self.count >= index + 4 else {
+            return nil
+        }
+
+        let byte1 = self[index]
+        let byte2 = self[index + 1]
+        let byte3 = self[index + 2]
+        let byte4 = self[index + 3]
+
+        let bitPattern: UInt32
+
+        switch architecture {
+        case .littleEndian:
+            bitPattern = UInt32(byte1)
+                | (UInt32(byte2) << 8)
+                | (UInt32(byte3) << 16)
+                | (UInt32(byte4) << 24)
+        case .bigEndian:
+            bitPattern = UInt32(byte4)
+                | (UInt32(byte3) << 8)
+                | (UInt32(byte2) << 16)
+                | (UInt32(byte1) << 24)
+        }
+
+        // Check for invalid value
+        guard bitPattern != 0xFFFFFFFF else {
+            return nil
+        }
+
+        return Float32(bitPattern: bitPattern)
+    }
+
 }
