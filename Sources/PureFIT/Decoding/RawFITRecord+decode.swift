@@ -75,6 +75,7 @@ extension RawFITRecord {
 
             let definition = RawFITDefinitionRecord(
                 architecture: architecture,
+                localMessageNumber: localMessageNumber,
                 globalMessageNumber: globalMessageNumber,
                 fieldCount: fieldCount,
                 fields: fields,
@@ -102,10 +103,12 @@ extension RawFITRecord {
         let developerFieldsData = Array(data[offset..<(offset + developerFieldSize)])
         offset += developerFieldSize
 
-        self = .data(RawFITDataRecord(
+        let dataRecord = RawFITDataRecord(
+            localMessageNumber: localMessageNumber,
             globalMessageNumber: definition.globalMessageNumber,
             fieldsData: fieldData,
             developerFieldsData: developerFieldsData
-        ))
+        )
+        self = .data(dataRecord)
     }
 }

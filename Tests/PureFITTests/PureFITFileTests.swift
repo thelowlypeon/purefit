@@ -10,10 +10,17 @@ import Foundation
 @testable import PureFIT
 
 struct PureFITFileTests {
+    @Test func parsingGarminFITFile() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let raw = try RawFITFile(url: url)
+        let fit = try PureFITFile(rawFITFile: raw)
+        #expect(fit.messages.count == 23291)
+    }
+
     @Test func parsingFITFile() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let raw = try RawFITFile(url: url)
-        let fit = PureFITFile(rawFITFile: raw)
+        let fit = try PureFITFile(rawFITFile: raw)
 
         // fileId message
         #expect(fit.messages.count(where: { $0.globalMessageNumber == 0 }) == 1)

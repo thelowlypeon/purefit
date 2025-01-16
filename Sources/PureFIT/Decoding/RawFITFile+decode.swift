@@ -24,10 +24,10 @@ extension RawFITFile {
 
         // Parse records
         var records: [RawFITRecord] = []
-        var definitions: [UInt16: RawFITDefinitionRecord] = [:]
+        var definitionsByLocalMessageNumber: [UInt16: RawFITDefinitionRecord] = [:]
 
         while offset < data.count - (header.crc != nil ? 2 : 0) {
-            let record = try RawFITRecord(data: data, offset: &offset, definitions: &definitions)
+            let record = try RawFITRecord(data: data, offset: &offset, definitions: &definitionsByLocalMessageNumber)
             records.append(record)
         }
 

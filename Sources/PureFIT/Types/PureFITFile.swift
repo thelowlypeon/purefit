@@ -10,22 +10,22 @@ public struct PureFITFile {
     public let messages: [FITMessage]
     public let undefinedDataRecords: [RawFITDataRecord]?
 
-    public init(rawFITFile: RawFITFile) {
+    public init(rawFITFile: RawFITFile) throws {
         var messages = [FITMessage]()
-        var definitionsByMessageNumber = [FITGlobalMessageNumber: RawFITDefinitionRecord]()
+        var definitionsByLocalMessageNumber = [UInt16: RawFITDefinitionRecord]()
         var developerFieldDefinitions = [FITMessage]() // TODO: index by developerDataIndex and developerFieldNumber for faster lookup
         var undefinedDataRecords = [RawFITDataRecord]()
         for record in rawFITFile.records {
             switch record {
             case .definition(let definitionRecord):
-                definitionsByMessageNumber[definitionRecord.globalMessageNumber] = definitionRecord
+                definitionsByLocalMessageNumber[definitionRecord.localMessageNumber] = definitionRecord
             case .data(let dataRecord):
-                guard let definition = definitionsByMessageNumber[dataRecord.globalMessageNumber]
+                guard let definition = definitionsByLocalMessageNumber[dataRecord.localMessageNumber]
                 else {
                     undefinedDataRecords.append(dataRecord)
                     continue
                 }
-                let message = FITMessage(
+                let message = try FITMessage(
                     definitionRecord: definition,
                     dataRecord: dataRecord,
                     developerFieldDefinitions: developerFieldDefinitions

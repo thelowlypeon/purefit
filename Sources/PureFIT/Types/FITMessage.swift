@@ -9,6 +9,10 @@ public struct FITMessage {
     public let globalMessageNumber: FITGlobalMessageNumber
     public let fields: [FieldDefinitionNumber: [FITValue]]
 
+    public enum ParserError: Error {
+        case invalidDataSize
+    }
+
     public func value(at fieldNumber: UInt8) -> FITValue? {
         return fields[.standard(fieldNumber)]?.first
     }
@@ -25,10 +29,12 @@ public struct FITMessage {
         return fields[fieldNumber]
     }
 
-    internal init(definitionRecord: RawFITDefinitionRecord, dataRecord: RawFITDataRecord, developerFieldDefinitions: [FITMessage]) {
+    internal init(definitionRecord: RawFITDefinitionRecord, dataRecord: RawFITDataRecord, developerFieldDefinitions: [FITMessage]) throws {
         var offset = 0
-        let fields: [FITField] = definitionRecord.fields.compactMap { fieldDefinition in
+        let fields: [FITField] = try definitionRecord.fields.compactMap { fieldDefinition in
             let fieldSize = Int(fieldDefinition.size)
+            guard dataRecord.fieldsData.count >= offset + fieldSize
+            else { throw ParserError.invalidDataSize }
             let value = FITValue.from(
                 bytes: Array(dataRecord.fieldsData[offset..<(offset + fieldSize)]),
                 baseType: fieldDefinition.baseType,
