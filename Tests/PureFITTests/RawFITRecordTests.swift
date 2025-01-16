@@ -9,7 +9,7 @@ import Testing
 import Foundation
 @testable import PureFIT
 
-struct ParseFITRecordTests {
+struct RawFITRecordTests {
     @Test func parseDefinitionAndSubsequentDataRecordTest() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)

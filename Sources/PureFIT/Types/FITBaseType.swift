@@ -24,3 +24,16 @@ public enum FITBaseType: UInt8 {
     case uint64 = 143       // Unsigned 64-bit integer, invalid value: 18446744073709551615, size: 8 bytes
     case uint64z = 144      // Unsigned 64-bit integer with zero invalid, invalid value: 0, size: 8 bytes
 }
+
+extension FITBaseType {
+    public var size: Int? {
+        switch self {
+        case .enum, .sint8, .uint8, .uint8z, .bytes: return 1
+        case .sint16, .uint16, .uint16z: return 2
+        case .sint32, .uint32, .float32, .uint32z: return 4
+        case .sint64, .uint64, .uint64z, .float64: return 8
+        case .string:
+            return nil // null terminated
+        }
+    }
+}
