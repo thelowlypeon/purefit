@@ -17,6 +17,14 @@ struct PureFITFileTests {
         #expect(fit.messages.count == 23291)
     }
 
+    @Test func parsingActivityWithDeveloperData() async throws {
+        // this file from garmin's FIT cookbook
+        let url = Bundle.module.url(forResource: "activity_developerdata", withExtension: "fit", subdirectory: "Fixtures")!
+        let raw = try RawFITFile(url: url)
+        let fit = try PureFITFile(rawFITFile: raw)
+        #expect(fit.messages.count == 3611)
+    }
+
     @Test func parsingFITFile() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let raw = try RawFITFile(url: url)
