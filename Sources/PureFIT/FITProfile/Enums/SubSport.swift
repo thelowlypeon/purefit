@@ -1,0 +1,98 @@
+//
+//  SubSport.swift
+//  PureFIT
+//
+//  Created by Peter Compernolle on 3/26/25.
+//
+
+enum SubSport: UInt8 {
+    case generic = 0
+    case treadmill = 1
+    case street = 2
+    case trail = 3
+    case track = 4
+    case spin = 5
+    case indoor_cycling = 6
+    case road = 7
+    case mountain = 8
+    case downhill = 9
+    case recumbent = 10
+    case cyclocross = 11
+    case hand_cycling = 12
+    case track_cycling = 13
+    case indoor_rowing = 14
+    case elliptical = 15
+    case stair_climbing = 16
+    case lap_swimming = 17
+    case open_water = 18
+    case flexibility_training = 19
+    case strength_training = 20
+    case warm_up = 21
+    case match = 22
+    case exercise = 23
+    case challenge = 24
+    case indoor_skiing = 25
+    case cardio_training = 26
+    case indoor_walking = 27
+    case e_bike_fitness = 28
+    case bmx = 29
+    case casual_walking = 30
+    case speed_walking = 31
+    case bike_to_run_transition = 32
+    case run_to_bike_transition = 33
+    case swim_to_bike_transition = 34
+    case atv = 35
+    case motocross = 36
+    case backcountry = 37
+    case resort = 38
+    case rc_drone = 39
+    case wingsuit = 40
+    case whitewater = 41
+    case skate_skiing = 42
+    case yoga = 43
+    case pilates = 44
+    case indoor_running = 45
+    case gravel_cycling = 46
+    case e_bike_mountain = 47
+    case commuting = 48
+    case mixed_surface = 49
+    case navigate = 50
+    case track_me = 51
+    case map = 52
+    case single_gas_diving = 53
+    case multi_gas_diving = 54
+    case gauge_diving = 55
+    case apnea_diving = 56
+    case apnea_hunting = 57
+    case virtual_activity = 58
+    case obstacle = 59
+    case breathing = 62
+    case sail_race = 65
+    case ultra = 67
+    case indoor_climbing = 68
+    case bouldering = 69
+    case hiit = 70
+    case amrap = 73
+    case emom = 74
+    case tabata = 75
+    case pickleball = 84
+    case padel = 85
+    case indoor_wheelchair_walk = 86
+    case indoor_wheelchair_run = 87
+    case indoor_hand_cycling = 88
+    case squash = 94
+    case badminton = 95
+    case racquetball = 96
+    case table_tennis = 97
+    case fly_canopy = 110
+    case fly_paraglide = 111
+    case fly_paramotor = 112
+    case fly_pressurized = 113
+    case fly_navigate = 114
+    case fly_timer = 115
+    case fly_altimeter = 116
+    case fly_wx = 117
+    case fly_vfr = 118
+    case fly_ifr = 119
+    case all = 254
+}

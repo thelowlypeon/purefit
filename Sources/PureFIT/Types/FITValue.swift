@@ -172,3 +172,123 @@ extension FITValue {
         }
     }
 }
+
+extension FITValue {
+    func doubleValue(from baseType: FITBaseType) -> Double? {
+        switch baseType {
+        case .sint8:
+            if case .sint8(let val) = self {
+                return Double(val)
+            }
+        case .uint8:
+            if case .uint8(let val) = self {
+                return Double(val)
+            }
+        case .uint8z:
+            if case .uint8z(let val) = self {
+                return Double(val)
+            }
+        case .sint16:
+            if case .sint16(let val) = self {
+                return Double(val)
+            }
+        case .uint16:
+            if case .uint16(let val) = self {
+                return Double(val)
+            }
+        case .sint32:
+            if case .sint32(let val) = self {
+                return Double(val)
+            }
+        case .uint32:
+            if case .uint32(let val) = self {
+                return Double(val)
+            }
+        case .float32:
+            if case .float32(let val) = self {
+                return Double(val)
+            }
+        case .float64:
+            if case .float64(let val) = self {
+                return Double(val)
+            }
+        case .uint16z:
+            if case .uint16z(let val) = self {
+                return Double(val)
+            }
+        case .uint32z:
+            if case .uint32z(let val) = self {
+                return Double(val)
+            }
+        case .sint64:
+            if case .sint64(let val) = self {
+                return Double(val)
+            }
+        case .uint64:
+            if case .uint64(let val) = self {
+                return Double(val)
+            }
+        case .uint64z:
+            if case .uint64z(let val) = self {
+                return Double(val)
+            }
+        default: break
+        }
+        return nil
+    }
+
+    func integerValue(from baseType: FITBaseType) -> Int? {
+        switch baseType {
+        case .sint8:
+            if case .sint8(let val) = self {
+                return Int(val)
+            }
+        case .uint8:
+            if case .uint8(let val) = self {
+                return Int(val)
+            }
+        case .uint8z:
+            if case .uint8z(let val) = self {
+                return Int(val)
+            }
+        case .sint16:
+            if case .sint16(let val) = self {
+                return Int(val)
+            }
+        case .uint16:
+            if case .uint16(let val) = self {
+                return Int(val)
+            }
+        case .sint32:
+            if case .sint32(let val) = self {
+                return Int(val)
+            }
+        case .uint32:
+            if case .uint32(let val) = self {
+                return Int(val)
+            }
+        case .uint16z:
+            if case .uint16z(let val) = self {
+                return Int(val)
+            }
+        case .uint32z:
+            if case .uint32z(let val) = self {
+                return Int(val)
+            }
+        case .sint64:
+            if case .sint64(let val) = self {
+                return Int(val)
+            }
+        case .uint64:
+            if case .uint64(let val) = self {
+                return Int(val)
+            }
+        case .uint64z:
+            if case .uint64z(let val) = self {
+                return Int(val)
+            }
+        default: break
+        }
+        return nil
+    }
+}

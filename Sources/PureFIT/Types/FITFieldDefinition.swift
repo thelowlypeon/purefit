@@ -8,6 +8,15 @@
 public enum FieldDefinitionNumber: Hashable, Equatable {
     case standard(UInt8)
     case developer(_ developerIndex: UInt8, _ fieldNumber: UInt8)
+
+    var defaultName: String {
+        switch self {
+        case .standard(let number):
+            return "Field \(number)"
+        case .developer(let devIndex, let number):
+            return "Dev field \(devIndex)-\(number)"
+        }
+    }
 }
 
 extension FieldDefinitionNumber: Comparable {
@@ -26,6 +35,8 @@ extension FieldDefinitionNumber: Comparable {
         }
     }
 }
+
+extension FieldDefinitionNumber: Sendable {}
 
 public struct FITFieldDefinition {
     public let fieldDefinitionNumber: UInt8

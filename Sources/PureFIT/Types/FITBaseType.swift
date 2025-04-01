@@ -24,6 +24,8 @@ public enum FITBaseType: UInt8 {
     case uint64 = 143       // Unsigned 64-bit integer, invalid value: 18446744073709551615, size: 8 bytes
     case uint64z = 144      // Unsigned 64-bit integer with zero invalid, invalid value: 0, size: 8 bytes
 }
+extension FITBaseType: RawRepresentable {}
+extension FITBaseType: Sendable {}
 
 extension FITBaseType {
     public var size: Int? {

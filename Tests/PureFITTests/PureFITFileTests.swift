@@ -6,15 +6,111 @@
 //
 
 import Testing
-import Foundation
 @testable import PureFIT
 
 struct PureFITFileTests {
+    /*
+    @Test func playgroundTest() async throws {
+        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let raw = try RawFITFile(url: url)
+        let fit = try PureFITFile(rawFITFile: raw)
+        let profile = Profile(fitFile: fit)
+        for message in fit.messages where message.globalMessageNumber == .session {
+            if let messageDef = profile.messageDefinitions[message.globalMessageNumber] {
+                print("messageDef: \(messageDef)")
+                for fieldNum in message.fields.keys.sorted() {
+                    guard let fieldValues = message.fields[fieldNum] else { continue }
+                    if let fieldDef = messageDef.fieldDefinitions[fieldNum] {
+                        print("\(fieldDef.name): \(fieldDef.format(values: fieldValues) ?? "-")")
+                    } else {
+                        // 66, 61: unknown
+                        // 108: enhanced_respiration_rate
+                        // 13: temperature
+                        // 30: left_right_balance
+                        // 43: left_torque_effectiveness
+                        // 44: right_torque_effectiveness
+                        // 45: left_pedal_smoothness
+                        // 46: right_pedal_smoothness
+                        // 29: accumulated_power
+                        //print("unrecognized field \(fieldNum) \(fieldValues)")
+                    }
+                }
+            } else {
+                print("unrecognized message \(message.globalMessageNumber)")
+            }
+        }
+    }
+     */
+
+    @Test func peter() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let raw = try RawFITFile(url: url)
+        let fit = try PureFITFile(rawFITFile: raw)
+
+        // first scan through all messages to find the union of all messages' field numbers (in order to provide consistent ordering) and get the developer fields
+        var developerFields = [FieldDefinitionNumber: DeveloperField]()
+        var viewedFields = [FITGlobalMessageNumber: Set<FieldDefinitionNumber>]() // this is to enforce an order once
+        for message in fit.messages {
+            viewedFields[message.globalMessageNumber, default: Set()].formUnion(message.fields.keys)
+            if case .fieldDescription = StandardMessage(rawValue: message.globalMessageNumber), let field = DeveloperField(fieldDescriptionMessage: message) {
+                developerFields[field.fieldDefinitionNumber] = field
+            }
+        }
+        let allFieldNumbersByMessageNumber = viewedFields.mapValues { $0.sorted() }
+
+        for message in fit.messages {// where message.globalMessageNumber == StandardMessage.hrv.rawValue {
+            let messageType = StandardMessage(rawValue: message.globalMessageNumber)
+            let fieldDefinitions = messageType?.standardFields
+
+            print("----- \(messageType?.name ?? "Msg: \(message.globalMessageNumber)") -----")
+            let expectedFieldNumbers = allFieldNumbersByMessageNumber[message.globalMessageNumber]!
+            for fieldDefinitionNumber in expectedFieldNumbers {
+                let fieldDefinition = fieldDefinitions?[fieldDefinitionNumber] ?? developerFields[fieldDefinitionNumber]
+                if let values = message.fields[fieldDefinitionNumber] {
+                    if let fieldDefinition {
+                        let fieldName = fieldDefinition.name
+                        let formattedFieldName = fieldName.padding(toLength: 20, withPad: " ", startingAt: 0)
+                        if let value = fieldDefinition.parse(values: values) {
+                            let strValue = value.format()
+                            print("\(formattedFieldName): \(strValue)")
+                        } else {
+                            print("\(formattedFieldName): <<invalid value \(values)>>")
+                        }
+                    } else {
+                        switch fieldDefinitionNumber {
+                        case .standard(let num):
+                            print("unrecognized std field number (msg \(message.globalMessageNumber) \(num): \(values)")
+                        case .developer(let devIndex, let devNum):
+                            print("unrecognized dev field number (msg \(message.globalMessageNumber) \(devIndex)-\(devNum): \(values)")
+                        }
+                    }
+                } else {
+                    print("// no value for \(fieldDefinitionNumber) in this message")
+                }
+            }
+        }
+        /*
+         let fit = try ProfiledFITFile(url: url)
+         for record in fit.recordMessages {
+            if let latitude = record.latitude {
+                print("Latitude: \(latitude.converted(to: .angle))")
+            }
+            for field = record.fields {
+              print("\(field.name): \(field.formatted(locale: locale))")
+            }
+         }
+         */
+
+    }
+
+
     @Test func parsingGarminFITFile() async throws {
         let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
         let raw = try RawFITFile(url: url)
         let fit = try PureFITFile(rawFITFile: raw)
         #expect(fit.messages.count == 23291)
+        let firstRecord = try #require(fit.messages.first(where: { $0.globalMessageNumber == 20 }))
+        #expect(firstRecord.value(at: 6) == .uint16(4264)) // NOTE: fitfileviewer.com says this is enhanced speed, field 73 uint32
     }
 
     @Test func parsingActivityWithDeveloperData() async throws {
