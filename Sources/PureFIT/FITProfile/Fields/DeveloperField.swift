@@ -7,65 +7,52 @@
 
 import Foundation
 
-struct DeveloperField: FieldDefinition, DimensionalFieldDefinition {
-    struct Value: FieldValue {
-        let stringValue: String // TODO we can do better than this, right?
+public struct DeveloperField: NamedFieldDefinition, DimensionalFieldDefinition {
+    public struct Value: FieldValue {
+        let stringValue: String
+        let fitValue: FITValue
 
-        func format(locale: Locale) -> String {
+        public func format(locale: Locale) -> String {
             return stringValue
         }
     }
 
-    let name: String
-    let fieldDefinitionNumber: FieldDefinitionNumber // always developer... should this instead have a developerDataIndex and a developerFieldNumber?
-    let baseType: FITBaseType
-    let scale: Double
-    let offset: Double
-    let units: String?
-    let nativeMessageNumber: UInt16?
+    public let name: String
+    public let fieldDefinitionNumber: FieldDefinitionNumber // always developer... should this instead have a developerDataIndex and a developerFieldNumber?
+    public let baseType: FITBaseType
+    public let scale: Double
+    public let offset: Double
+    public let units: String?
+    public let nativeMessageNumber: UInt16?
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         // developer fields can only have one per message
         guard let value = values.first else { return nil }
         let unitString = units == nil ? "" : " \(units!)"
         if baseType == .string, case .string(let str) = value {
-            return Value(stringValue: str)
+            return Value(stringValue: str, fitValue: value)
         }
         if let int = value.integerValue(from: baseType) {
-            return Value(stringValue: "\(int)\(unitString)")
+            return Value(stringValue: "\(int)\(unitString)", fitValue: value)
         }
         if let double = value.doubleValue(from: baseType) {
-            return Value(stringValue: "\(double)\(unitString)")
+            return Value(stringValue: "\(double)\(unitString)", fitValue: value)
         }
         return nil
     }
 
-    init?(fieldDescriptionMessage message: FITMessage) {
-        // TODO: Profile this!
-        guard case .uint8(let developerDataIndex) = message.value(at: 0),
-              case .uint8(let developerFieldNumber) = message.value(at: 1),
-              case .uint8(let fitBaseTypeRawValue) = message.value(at: 2),
-              let baseType = FITBaseType(rawValue: fitBaseTypeRawValue)
+    internal init?(fieldDescriptionMessage message: FieldDescriptionMessage) {
+        guard let developerDataIndex = message.developerDataIndex,
+              let developerFieldNumber = message.fieldDefinitionNumber,
+              let baseType = message.fitBaseType
         else { return nil }
-        if case .string(let name) = message.value(at: 3) {
-            self.name = name
-        } else {
-            self.name = "\(developerDataIndex)-\(developerFieldNumber)"
-        }
-        self.fieldDefinitionNumber = .developer(developerDataIndex, developerFieldNumber)
-        self.scale = message.value(at: 6)?.doubleValue(from: .uint8) ?? 1
-        self.offset = message.value(at: 7)?.doubleValue(from: .sint8) ?? 0
-        if case .string(let unitString) = message.value(at: 8) {
-            self.units = unitString
-        } else {
-            self.units = nil
-        }
+        self.name = message.fieldName ?? "\(developerDataIndex)-\(developerFieldNumber)"
+        self.fieldDefinitionNumber = .developer(UInt8(developerDataIndex), UInt8(developerFieldNumber))
         self.baseType = baseType
-        if case .uint16(let num) = message.value(at: 14) {
-            self.nativeMessageNumber = num
-        } else {
-            self.nativeMessageNumber = nil
-        }
+        self.scale = Double(message.scale ?? 1) // TODO: this should be an int
+        self.offset = Double(message.offset ?? 0) // TODO: this should be an int
+        self.units = message.units
+        self.nativeMessageNumber = message.nativeMessageNumber != nil ? UInt16(message.nativeMessageNumber!) : nil
     }
 }
 

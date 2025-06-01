@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct IndexField: FieldDefinition {
+struct IndexField: NamedFieldDefinition {
     struct Value: FieldValue {
         let value: Int
 

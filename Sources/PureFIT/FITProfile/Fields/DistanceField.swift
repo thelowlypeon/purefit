@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DistanceField: FieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+struct DistanceField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
     struct Value: FieldValue, MeasurementValue {
         let measurement: Measurement<UnitLength>
     }

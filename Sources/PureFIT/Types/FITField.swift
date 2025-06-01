@@ -7,5 +7,5 @@
 
 public struct FITField {
     public let definition: FITFieldDefinition
-    public let value: FITValue
+    public let values: [FITValue]
 }

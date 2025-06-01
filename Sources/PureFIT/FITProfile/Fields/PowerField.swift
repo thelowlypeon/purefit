@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PowerField: FieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+struct PowerField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
     struct Value: FieldValue, MeasurementValue {
         let measurement: Measurement<UnitPower>
     }

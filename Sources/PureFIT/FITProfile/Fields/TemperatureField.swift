@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TemperatureField: FieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+struct TemperatureField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
     struct Value: FieldValue, MeasurementValue {
         let measurement: Measurement<UnitTemperature>
     }

@@ -30,11 +30,11 @@ extension FITBaseType: Sendable {}
 extension FITBaseType {
     public var size: Int? {
         switch self {
-        case .enum, .sint8, .uint8, .uint8z, .bytes: return 1
+        case .enum, .sint8, .uint8, .uint8z: return 1
         case .sint16, .uint16, .uint16z: return 2
         case .sint32, .uint32, .float32, .uint32z: return 4
         case .sint64, .uint64, .uint64z, .float64: return 8
-        case .string:
+        case .bytes, .string:
             return nil // null terminated
         }
     }

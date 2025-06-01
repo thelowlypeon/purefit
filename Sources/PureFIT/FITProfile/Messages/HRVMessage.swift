@@ -6,12 +6,15 @@
 //
 
 struct HRVMessage: ProfiledMessage {
-    enum Field: UInt8, CaseIterable, StandardMessageField {
-        case time
+    let globalMessageType: GlobalMessageType = .hrv
+    let fields: [FieldDefinitionNumber : [FITValue]]
+
+    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
+        case time = 0
 
         var fieldDefinition: any FieldDefinition {
             switch self {
-            case .time: DurationField(name: "Time", baseType: .uint16, unit: .seconds, scale: 1000, offset: 0)
+            case .time: MultipleValueField(singleFieldDefinition: DurationField(name: "Time", baseType: .uint16, unit: .seconds, scale: 1000, offset: 0))
             }
         }
     }

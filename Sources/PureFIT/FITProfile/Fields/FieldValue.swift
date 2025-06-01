@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol FieldValue {
+public protocol FieldValue {
     func format(locale: Locale) -> String
 }
 extension FieldValue {

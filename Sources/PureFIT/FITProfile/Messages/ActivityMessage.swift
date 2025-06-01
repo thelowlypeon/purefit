@@ -6,7 +6,10 @@
 //
 
 struct ActivityMessage: ProfiledMessage {
-    enum Field: UInt8, CaseIterable, StandardMessageField {
+    let globalMessageType: GlobalMessageType = .activity
+    let fields: [FieldDefinitionNumber : [FITValue]]
+
+    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
         case totalTimerTime = 0
         case numSessions = 1
         case localTimestamp = 5

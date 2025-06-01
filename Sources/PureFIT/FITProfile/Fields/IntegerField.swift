@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct IntegerField: FieldDefinition {
+struct IntegerField: NamedFieldDefinition {
     struct Value: FieldValue {
         let value: Int
         let unitSymbol: String?

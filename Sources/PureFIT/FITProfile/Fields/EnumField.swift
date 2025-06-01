@@ -7,9 +7,12 @@
 
 import Foundation
 
-struct EnumField<T>: FieldDefinition where T: RawRepresentable, T.RawValue == UInt8, T: Sendable {
+struct EnumField<T>: NamedFieldDefinition where T: RawRepresentable, T.RawValue == UInt8, T: Sendable {
     struct Value: FieldValue {
         let rawValue: T.RawValue
+        var enumValue: T? {
+            T(rawValue: rawValue)
+        }
 
         func format(locale: Locale = .current) -> String {
             if let enumVal = T(rawValue: rawValue) {

@@ -36,7 +36,7 @@ protocol MeasurableFieldDefinition {
     func measurement(_ value: FITValue) -> Measurement<UnitType>?
 }
 
-extension MeasurableFieldDefinition where Self: DimensionalFieldDefinition, Self: FieldDefinition {
+extension MeasurableFieldDefinition where Self: DimensionalFieldDefinition, Self: NamedFieldDefinition {
     func measurement(_ value: FITValue) -> Measurement<UnitType>? {
         guard let doubleValue = scaledValue(value) else { return nil }
         return Measurement<UnitType>(value: doubleValue, unit: unit)

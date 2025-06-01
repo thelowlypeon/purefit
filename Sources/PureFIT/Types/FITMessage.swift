@@ -5,14 +5,15 @@
 //  Created by Peter Compernolle on 1/15/25.
 //
 
-public struct FITMessage {
-    public let globalMessageNumber: FITGlobalMessageNumber
-    public let fields: [FieldDefinitionNumber: [FITValue]]
 
-    public enum ParserError: Error {
-        case invalidDataSize
-    }
+public protocol FITMessage {
+    var globalMessageNumber: FITGlobalMessageNumber { get }
+    var fields: [FieldDefinitionNumber: [FITValue]] { get }
+    func fieldDefinition(for fieldDefinitionNumber: FieldDefinitionNumber, developerFieldDefinitions: [FieldDefinitionNumber: DeveloperField]) -> any FieldDefinition
+}
 
+extension FITMessage {
+    // TODO: make all these internal or at least decide whether it should be public API if we already have the values(at: [FieldDefinitionNumber])
     public func value(at fieldNumber: UInt8) -> FITValue? {
         return fields[.standard(fieldNumber)]?.first
     }
@@ -29,20 +30,85 @@ public struct FITMessage {
         return fields[fieldNumber]
     }
 
-    internal init(definitionRecord: RawFITDefinitionRecord, dataRecord: RawFITDataRecord, developerFieldDefinitions: [FITMessage]) throws {
+    public func developerFieldValue(for developerField: DeveloperField) -> DeveloperField.Value? {
+        guard developerField.nativeMessageNumber == nil || developerField.nativeMessageNumber == globalMessageNumber
+        else { return nil }
+        guard let rawValues = values(at: developerField.fieldDefinitionNumber) else { return nil }
+        return developerField.parse(values: rawValues)
+    }
+
+    public func allValues(developerFields: [FieldDefinitionNumber: DeveloperField]) -> [FieldValue?] {
+        return values(at: fields.keys.sorted(), developerFieldDefinitions: developerFields)
+    }
+
+    public func values(at fieldDefinitionNumbers: [FieldDefinitionNumber], developerFieldDefinitions: [FieldDefinitionNumber: DeveloperField]) -> [FieldValue?] {
+        return fieldDefinitionNumbers.map { definitionNumber in
+            let values = fields[definitionNumber]
+            let fieldDefinition = fieldDefinition(for: definitionNumber, developerFieldDefinitions: developerFieldDefinitions)
+            return values != nil ? fieldDefinition.parse(values: values!) : nil
+        }
+    }
+}
+
+public struct UnprofiledMessage: FITMessage {
+    public let globalMessageNumber: FITGlobalMessageNumber
+    public let fields: [FieldDefinitionNumber: [FITValue]]
+
+    public func fieldDefinition(for fieldDefinitionNumber: FieldDefinitionNumber, developerFieldDefinitions: [FieldDefinitionNumber: DeveloperField]) -> any FieldDefinition {
+        switch fieldDefinitionNumber {
+        case .standard(_): return UndefinedField(globalMessageNumber: globalMessageNumber, fieldDefinitionNumber: fieldDefinitionNumber)
+        case .developer(_, _):
+            return developerFieldDefinitions[fieldDefinitionNumber] ?? UndefinedField(globalMessageNumber: globalMessageNumber, fieldDefinitionNumber: fieldDefinitionNumber)
+        }
+    }
+}
+
+internal struct FITMessageBuilder {
+    public enum ParserError: Error {
+        case invalidDataSize
+    }
+
+    static func buildMessage(definitionRecord: RawFITDefinitionRecord, dataRecord: RawFITDataRecord, developerFieldDefinitions: [FieldDescriptionMessage]) throws -> any FITMessage {
+        let globalMessageNumber = dataRecord.globalMessageNumber
+        let fields = try extractFieldValues(definitionRecord: definitionRecord, dataRecord: dataRecord, developerFieldDefinitions: developerFieldDefinitions)
+        let messageType = GlobalMessageType(rawValue: globalMessageNumber)
+        switch messageType {
+        case .fileID: return FileIDMessage(fields: fields)
+        case .session: return SessionMessage(fields: fields)
+        case .lap: return LapMessage(fields: fields)
+        case .record: return RecordMessage(fields: fields)
+        case .event: return EventMessage(fields: fields)
+        case .deviceInfo: return DeviceInfoMessage(fields: fields)
+        case .activity: return ActivityMessage(fields: fields)
+        case .hrv: return HRVMessage(fields: fields)
+        case .fieldDescription: return FieldDescriptionMessage(fields: fields)
+        case .timeInZone: return TimeInZoneMessage(fields: fields)
+        case nil: return UnprofiledMessage(globalMessageNumber: globalMessageNumber, fields: fields)
+        }
+    }
+
+    static func extractFieldValues(definitionRecord: RawFITDefinitionRecord, dataRecord: RawFITDataRecord, developerFieldDefinitions: [FieldDescriptionMessage]) throws -> [FieldDefinitionNumber: [FITValue]] {
         var offset = 0
         let fields: [FITField] = try definitionRecord.fields.compactMap { fieldDefinition in
             let fieldSize = Int(fieldDefinition.size)
             guard dataRecord.fieldsData.count >= offset + fieldSize
             else { throw ParserError.invalidDataSize }
-            let value = FITValue.from(
-                bytes: Array(dataRecord.fieldsData[offset..<(offset + fieldSize)]),
-                baseType: fieldDefinition.baseType,
-                architecture: definitionRecord.architecture
-            )
-            offset += fieldSize
-            guard let value else { return nil }
-            return .init(definition: fieldDefinition, value: value)
+            // use baseType.size to determine how many values there are. eg HRV (message 78) times (field 0) contains an array of 5 values
+            let valueLength = (fieldDefinition.baseType.size ?? fieldSize)
+            let numValues = fieldSize / valueLength
+            var values = [FITValue]()
+            for _ in 0..<numValues {
+                if let value = FITValue.from(
+                    bytes: Array(dataRecord.fieldsData[offset..<(offset + valueLength)]),
+                    baseType: fieldDefinition.baseType,
+                    architecture: definitionRecord.architecture
+                ) {
+                    values.append(value)
+                }
+                offset += valueLength
+            }
+            guard !values.isEmpty else { return nil }
+            return .init(definition: fieldDefinition, values: values)
         }
 
         offset = 0
@@ -54,24 +120,17 @@ public struct FITMessage {
 
             offset += fieldSize
             let developerFieldDefinition = developerFieldDefinitions.first(where: { definitionMessage in
-                guard let fieldDefinitionNumberField = definitionMessage.value(at: .standard(1)),
-                        case .uint8(let fieldDefinitionNumber) = fieldDefinitionNumberField,
-                      let developerDataIndexField = definitionMessage.value(at: .standard(0)),
-                        case .uint8(let developerDataIndex) = developerDataIndexField
+                guard let fieldDefinitionNumber = (definitionMessage.standardFieldValue(for: .fieldDefinitionNumber) as? IndexField.Value)?.value,
+                      let developerDataIndex = (definitionMessage.standardFieldValue(for: .developerDataIndex) as? IndexField.Value)?.value
                 else { return false }
                 return fieldDefinitionNumber == fieldDefinition.developerFieldDefinitionNumber && developerDataIndex == fieldDefinition.developerDataIndex
             })
 
-            let baseType: FITBaseType
-            if case .uint8(let baseTypeRawValue) = developerFieldDefinition?.value(at: .standard(2)) {
-                baseType = FITBaseType(rawValue: baseTypeRawValue) ?? .bytes
-            } else {
-                baseType = .bytes
-            }
+            let baseType: FITBaseType? = (developerFieldDefinition?.standardFieldValue(for: .fitBaseType) as? EnumField<FITBaseType>.Value)?.enumValue
 
             guard let value = FITValue.from(
                 bytes: Array(bytes),
-                baseType: baseType,
+                baseType: baseType ?? .bytes,
                 architecture: .littleEndian)
             else { return nil }
             return FITDeveloperField(
@@ -80,13 +139,12 @@ public struct FITMessage {
             )
         }
 
-        self.globalMessageNumber = dataRecord.globalMessageNumber
-        let fieldsDict = Dictionary(fields.map { ($0.definition.fieldDefinition, [$0.value] )}, uniquingKeysWith: { lhs, rhs in
+        let fieldsDict = Dictionary(fields.map { ($0.definition.fieldDefinition, $0.values )}, uniquingKeysWith: { lhs, rhs in
             return lhs + rhs
         })
         let devFieldsDict = Dictionary(developerFields.map { ($0.definition.fieldDefinition, [$0.value] )}, uniquingKeysWith: { lhs, rhs in
             return lhs + rhs
         })
-        self.fields = fieldsDict.merging(devFieldsDict) { return $0 + $1 }
+        return fieldsDict.merging(devFieldsDict) { return $0 + $1 }
     }
 }

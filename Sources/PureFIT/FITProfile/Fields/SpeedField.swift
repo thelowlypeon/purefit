@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SpeedField: FieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+struct SpeedField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
     struct Value: FieldValue, MeasurementValue {
         let measurement: Measurement<UnitSpeed>
     }

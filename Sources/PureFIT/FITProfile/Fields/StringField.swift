@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct StringField: FieldDefinition {
+struct StringField: NamedFieldDefinition {
     struct Value: FieldValue {
         let string: String
 

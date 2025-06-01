@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AngleField: FieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition, Sendable {
+struct AngleField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition, Sendable {
     struct Value: FieldValue, MeasurementValue {
         let measurement: Measurement<UnitAngle>
         // TODO: convert to degrees?

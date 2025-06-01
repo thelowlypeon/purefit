@@ -17,7 +17,7 @@ extension DimensionalFieldDefinition {
     }
 }
 
-extension DimensionalFieldDefinition where Self: FieldDefinition {
+extension DimensionalFieldDefinition where Self: NamedFieldDefinition {
     func scaledValue(_ value: FITValue) -> Double? {
         return scaledValue(value.doubleValue(from: baseType))
     }
