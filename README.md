@@ -14,23 +14,72 @@ This library does not handle encoding, but that is a possibility for the future.
 ## Design
 
 PureFIT aims to provide a Swift-friendly representation of a FIT file, called a `RawFITFile`.
-If you want to, for example, get a speed `Measurement<UnitSpeed>` for each record message.
-(It would be easy, though, to extend this to do so.)
+On top of `RawFITFile`, PureFIT can interpret FIT files using Garmin's FIT profile,
+but, unlike most other libraries, this assumes that the profile is incomplete.
+A `PureFITFile`, therefore, can support unreocognized message types and unrecognized fields by default.
 
 One of the primary aims of this library is to ensure future-proof-ness as the FIT profile evolves and new fields are added.
 As such, this library tries to understand as little about the FIT profile as possible, such as which global message numbers
 correspond with which message types, which field numbers correspond to which fields, etc.
 Broadly speaking, it knows only what is defined in the FIT file.
 
-### FIT Profile Types
-
-While the aim of this library is to _not_ depend on the FIT profile, ie the _meaning_ of various values,
-there are some practical exceptions to make it more useful.
-
-* `FITBaseType`, an enum, defines the type of data for a given field, eg, `.uint8`, or `.enum`
-* `FITValue` is derived by `FITBaseType`, and is vastly more useful than dealing with raw bytes. The raw byte array remains available in a `RawFITFile`'s `RawFITRecord`
-
 ## Usage
+
+There are three main ways to use this library: reading and manipulating specific values, reading all values (including unrecognized fields), using field definitions.
+
+### Specific Values
+
+If you need a value of a specific kind of message for a specific field, such all record messages' power values:
+
+```swift
+let fit = PureFITFile(url: url)
+let recordMessages = fit.messages.compactMap { $0 as? RecordMessage }
+let powerFieldValues = recordMessages.map { $0.standardFieldValue(for: .power) as? PowerField.Value }
+let powerValues = powerFieldValues.map { $0?.measurement.converted(to: .watts).value }
+```
+
+### Unrecognized values
+
+This is the main reason this library exists! Many FIT files written by Garmin or third parties include fields that are not included
+in the official FIT Profile. As a result, many fields disappear when sharing from one service to another.
+This API is intended to show you what is in the FIT file _even if_ you aren't sure what the field represents (yet).
+
+```swift
+let fit = PureFITFile(url: url)
+let developerFieldDefinitions = fit.developerFields
+for message in fit.messages {
+  for (fieldDefinitionNumber, values) in message.fields {
+    if let fieldDefinition = message.fieldDefinition(for: fieldDefinitionNumber, developerFieldDefinitions: developerFieldDefinitions) {
+      print("\(fieldDefinition.name)": \(fieldDefinition.format(values: values))"
+    } else {
+      print("Unrecognized field \(fieldDefinitionNumber): \(values")
+    }
+  }
+}
+```
+
+### Field Definitions
+
+PureFIT reads developer field definitions from the message, and includes some standard definitions out of the box.
+More standard field definitions are on the way.
+
+```swift
+let fit = PureFITFile(url: url)
+let developerFields = fit.developerFields
+if let speed = developerFields[.developer(0, 5)] {
+  print(speed.name) // "Speed"
+  print(speed.baseType) // .float32
+  print(speed.scale) // 1.0
+  print(speed.offset) // 0.0
+  print(speed.units) // "M/S"
+  print(speed.nativeMessageNumber) // 5
+  
+  // use the field definition to parse raw FIT values
+  print(speed.parse(.float32(123)?.format(locale: .current)) // 123.0 M/S
+}
+```
+
+### FIT Details
 
 Simply pass your `Data` instance into `RawFITFile(data: data)`:
 
