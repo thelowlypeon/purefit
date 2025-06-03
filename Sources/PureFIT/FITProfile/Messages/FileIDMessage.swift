@@ -5,14 +5,14 @@
 //  Created by Peter Compernolle on 5/29/25.
 //
 
-struct FileIDMessage: ProfiledMessage {
-    let globalMessageType: GlobalMessageType = .fileID
-    let fields: [FieldDefinitionNumber : [FITValue]]
+public struct FileIDMessage: ProfiledMessage {
+    public let globalMessageType: GlobalMessageType = .fileID
+    public let fields: [FieldDefinitionNumber : [FITValue]]
 
-    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
+    public enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
         case timeCreated = 4
 
-        var fieldDefinition: any FieldDefinition {
+        public var fieldDefinition: any FieldDefinition {
             switch self {
             case .timeCreated: DateField(name: "Time Created")
             }

@@ -5,17 +5,17 @@
 //  Created by Peter Compernolle on 5/29/25.
 //
 
-struct LapMessage: ProfiledMessage {
-    let globalMessageType: GlobalMessageType = .lap
-    let fields: [FieldDefinitionNumber : [FITValue]]
+public struct LapMessage: ProfiledMessage {
+    public let globalMessageType: GlobalMessageType = .lap
+    public let fields: [FieldDefinitionNumber : [FITValue]]
 
-    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
+    public enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
         case startTime = 2
         case averageTemperature = 50
         case timestamp = 253
         case messageIndex = 254
 
-        var fieldDefinition: any FieldDefinition {
+        public var fieldDefinition: any FieldDefinition {
             switch self {
             case .startTime: DateField(name: "Start Time", style: .time)
             case .averageTemperature: TemperatureField(name: "Average Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)

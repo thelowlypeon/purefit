@@ -5,19 +5,19 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-protocol FieldDefinitionProviding: RawRepresentable where RawValue == UInt8 {
+public protocol FieldDefinitionProviding: RawRepresentable where RawValue == UInt8 {
     var fieldDefinition: any FieldDefinition { get }
 }
 
-protocol ProfiledMessage: FITMessage {
+public protocol ProfiledMessage: FITMessage {
     var globalMessageType: GlobalMessageType { get }
     associatedtype Field: FieldDefinitionProviding
 }
 
 extension ProfiledMessage {
-    var globalMessageNumber: FITGlobalMessageNumber { globalMessageType.rawValue }
+    public var globalMessageNumber: FITGlobalMessageNumber { globalMessageType.rawValue }
 
-    func standardFieldValue(for field: Field) -> FieldValue? {
+    public func standardFieldValue(for field: Field) -> FieldValue? {
         guard let rawValues = values(at: field)
         else { return nil }
         let fieldDefinition = fieldDefinition(for: .standard(field.rawValue), developerFieldDefinitions: [:])
@@ -35,7 +35,7 @@ extension ProfiledMessage {
 }
 
 extension ProfiledMessage {
-    func fieldDefinition(for fieldDefinitionNumber: FieldDefinitionNumber, developerFieldDefinitions: [FieldDefinitionNumber: DeveloperField]) -> any FieldDefinition {
+    public func fieldDefinition(for fieldDefinitionNumber: FieldDefinitionNumber, developerFieldDefinitions: [FieldDefinitionNumber: DeveloperField]) -> any FieldDefinition {
         switch fieldDefinitionNumber {
         case .standard(let number):
             return Field(rawValue: number)?.fieldDefinition ?? UndefinedField(globalMessageNumber: globalMessageNumber, fieldDefinitionNumber: fieldDefinitionNumber)

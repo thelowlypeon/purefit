@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-enum GlobalMessageType: UInt16, CaseIterable {
+public enum GlobalMessageType: UInt16, CaseIterable {
     case fileID = 0
     case session = 18
     case lap = 19
@@ -17,7 +17,7 @@ enum GlobalMessageType: UInt16, CaseIterable {
     case fieldDescription = 206
     case timeInZone = 216
 
-    var name: String {
+    public var name: String {
         switch self {
         case .fileID: "File ID"
         case .session: "Session"

@@ -5,11 +5,11 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-struct RecordMessage: ProfiledMessage {
-    let globalMessageType: GlobalMessageType = .record
-    let fields: [FieldDefinitionNumber : [FITValue]]
+public struct RecordMessage: ProfiledMessage {
+    public let globalMessageType: GlobalMessageType = .record
+    public let fields: [FieldDefinitionNumber : [FITValue]]
 
-    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
+    public enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
         case latitude = 0
         case longitude = 1
         case altitude = 2
@@ -39,7 +39,7 @@ struct RecordMessage: ProfiledMessage {
         //case enhancedRespiratoryRate = 108
         case timestamp = 253
 
-        var fieldDefinition: any FieldDefinition {
+        public var fieldDefinition: any FieldDefinition {
             switch self {
             case .latitude: AngleField(name: "Longitude", baseType: .sint32, scale: 1, offset: 0)
             case .longitude: AngleField(name: "Longitude", baseType: .sint32, scale: 1, offset: 0)

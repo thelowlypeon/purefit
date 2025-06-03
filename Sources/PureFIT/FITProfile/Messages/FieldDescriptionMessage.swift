@@ -5,9 +5,9 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-struct FieldDescriptionMessage: ProfiledMessage {
-    let globalMessageType: GlobalMessageType = .fieldDescription
-    let fields: [FieldDefinitionNumber : [FITValue]]
+public struct FieldDescriptionMessage: ProfiledMessage {
+    public let globalMessageType: GlobalMessageType = .fieldDescription
+    public let fields: [FieldDefinitionNumber : [FITValue]]
 
     public var developerDataIndex: Int? {
         return (standardFieldValue(for: .developerDataIndex) as? IndexField.Value)?.value
@@ -45,7 +45,7 @@ struct FieldDescriptionMessage: ProfiledMessage {
         return (standardFieldValue(for: .nativeFieldNumber) as? IndexField.Value)?.value
     }
 
-    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
+    public enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
         case developerDataIndex = 0
         case fieldDefinitionNumber = 1
         case fitBaseType = 2
@@ -56,7 +56,7 @@ struct FieldDescriptionMessage: ProfiledMessage {
         case nativeMessageNumber = 14
         case nativeFieldNumber = 15
 
-        var fieldDefinition: any FieldDefinition {
+        public var fieldDefinition: any FieldDefinition {
             switch self {
             case .developerDataIndex: IndexField(name: "Developer Data Index", baseType: .uint8)
             case .fieldDefinitionNumber: IndexField(name: "Field Definition Number", baseType: .uint8)

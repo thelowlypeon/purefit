@@ -5,11 +5,11 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-struct SessionMessage: ProfiledMessage {
-    let globalMessageType: GlobalMessageType = .session
-    let fields: [FieldDefinitionNumber : [FITValue]]
+public struct SessionMessage: ProfiledMessage {
+    public let globalMessageType: GlobalMessageType = .session
+    public let fields: [FieldDefinitionNumber : [FITValue]]
 
-    enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
+    public enum Field: UInt8, CaseIterable, StandardMessageField, FieldDefinitionProviding {
         case startTime = 2
         case startPositionLatitude = 3
         case startPositionLongitude = 4
@@ -23,7 +23,7 @@ struct SessionMessage: ProfiledMessage {
         case timestamp = 253
         case messageIndex = 254
 
-        var fieldDefinition: any FieldDefinition {
+        public var fieldDefinition: any FieldDefinition {
             switch self {
             case .startTime: DateField(name: "Start Time")
             case .startPositionLatitude: AngleField(name: "Starting Longitude", baseType: .sint32, scale: 1, offset: 0)
