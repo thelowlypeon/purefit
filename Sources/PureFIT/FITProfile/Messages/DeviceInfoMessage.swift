@@ -16,7 +16,7 @@ public struct DeviceInfoMessage: ProfiledMessage {
         public var fieldDefinition: any FieldDefinition {
             switch self {
             case .productName: StringField(name: "Product Name")
-            case .timestamp: DateField(name: "Timestamp", style: .time)
+            case .timestamp: DateField(name: "Timestamp")
             }
         }
     }

@@ -67,7 +67,7 @@ public struct RecordMessage: ProfiledMessage {
             case .enhancedAltitude: DistanceField(name: "Enhanced Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
             // NOTE: performanceCondition is not documented in profile.xlsx
             case .performanceCondition: IntegerField(name: "Performance Condition", baseType: .sint8)
-            case .timestamp: DateField(name: "Timestamp", style: .time)
+            case .timestamp: DateField(name: "Timestamp")
             }
         }
     }

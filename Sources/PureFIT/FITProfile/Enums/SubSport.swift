@@ -96,3 +96,4 @@ public enum SubSport: UInt8 {
     case fly_ifr = 119
     case all = 254
 }
+extension SubSport: Sendable {}

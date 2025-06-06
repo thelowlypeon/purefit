@@ -18,7 +18,7 @@ public struct EventMessage: ProfiledMessage {
             switch self {
             case .event: IntegerField(name: "Event", baseType: .enum) // TODO: Enum field
             case .eventType: IntegerField(name: "Event Type", baseType: .enum) // TODO: Enum field
-            case .timestamp: DateField(name: "Timestamp", style: .time)
+            case .timestamp: DateField(name: "Timestamp")
             }
         }
     }

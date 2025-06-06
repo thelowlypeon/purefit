@@ -76,4 +76,5 @@ public enum Sport: UInt8 {
     case jump_rope = 84
     case all = 254
 }
+extension Sport: Sendable {}
 

@@ -17,9 +17,9 @@ public struct LapMessage: ProfiledMessage {
 
         public var fieldDefinition: any FieldDefinition {
             switch self {
-            case .startTime: DateField(name: "Start Time", style: .time)
+            case .startTime: DateField(name: "Start Time")
             case .averageTemperature: TemperatureField(name: "Average Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)
-            case .timestamp: DateField(name: "Timestamp", style: .time)
+            case .timestamp: DateField(name: "Timestamp")
             case .messageIndex: IndexField(name: "Message Index", baseType: .uint16)
             }
         }
