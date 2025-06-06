@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct DistanceField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
-    struct Value: FieldValue, MeasurementValue {
-        let measurement: Measurement<UnitLength>
+public struct DistanceField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+    public struct Value: FieldValue, MeasurementValue {
+        public let measurement: Measurement<UnitLength>
     }
 
-    let name: String
-    let baseType: FITBaseType
-    let unit: UnitLength
-    let scale: Double
-    let offset: Double
+    public let name: String
+    public let baseType: FITBaseType
+    public let unit: UnitLength
+    public let scale: Double
+    public let offset: Double
     // TODO: width and usage (for formatting)
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         guard let value = values.first, let measurement = measurement(value) else { return nil }
         return Value(measurement: measurement)
     }

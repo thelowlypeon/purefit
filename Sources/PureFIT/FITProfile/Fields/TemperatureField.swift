@@ -7,17 +7,17 @@
 
 import Foundation
 
-struct TemperatureField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
-    struct Value: FieldValue, MeasurementValue {
-        let measurement: Measurement<UnitTemperature>
+public struct TemperatureField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+    public struct Value: FieldValue, MeasurementValue {
+        public let measurement: Measurement<UnitTemperature>
     }
-    let name: String
-    let baseType: FITBaseType
-    let unit: UnitTemperature
-    let scale: Double
-    let offset: Double
+    public let name: String
+    public let baseType: FITBaseType
+    public let unit: UnitTemperature
+    public let scale: Double
+    public let offset: Double
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         guard let value = values.first, let measurement = measurement(value) else { return nil }
         return Value(measurement: measurement)
     }

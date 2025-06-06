@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-enum Sport: UInt8 {
+public enum Sport: UInt8 {
     case generic = 0
     case running = 1
     case cycling = 2

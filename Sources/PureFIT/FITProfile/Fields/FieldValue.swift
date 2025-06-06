@@ -11,7 +11,7 @@ public protocol FieldValue {
     func format(locale: Locale) -> String
 }
 extension FieldValue {
-    func format() -> String {
+    public func format() -> String {
         format(locale: .current)
     }
 }

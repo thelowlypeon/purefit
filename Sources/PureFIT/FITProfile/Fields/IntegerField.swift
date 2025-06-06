@@ -7,30 +7,30 @@
 
 import Foundation
 
-struct IntegerField: NamedFieldDefinition {
-    struct Value: FieldValue {
-        let value: Int
-        let unitSymbol: String?
+public struct IntegerField: NamedFieldDefinition {
+    public struct Value: FieldValue {
+        public let value: Int
+        public let unitSymbol: String?
 
-        func format(locale: Locale) -> String {
+        public func format(locale: Locale) -> String {
             let unitString = unitSymbol == nil ? "" : " \(unitSymbol!)"
             return "\(value)\(unitString)"
         }
     }
 
-    let name: String
-    let baseType: FITBaseType
-    let unitSymbol: String?
-    let scale: Int
+    public let name: String
+    public let baseType: FITBaseType
+    public let unitSymbol: String?
+    public let scale: Int
 
-    init(name: String, baseType: FITBaseType, unitSymbol: String? = nil, scale: Int = 1) {
+    public init(name: String, baseType: FITBaseType, unitSymbol: String? = nil, scale: Int = 1) {
         self.name = name
         self.baseType = baseType
         self.unitSymbol = unitSymbol
         self.scale = scale
     }
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         guard let integerValue = values.first?.integerValue(from: baseType) else { return nil }
         return Value(value: integerValue / scale, unitSymbol: unitSymbol)
     }

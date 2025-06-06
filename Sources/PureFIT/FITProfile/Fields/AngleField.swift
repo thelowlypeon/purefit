@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct AngleField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition, Sendable {
-    struct Value: FieldValue, MeasurementValue {
+public struct AngleField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition, Sendable {
+    public struct Value: FieldValue, MeasurementValue {
         let measurement: Measurement<UnitAngle>
         // TODO: convert to degrees?
     }
 
-    let name: String
-    let baseType: FITBaseType
-    let scale: Double
-    let offset: Double
-    var unit: UnitAngle { .garminSemicircle } // TODO: this should probably be configurable. TBD.
+    public let name: String
+    public let baseType: FITBaseType
+    public let scale: Double
+    public let offset: Double
+    public var unit: UnitAngle { .garminSemicircle } // TODO: this should probably be configurable. TBD.
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         guard let value = values.first, let measurement = measurement(value) else { return nil }
         return Value(measurement: measurement)
     }

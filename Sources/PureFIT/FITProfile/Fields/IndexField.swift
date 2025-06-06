@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct IndexField: NamedFieldDefinition {
-    struct Value: FieldValue {
-        let value: Int
+public struct IndexField: NamedFieldDefinition {
+    public struct Value: FieldValue {
+        public let value: Int
 
-        func format(locale: Locale) -> String {
+        public func format(locale: Locale) -> String {
             return "\(value)"
         }
     }
 
-    let name: String
-    let baseType: FITBaseType
+    public let name: String
+    public let baseType: FITBaseType
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         guard let integerValue = values.first?.integerValue(from: baseType) else { return nil }
         return Value(value: integerValue)
     }

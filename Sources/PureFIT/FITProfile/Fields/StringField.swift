@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct StringField: NamedFieldDefinition {
-    struct Value: FieldValue {
-        let string: String
+public struct StringField: NamedFieldDefinition {
+    public struct Value: FieldValue {
+        public let string: String
 
-        func format(locale: Locale = .current) -> String {
+        public func format(locale: Locale = .current) -> String {
             return string
         }
     }
-    let name: String
-    var baseType: FITBaseType { .string }
+    public let name: String
+    public var baseType: FITBaseType { .string }
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         if case .string(let str) = values.first {
             return Value(string: str)
         }

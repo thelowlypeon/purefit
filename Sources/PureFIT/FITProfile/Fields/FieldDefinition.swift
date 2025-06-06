@@ -26,8 +26,8 @@ public struct UndefinedField: FieldDefinition {
         }
     }
 
-    let globalMessageNumber: FITGlobalMessageNumber
-    let fieldDefinitionNumber: FieldDefinitionNumber
+    public let globalMessageNumber: FITGlobalMessageNumber
+    public let fieldDefinitionNumber: FieldDefinitionNumber
 
     public func parse(values: [FITValue]) -> Value? {
         guard let value = values.first else { return nil }

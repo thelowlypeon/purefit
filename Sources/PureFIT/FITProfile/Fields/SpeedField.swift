@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct SpeedField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
-    struct Value: FieldValue, MeasurementValue {
-        let measurement: Measurement<UnitSpeed>
+public struct SpeedField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
+    public struct Value: FieldValue, MeasurementValue {
+        public let measurement: Measurement<UnitSpeed>
     }
 
-    let name: String
-    let baseType: FITBaseType
-    let unit: UnitSpeed
-    let scale: Double
-    let offset: Double
+    public let name: String
+    public let baseType: FITBaseType
+    public let unit: UnitSpeed
+    public let scale: Double
+    public let offset: Double
 
-    func parse(values: [FITValue]) -> Value? {
+    public func parse(values: [FITValue]) -> Value? {
         guard let value = values.first, let measurement = measurement(value) else { return nil }
         return Value(measurement: measurement)
     }
