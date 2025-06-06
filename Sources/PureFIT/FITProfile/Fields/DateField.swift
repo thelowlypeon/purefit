@@ -9,7 +9,7 @@ import Foundation
 
 public struct DateField: NamedFieldDefinition {
     public struct Value: FieldValue {
-        let date: Date
+        public let date: Date
 
         public func format(locale: Locale) -> String {
             let formatter = DateFormatter()
