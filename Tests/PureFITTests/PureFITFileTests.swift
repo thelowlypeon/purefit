@@ -194,9 +194,7 @@ struct PureFITFileTests {
         let sessions = fit.messages.compactMap { $0 as? SessionMessage }
         #expect(sessions.count == 1)
         let session = try #require(sessions.first)
-        if #available(iOS 15.0, *) {
-            #expect((session.standardFieldValue(for: .startTime) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T10:34:55Z")
-        }
+        #expect((session.standardFieldValue(for: .startTime) as? DateField.Value)?.format(locale: .current) == "Jul 12, 2020 at 05:34:55")
         let startLatitudeMeasurement = (session.standardFieldValue(for: .startPositionLatitude) as? AngleField.Value)?.measurement
         #expect(startLatitudeMeasurement?.unit == .garminSemicircle)
         #expect(startLatitudeMeasurement?.converted(to: .degrees).value == 41.94262119010091)

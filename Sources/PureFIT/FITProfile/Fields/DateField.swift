@@ -14,6 +14,8 @@ public struct DateField: NamedFieldDefinition {
         public func format(locale: Locale) -> String {
             let formatter = DateFormatter()
             formatter.locale = locale
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .medium
             return formatter.string(from: date)
         }
     }
