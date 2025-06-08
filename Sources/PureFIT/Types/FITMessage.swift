@@ -83,7 +83,7 @@ internal struct FITMessageBuilder {
         case .hrv: return HRVMessage(fields: fields)
         case .fieldDescription: return FieldDescriptionMessage(fields: fields)
         case .timeInZone: return TimeInZoneMessage(fields: fields)
-        case nil: return UnprofiledMessage(globalMessageNumber: globalMessageNumber, fields: fields)
+        default: return UnprofiledMessage(globalMessageNumber: globalMessageNumber, fields: fields)
         }
     }
 
