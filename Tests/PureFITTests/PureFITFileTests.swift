@@ -143,8 +143,8 @@ struct PureFITFileTests {
         #expect(activityMessages.count == 1)
         let activityMessage = try #require(activityMessages.first)
         let totalTimerTime = try #require(activityMessage.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)
-        #expect(totalTimerTime.format() == "1.186h") // weird. not ideal. need to format durations in a more meanintful way
-        #expect(totalTimerTime.measurement.converted(to: .minutes).value.rounded() == 71)
+        #expect(totalTimerTime.format() == "1:11:07") // weird. not ideal. need to format durations in a more meanintful way
+        #expect(totalTimerTime.duration == 4267.891)
         // this doesn't really need to be public, does it?
         let rawTotalTimerTimeValue = try #require(activityMessage.value(at: .totalTimerTime))
         #expect(rawTotalTimerTimeValue == .uint32(4267891))
@@ -170,7 +170,7 @@ struct PureFITFileTests {
         let activity = try #require(activities.first)
         #expect((activity.standardFieldValue(for: .numSessions) as? IntegerField.Value)?.value == 1)
         #expect(activity.value(at: .standard(2)) == .enum(0)) // oops, need to add this one. this is `type`
-        #expect((activity.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.measurement.converted(to: .seconds).value == 11380.964)
+        #expect((activity.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.duration == 11380.964)
         if #available(iOS 15.0, *) {
             #expect((activity.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T13:47:52Z")
             #expect((activity.standardFieldValue(for: .localTimestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T08:47:52Z")
@@ -185,7 +185,7 @@ struct PureFITFileTests {
         let hrvMessage = try #require(hrvMessages.first)
         #expect(hrvMessage.fields == [.standard(0): [.uint16(558), .uint16(557)]])
         let times = try #require((hrvMessage.standardFieldValue(for: .time) as? MultipleValueField<DurationField>.Value)?.values)
-        #expect(times.map { $0.measurement.converted(to: .milliseconds).value } == [558, 557])
+        #expect(times.map { $0.duration } == [0.558, 0.557])
     }
 
     @Test func readSessionData() async throws {
@@ -200,8 +200,8 @@ struct PureFITFileTests {
         #expect(startLatitudeMeasurement?.converted(to: .degrees).value == 41.94262119010091)
         #expect((session.standardFieldValue(for: .sport) as? EnumField<Sport>.Value)?.enumValue == .cycling)
         #expect((session.standardFieldValue(for: .subSport) as? EnumField<SubSport>.Value)?.enumValue == .road)
-        #expect((session.standardFieldValue(for: .totalElapsedTime) as? DurationField.Value)?.measurement.converted(to: .milliseconds).value == 11503959)
-        #expect((session.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.measurement.converted(to: .milliseconds).value == 11380964)
+        #expect((session.standardFieldValue(for: .totalElapsedTime) as? DurationField.Value)?.duration == 11503.959)
+        #expect((session.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.duration == 11380.964)
         #expect((session.standardFieldValue(for: .totalDistance) as? DistanceField.Value)?.measurement.converted(to: .meters).value == 100346.79)
     }
 
@@ -242,10 +242,10 @@ struct PureFITFileTests {
         #expect(timeInZoneMessages.count == 14)
         let timeInZoneMessage = try #require(timeInZoneMessages.first)
         let timeInHRZoneFieldValues = (timeInZoneMessage.standardFieldValue(for: .timeInHRZone) as? MultipleValueField<DurationField>.Value)?.values
-        let timeInHRZoneValues = timeInHRZoneFieldValues?.map { $0.measurement.converted(to: .milliseconds).value }
+        let timeInHRZoneValues = timeInHRZoneFieldValues?.map { $0.duration * 1000 }
         #expect(timeInHRZoneValues == [4117, 26999, 344998, 473005, 68997, 0, 0])
         let timeInPowerZoneFieldValues = (timeInZoneMessage.standardFieldValue(for: .timeInPowerZone) as? MultipleValueField<DurationField>.Value)?.values
-        let timeInPowerZoneValues = timeInPowerZoneFieldValues?.map { $0.measurement.converted(to: .milliseconds).value }
+        let timeInPowerZoneValues = timeInPowerZoneFieldValues?.map { $0.duration * 1000 }
         #expect(timeInPowerZoneValues == [51003, 5996, 124004, 302113, 237997, 118007, 67991, 0, 0, 0])
     }
 

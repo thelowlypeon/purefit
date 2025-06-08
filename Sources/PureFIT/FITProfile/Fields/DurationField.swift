@@ -24,9 +24,22 @@ public struct MultipleValueField<T: NamedFieldDefinition>: FieldDefinition {
     }
 }
 
-public struct DurationField: NamedFieldDefinition, DimensionalFieldDefinition, MeasurableFieldDefinition {
-    public struct Value: FieldValue, MeasurementValue {
-        public let measurement: Measurement<UnitDuration>
+public struct DurationField: NamedFieldDefinition, DimensionalFieldDefinition {
+    public struct Value: FieldValue {
+        public let duration: TimeInterval // seconds
+
+        public func format(locale: Locale) -> String {
+            let dateComponentsFormatter = DateComponentsFormatter()
+            dateComponentsFormatter.allowedUnits = [.hour, .minute, .second]
+            dateComponentsFormatter.unitsStyle = .positional
+            if let str = dateComponentsFormatter.string(from: duration) {
+                return str
+            } else {
+                let measurementFormatter = MeasurementFormatter()
+                measurementFormatter.locale = locale
+                return measurementFormatter.string(from: Measurement<UnitDuration>(value: duration, unit: .seconds))
+            }
+        }
     }
     public let name: String
     public let baseType: FITBaseType
@@ -35,7 +48,7 @@ public struct DurationField: NamedFieldDefinition, DimensionalFieldDefinition, M
     public let offset: Double
 
     public func parse(values: [FITValue]) -> Value? {
-        guard let value = values.first, let measurement = measurement(value) else { return nil }
-        return Value(measurement: measurement)
+        guard let value = values.first, let duration = scaledValue(value) else { return nil }
+        return Value(duration: duration)
     }
 }
