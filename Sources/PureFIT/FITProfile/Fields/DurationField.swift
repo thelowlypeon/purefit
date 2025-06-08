@@ -24,25 +24,23 @@ public struct MultipleValueField<T: NamedFieldDefinition>: FieldDefinition {
     }
 }
 
-public struct DurationField: NamedFieldDefinition, DimensionalFieldDefinition {
+public struct DurationField: NamedFieldDefinition, MeasurableFieldDefinition, DimensionalFieldDefinition {
     public struct Value: FieldValue {
-        public let duration: TimeInterval // seconds
+        public let measurement: Measurement<UnitDuration>
+        public var duration: TimeInterval {
+            measurement.converted(to: .seconds).value
+        }
 
         public func format(locale: Locale) -> String {
             let dateComponentsFormatter = DateComponentsFormatter()
             dateComponentsFormatter.allowedUnits = [.hour, .minute, .second]
             dateComponentsFormatter.unitsStyle = .positional
-            if duration > 1, let str = dateComponentsFormatter.string(from: duration) {
+            if measurement.unit == .seconds, let str = dateComponentsFormatter.string(from: measurement.value) {
                 return str
             } else {
                 let measurementFormatter = MeasurementFormatter()
                 measurementFormatter.locale = locale
-                let measurement: Measurement<UnitDuration>
-                if #available(iOS 13.0, *) {
-                    measurement = duration > 1 ? .init(value: duration, unit: .seconds) : .init(value: duration * 1000, unit: .milliseconds)
-                } else {
-                    measurement = .init(value: duration, unit: .seconds)
-                }
+                measurementFormatter.unitOptions = .providedUnit // durations aren't locale-specific, are they? seconds vs microseconds
                 return measurementFormatter.string(from: measurement)
             }
         }
@@ -54,7 +52,8 @@ public struct DurationField: NamedFieldDefinition, DimensionalFieldDefinition {
     public let offset: Double
 
     public func parse(values: [FITValue]) -> Value? {
-        guard let value = values.first, let duration = scaledValue(value) else { return nil }
-        return Value(duration: duration)
+        guard let value = values.first, let durationInUnit = scaledValue(value) else { return nil }
+        let measurement = Measurement<UnitDuration>(value: durationInUnit, unit: unit)
+        return Value(measurement: measurement)
     }
 }

@@ -14,7 +14,12 @@ public struct HRVMessage: ProfiledMessage {
 
         public var fieldDefinition: any FieldDefinition {
             switch self {
-            case .time: MultipleValueField(singleFieldDefinition: DurationField(name: "Time", baseType: .uint16, unit: .seconds, scale: 1000, offset: 0))
+            case .time:
+                if #available(iOS 13.0, *) {
+                    MultipleValueField(singleFieldDefinition: DurationField(name: "Time", baseType: .uint16, unit: .milliseconds, scale: 1, offset: 0))
+                } else {
+                    MultipleValueField(singleFieldDefinition: DurationField(name: "Time", baseType: .uint16, unit: .seconds, scale: 1000, offset: 0))
+                }
             }
         }
     }

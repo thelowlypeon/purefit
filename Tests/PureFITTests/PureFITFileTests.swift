@@ -186,7 +186,7 @@ struct PureFITFileTests {
         #expect(hrvMessage.fields == [.standard(0): [.uint16(558), .uint16(557)]])
         let times = try #require((hrvMessage.standardFieldValue(for: .time) as? MultipleValueField<DurationField>.Value)?.values)
         #expect(times.map { $0.duration } == [0.558, 0.557])
-        #expect(times.map { $0.format() } == ["0.558 sec", "0.557 sec"]) // on ios 13 it's "558 ms"
+        #expect(times.map { $0.format() } == ["558 ms", "557 ms"]) // on ios 13 it's "558 ms"
     }
 
     @Test func readSessionData() async throws {
