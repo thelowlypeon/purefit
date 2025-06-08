@@ -32,12 +32,18 @@ public struct DurationField: NamedFieldDefinition, DimensionalFieldDefinition {
             let dateComponentsFormatter = DateComponentsFormatter()
             dateComponentsFormatter.allowedUnits = [.hour, .minute, .second]
             dateComponentsFormatter.unitsStyle = .positional
-            if let str = dateComponentsFormatter.string(from: duration) {
+            if duration > 1, let str = dateComponentsFormatter.string(from: duration) {
                 return str
             } else {
                 let measurementFormatter = MeasurementFormatter()
                 measurementFormatter.locale = locale
-                return measurementFormatter.string(from: Measurement<UnitDuration>(value: duration, unit: .seconds))
+                let measurement: Measurement<UnitDuration>
+                if #available(iOS 13.0, *) {
+                    measurement = duration > 1 ? .init(value: duration, unit: .seconds) : .init(value: duration * 1000, unit: .milliseconds)
+                } else {
+                    measurement = .init(value: duration, unit: .seconds)
+                }
+                return measurementFormatter.string(from: measurement)
             }
         }
     }
