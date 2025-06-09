@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 6/8/25.
 //
 
-public enum Event: UInt8, Sendable {
+public enum Event: UInt8, FITEnum, Sendable {
     case timer = 0
     case workout = 3
     case workoutStep = 4

@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-public enum SubSport: UInt8 {
+public enum SubSport: UInt8, FITEnum {
     case generic = 0
     case treadmill = 1
     case street = 2

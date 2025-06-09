@@ -60,7 +60,7 @@ public struct FieldDescriptionMessage: ProfiledMessage {
             switch self {
             case .developerDataIndex: IndexField(name: "Developer Data Index", baseType: .uint8)
             case .fieldDefinitionNumber: IndexField(name: "Field Definition Number", baseType: .uint8)
-            case .fitBaseType: EnumField(name: "FIT Base Type", baseType: .uint8, enumType: FITBaseType.uint8)
+            case .fitBaseType: EnumField<FITBaseType>(name: "FIT Base Type", baseType: .uint8, enumType: .uint8)
             case .fieldName: StringField(name: "Field Name") // this is officially an array
             case .scale: IntegerField(name: "Scale", baseType: .uint8)
             case .offset: IntegerField(name: "Offset", baseType: .sint8)

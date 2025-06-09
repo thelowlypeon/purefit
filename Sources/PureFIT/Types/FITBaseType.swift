@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 1/15/25.
 //
 
-public enum FITBaseType: UInt8 {
+public enum FITBaseType: UInt8, FITEnum {
     case `enum` = 0         // Enum type, invalid value: 255, size: 1 byte
     case sint8 = 1          // Signed 8-bit integer, 2's complement, invalid value: 127, size: 1 byte
     case uint8 = 2          // Unsigned 8-bit integer, invalid value: 255, size: 1 byte

@@ -26,10 +26,10 @@ public struct SessionMessage: ProfiledMessage {
         public var fieldDefinition: any FieldDefinition {
             switch self {
             case .startTime: DateField(name: "Start Time")
-            case .startPositionLatitude: AngleField(name: "Starting Longitude", baseType: .sint32, scale: 1, offset: 0)
+            case .startPositionLatitude: AngleField(name: "Starting Latitude", baseType: .sint32, scale: 1, offset: 0)
             case .startPositionLongitude: AngleField(name: "Starting Longitude", baseType: .sint32, scale: 1, offset: 0)
-            case .sport: EnumField(name: "Sport", baseType: .enum, enumType: Sport.all)
-            case .subSport: EnumField(name: "Sub-sport", baseType: .enum, enumType: SubSport.generic)
+            case .sport: EnumField<Sport>(name: "Sport", baseType: .enum, enumType: .all)
+            case .subSport: EnumField<SubSport>(name: "Sub-sport", baseType: .enum, enumType: .generic)
             case .totalElapsedTime: DurationField(name: "Total Elapsed Time", baseType: .uint32, unit: .seconds, scale: 1000, offset: 0)
             case .totalTimerTime: DurationField(name: "Total Timer Time", baseType: .uint32, unit: .seconds, scale: 1000, offset: 0)
             case .totalDistance: DistanceField(name: "Total Distance", baseType: .uint32, unit: .meters, scale: 100, offset: 0)

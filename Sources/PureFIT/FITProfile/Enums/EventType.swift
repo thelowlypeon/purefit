@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 6/8/25.
 //
 
-public enum EventType: UInt8, Sendable {
+public enum EventType: UInt8, FITEnum, Sendable {
     case start = 0
     case stop = 1
     case consecutiveDepreciated = 2
