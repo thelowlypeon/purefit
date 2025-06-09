@@ -39,7 +39,7 @@ public struct DeviceInfoMessage: ProfiledMessage {
             case .manufacturer:
                 return EnumField<Manufacturer>(name: "Manufacturer", baseType: .uint16, enumType: .garmin)
             case .serialNumber:
-                return IntegerField(name: "Serial Number", baseType: .uint32)
+                return IntegerField(name: "Serial Number", baseType: .uint32z)
             case .product:
                 return IntegerField(name: "Product", baseType: .uint16)
             case .softwareVersion:
