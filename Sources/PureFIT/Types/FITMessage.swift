@@ -74,6 +74,7 @@ internal struct FITMessageBuilder {
         let messageType = GlobalMessageType(rawValue: globalMessageNumber)
         switch messageType {
         case .fileID: return FileIDMessage(fields: fields)
+        case .fileCreator: return FileCreatorMessage(fields: fields)
         case .session: return SessionMessage(fields: fields)
         case .lap: return LapMessage(fields: fields)
         case .record: return RecordMessage(fields: fields)
