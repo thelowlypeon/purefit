@@ -75,7 +75,7 @@ if let speed = developerFields[.developer(0, 5)] {
   print(speed.nativeMessageNumber) // 5
   
   // use the field definition to parse raw FIT values
-  print(speed.parse(.float32(123)?.format(locale: .current)) // 123.0 M/S
+  print(speed.parse(.float32(123))?.format(locale: .current)) // 123.0 M/S
 }
 ```
 
