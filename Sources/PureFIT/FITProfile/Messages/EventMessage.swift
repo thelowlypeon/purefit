@@ -20,7 +20,7 @@ public struct EventMessage: ProfiledMessage {
             switch self {
             case .event: EnumField<Event>(name: "Event", baseType: .enum, enumType: .activity)
             case .eventType: EnumField<EventType>(name: "Event Type", baseType: .enum, enumType: .start)
-            case .eventGroup: IntegerField(name: "Event Type", baseType: .uint8)
+            case .eventGroup: IntegerField(name: "Event Group", baseType: .uint8)
             case .timestamp: DateField(name: "Timestamp")
             }
         }
