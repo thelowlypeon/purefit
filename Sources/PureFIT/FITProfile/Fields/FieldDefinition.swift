@@ -21,8 +21,7 @@ public struct UndefinedField: FieldDefinition {
     public struct Value: FieldValue {
         let fitValue: FITValue
         public func format(locale: Locale) -> String {
-            // TODO: do better
-            return "\(fitValue)"
+            return fitValue.description // debugDescription will show eg uint16(12), but description shows eg 12
         }
     }
 

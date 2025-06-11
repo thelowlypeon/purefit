@@ -9,11 +9,12 @@ import Foundation
 
 public struct DeveloperField: NamedFieldDefinition, DimensionalFieldDefinition {
     public struct Value: FieldValue {
-        let stringValue: String
         let fitValue: FITValue
+        let units: String?
 
         public func format(locale: Locale) -> String {
-            return stringValue
+            let unitString = units == nil ? "" : " \(units!)"
+            return "\(fitValue.description)\(unitString)"
         }
     }
 
@@ -28,17 +29,7 @@ public struct DeveloperField: NamedFieldDefinition, DimensionalFieldDefinition {
     public func parse(values: [FITValue]) -> Value? {
         // developer fields can only have one per message
         guard let value = values.first else { return nil }
-        let unitString = units == nil ? "" : " \(units!)"
-        if baseType == .string, case .string(let str) = value {
-            return Value(stringValue: str, fitValue: value)
-        }
-        if let int = value.integerValue(from: baseType) {
-            return Value(stringValue: "\(int)\(unitString)", fitValue: value)
-        }
-        if let double = value.doubleValue(from: baseType) {
-            return Value(stringValue: "\(double)\(unitString)", fitValue: value)
-        }
-        return nil
+        return Value(fitValue: value, units: units)
     }
 
     internal init?(fieldDescriptionMessage message: FieldDescriptionMessage) {

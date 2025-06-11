@@ -5,6 +5,8 @@
 //  Created by Peter Compernolle on 1/15/25.
 //
 
+import Foundation // for UUID
+
 public enum FITValue: Sendable {
     case `enum`(UInt8)       // Enum type, associated value: UInt8
     case sint8(Int8)         // Signed 8-bit integer, associated value: Int8
@@ -26,6 +28,81 @@ public enum FITValue: Sendable {
 }
 
 extension FITValue: Equatable {}
+
+extension FITValue: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .enum(let val):
+            return String(val)
+        case .sint8(let val):
+            return String(val)
+        case .uint8(let val):
+            return String(val)
+        case .sint16(let val):
+            return String(val)
+        case .uint16(let val):
+            return String(val)
+        case .sint32(let val):
+            return String(val)
+        case .uint32(let val):
+            return String(val)
+        case .string(let val):
+            return String(val)
+        case .float32(let val):
+            return String(val)
+        case .float64(let val):
+            return String(val)
+        case .uint8z(let val):
+            return String(val)
+        case .uint16z(let val):
+            return String(val)
+        case .uint32z(let val):
+            return String(val)
+        case .bytes(let val):
+            if val.count == 16 {
+                let uuid = UUID(uuid: (
+                    val[0], val[1], val[2], val[3],
+                    val[4], val[5], val[6], val[7],
+                    val[8], val[9], val[10], val[11],
+                    val[12], val[13], val[14], val[15]
+                ))
+                return uuid.uuidString
+            } else {
+                return val.map { String(format: "%02X", $0) }.joined()
+            }
+        case .sint64(let val):
+            return String(val)
+        case .uint64(let val):
+            return String(val)
+        case .uint64z(let val):
+            return String(val)
+        }
+    }
+}
+
+extension FITValue: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .enum: ".enum(\(description))"
+        case .sint8: ".sint8(\(description))"
+        case .uint8: ".uint8(\(description))"
+        case .sint16: ".sint16(\(description))"
+        case .uint16: ".uint16(\(description))"
+        case .sint32: ".sint32(\(description))"
+        case .uint32: ".uint32(\(description))"
+        case .string: ".string(\(description))"
+        case .float32: ".float32(\(description))"
+        case .float64: ".float64(\(description))"
+        case .uint8z: ".uint8z(\(description))"
+        case .uint16z: ".uint16z(\(description))"
+        case .uint32z: ".uint32z(\(description))"
+        case .bytes(let val): ".bytes(\(val.map { String(format: "%02X", $0) }.joined(separator: ", ")))"
+        case .sint64: ".sint64(\(description))"
+        case .uint64: ".uint64(\(description))"
+        case .uint64z: ".uint64z(\(description))"
+        }
+    }
+}
 
 extension FITValue {
     static func from(

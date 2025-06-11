@@ -159,7 +159,24 @@ struct PureFITFileTests {
         let recordMessage = try #require(recordMessages.first)
         let airPower = try #require(recordMessage.developerFieldValue(for: airPowerField))
         #expect(airPower.fitValue == .uint16(5))
-        #expect(airPower.stringValue == "5 Watts")
+        #expect(airPower.units == "Watts")
+        #expect(airPower.format() == "5 Watts")
+        let lssField = try #require(fit.developerFields[.developer(0, 9)])
+        let lss = try #require(recordMessage.developerFieldValue(for: lssField))
+        #expect(lss.fitValue == .float32(11.25))
+        #expect(lss.fitValue.debugDescription == ".float32(11.25)")
+        #expect(lss.fitValue.description == "11.25")
+        #expect(lss.units == "KN/m")
+        #expect(lss.format() == "11.25 KN/m")
+    }
+
+    @Test func uuidFieldValue() async throws {
+        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let developerDataIDMessage = try #require(fit.messages.filter { $0.globalMessageNumber == GlobalMessageType.developerDataID.rawValue }.first)
+        let applicationIDFITValue = try #require(developerDataIDMessage.values(at: 1)?.first)
+        #expect(applicationIDFITValue.debugDescription == ".bytes(57, 6F, 72, 6B, 4F, 75, 74, 44, 6F, 6F, 72, 73, 20, 41, 70, 70)")
+        #expect(applicationIDFITValue.description == "576F726B-4F75-7444-6F6F-727320417070")
     }
 
     @Test func readActivityData() async throws {
@@ -297,7 +314,7 @@ struct PureFITFileTests {
         let session = try #require(fit.messages.compactMap { $0 as? SessionMessage }.first)
         let doughnutsEarnedValue = try #require(session.developerFieldValue(for: doughnutsEarnedField))
         #expect(doughnutsEarnedValue.fitValue == .float32(3.0008333))
-        #expect(doughnutsEarnedValue.format() == "3.00083327293396 doughnuts") // weird
+        #expect(doughnutsEarnedValue.format() == "3.0008333 doughnuts") // no float funny business!
     }
 
     @Test func parsingGarminFITFile() async throws {
