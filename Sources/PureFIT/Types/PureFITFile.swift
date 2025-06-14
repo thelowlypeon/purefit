@@ -75,3 +75,4 @@ public struct PureFITFile {
         return developerFields
     }
 }
+extension PureFITFile: Sendable {}

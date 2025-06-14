@@ -11,3 +11,4 @@ public struct RawFITDataRecord {
     public let fieldsData: [UInt8]
     public let developerFieldsData: [UInt8]
 }
+extension RawFITDataRecord: Sendable {}

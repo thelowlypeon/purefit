@@ -6,7 +6,7 @@
 //
 
 
-public protocol FITMessage {
+public protocol FITMessage: Sendable {
     var globalMessageNumber: FITGlobalMessageNumber { get }
     var fields: [FieldDefinitionNumber: [FITValue]] { get }
     func fieldDefinition(for fieldDefinitionNumber: FieldDefinitionNumber, developerFieldDefinitions: [FieldDefinitionNumber: DeveloperField]) -> any FieldDefinition

@@ -43,6 +43,8 @@ public struct FITCRC {
     }
 }
 
+extension FITCRC: Sendable {}
+
 extension FITHeader {
     public func isCRCValid(headerData: Data) -> Bool? {
         guard let crc else { return nil }

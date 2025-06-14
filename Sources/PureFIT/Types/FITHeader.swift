@@ -13,3 +13,4 @@ public struct FITHeader {
     public let dataType: String // should always be ".FIT"
     public let crc: FITCRC?
 }
+extension FITHeader: Sendable {}
