@@ -22,7 +22,10 @@ public struct PureFITFile {
         var definitionsByLocalMessageNumber = [UInt16: RawFITDefinitionRecord]()
         var developerFieldDefinitions = [FieldDescriptionMessage]() // TODO: index by developerDataIndex and developerFieldNumber for faster lookup
         var undefinedDataRecords = [RawFITDataRecord]()
-        for record in rawFITFile.records {
+        for (index, record) in rawFITFile.records.enumerated() {
+            if #available(iOS 13.0, *), index % 100 == 0 {
+                try Task.checkCancellation()
+            }
             switch record {
             case .definition(let definitionRecord):
                 definitionsByLocalMessageNumber[definitionRecord.localMessageNumber] = definitionRecord

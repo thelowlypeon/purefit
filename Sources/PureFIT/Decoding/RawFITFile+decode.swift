@@ -26,8 +26,13 @@ extension RawFITFile {
         var records: [RawFITRecord] = []
         var definitionsByLocalMessageNumber: [UInt16: RawFITDefinitionRecord] = [:]
 
+        var i = 0
         while offset < data.count - (header.crc != nil ? 2 : 0) {
+            if #available(iOS 13.0, *), i % 100 == 0 {
+                try Task.checkCancellation()
+            }
             let record = try RawFITRecord(data: data, offset: &offset, definitions: &definitionsByLocalMessageNumber)
+            i += 1
             records.append(record)
         }
 
