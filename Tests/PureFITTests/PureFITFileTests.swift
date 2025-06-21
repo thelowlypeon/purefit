@@ -248,7 +248,7 @@ struct PureFITFileTests {
             963494772,
             963495579
         ])
-        let averageTemperatures = laps.map { ($0.standardFieldValue(for: .averageTemperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value }
+        let averageTemperatures = laps.map { ($0.standardFieldValue(for: .avgTemperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value }
         #expect(averageTemperatures == [22.0, 20.0, 20.0, 20.0, 21.0, 21.0, 20.0, 21.0, 22.0, 22.0, 22.0, 23.0, 24.0])
     }
 
