@@ -17,6 +17,11 @@ public struct PureFITFile {
         try self.init(rawFITFile: rawFITFile)
     }
 
+    public init(data: Data) throws {
+        let rawFITFile = try RawFITFile(data: data)
+        try self.init(rawFITFile: rawFITFile)
+    }
+
     public init(rawFITFile: RawFITFile) throws {
         var messages = [FITMessage]()
         var definitionsByLocalMessageNumber = [UInt16: RawFITDefinitionRecord]()
