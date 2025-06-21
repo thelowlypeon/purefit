@@ -10,6 +10,13 @@ import Testing
 @testable import PureFIT
 
 struct PureFITFileTests {
+    @Test func initWithDataTest() async throws {
+        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let data = try Data(contentsOf: url)
+        let fit = try PureFITFile(data: data)
+        #expect(fit.messages.count == 4285)
+    }
+
     @Test func fieldsPresentIncludeDeveloperFields() async throws {
         let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)

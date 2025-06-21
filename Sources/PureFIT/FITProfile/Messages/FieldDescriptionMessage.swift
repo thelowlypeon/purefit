@@ -50,6 +50,7 @@ public struct FieldDescriptionMessage: ProfiledMessage {
         case fieldDefinitionNumber = 1
         case fitBaseType = 2
         case fieldName = 3
+        case arrayLength = 4
         case scale = 6
         case offset = 7
         case units = 8
@@ -62,6 +63,7 @@ public struct FieldDescriptionMessage: ProfiledMessage {
             case .fieldDefinitionNumber: IndexField(name: "Field Definition Number", baseType: .uint8)
             case .fitBaseType: EnumField<FITBaseType>(name: "FIT Base Type", baseType: .uint8, enumType: .uint8)
             case .fieldName: StringField(name: "Field Name") // this is officially an array
+            case .arrayLength: IntegerField(name: "Array Length", baseType: .uint8)
             case .scale: IntegerField(name: "Scale", baseType: .uint8)
             case .offset: IntegerField(name: "Offset", baseType: .sint8)
             case .units: StringField(name: "Units") // this is officially an array

@@ -5,7 +5,7 @@
 //  Created by Peter Compernolle on 3/26/25.
 //
 
-public enum GlobalMessageType: UInt16, CaseIterable, Sendable {
+public enum GlobalMessageType: UInt16, FITEnum, CaseIterable, Sendable {
     case fileID = 0
     case capabilities = 1
     case deviceSettings = 2
