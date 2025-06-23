@@ -203,7 +203,7 @@ public struct LapMessage: ProfiledMessage {
             case .zoneCount: MultipleValueField(singleFieldDefinition: IntegerField(name: "Zone Count", baseType: .uint16))
             case .avgVerticalOscillation: DistanceField(name: "Average Vertical Oscillation", baseType: .uint16, unit: .millimeters, scale: 10, offset: 0)
             case .avgStanceTimePercent: IntegerField(name: "Average Stance Time Percent", baseType: .uint16, unitSymbol: "%", scale: 100)
-            case .avgStanceTime: if #available(iOS 13.0, *) {
+            case .avgStanceTime: if #available(iOS 13.0, macOS 10.15, *) {
                 DurationField(name: "Average Stance Time", baseType: .uint16, unit: .milliseconds, scale: 10, offset: 0)
             } else {
                 DurationField(name: "Average Stance Time", baseType: .uint16, unit: .seconds, scale: 0.01, offset: 0)

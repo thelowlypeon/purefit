@@ -28,7 +28,7 @@ public struct PureFITFile {
         var developerFieldDefinitions = [FieldDescriptionMessage]() // TODO: index by developerDataIndex and developerFieldNumber for faster lookup
         var undefinedDataRecords = [RawFITDataRecord]()
         for (index, record) in rawFITFile.records.enumerated() {
-            if #available(iOS 13.0, *), index % 100 == 0 {
+            if #available(iOS 13.0, macOS 10.15, *), index % 100 == 0 {
                 try Task.checkCancellation()
             }
             switch record {

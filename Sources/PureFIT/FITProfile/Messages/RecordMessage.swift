@@ -57,7 +57,7 @@ public struct RecordMessage: ProfiledMessage {
             case .leftTorqueEffectiveness: IntegerField(name: "Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
             case .rightTorqueEffectiveness: IntegerField(name: "Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
             case .verticalOscillation: DistanceField(name: "Vertical Oscillation", baseType: .uint16, unit: .millimeters, scale: 10, offset: 0)
-            case .stanceTime: if #available(iOS 13.0, *) {
+            case .stanceTime: if #available(iOS 13.0, macOS 10.15, *) {
                 DurationField(name: "Stance Time", baseType: .uint16, unit: .milliseconds, scale: 10, offset: 0)
             } else {
                 DurationField(name: "Stance Time", baseType: .uint16, unit: .seconds, scale: 0.01, offset: 0)

@@ -28,7 +28,7 @@ extension RawFITFile {
 
         var i = 0
         while offset < data.count - (header.crc != nil ? 2 : 0) {
-            if #available(iOS 13.0, *), i % 100 == 0 {
+            if #available(iOS 13.0, macOS 10.15, *), i % 100 == 0 {
                 try Task.checkCancellation()
             }
             let record = try RawFITRecord(data: data, offset: &offset, definitions: &definitionsByLocalMessageNumber)
