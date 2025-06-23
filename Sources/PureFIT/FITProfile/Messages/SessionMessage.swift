@@ -36,7 +36,7 @@ public struct SessionMessage: ProfiledMessage {
             case .firstLapIndex: IntegerField(name: "First Lap Index", baseType: .uint16)
             case .numLaps: IntegerField(name: "Num Laps", baseType: .uint16)
             case .timestamp: DateField(name: "Timestamp")
-            case .messageIndex: IntegerField(name: "Message Index", baseType: .uint16)
+            case .messageIndex: CompositeField<MessageIndex>(name: "Message Index", baseType: .uint16)
             }
         }
     }

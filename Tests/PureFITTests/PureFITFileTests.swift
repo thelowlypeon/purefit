@@ -228,6 +228,7 @@ struct PureFITFileTests {
         #expect((session.standardFieldValue(for: .totalElapsedTime) as? DurationField.Value)?.duration == 11503.959)
         #expect((session.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.duration == 11380.964)
         #expect((session.standardFieldValue(for: .totalDistance) as? DistanceField.Value)?.measurement.converted(to: .meters).value == 100346.79)
+        #expect((session.standardFieldValue(for: .messageIndex) as? CompositeField<MessageIndex>.Value)?.compositeValue.values == [.index(0)])
     }
 
     @Test func readLapData() async throws {
@@ -257,6 +258,18 @@ struct PureFITFileTests {
         ])
         let averageTemperatures = laps.map { ($0.standardFieldValue(for: .avgTemperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value }
         #expect(averageTemperatures == [22.0, 20.0, 20.0, 20.0, 21.0, 21.0, 20.0, 21.0, 22.0, 22.0, 22.0, 23.0, 24.0])
+    }
+
+    @Test func compositeFieldDefinition() async throws {
+        let url = Bundle.module.url(forResource: "stryd-run", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let laps = fit.messages.compactMap { $0 as? LapMessage }
+        let lap = try #require(laps.first)
+        let workoutStepIndex = try #require(lap.standardFieldValue(for: .workoutStepIndex) as? CompositeField<MessageIndex>.Value)
+        // composite field format
+        #expect(workoutStepIndex.format() == "0")
+        #expect(workoutStepIndex.compositeValue.values == [.index(0)])
+        #expect(workoutStepIndex.compositeValue.values.map(\.name) == ["Index"])
     }
 
     @Test func readTimeInZoneData() async throws {

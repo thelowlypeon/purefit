@@ -71,7 +71,7 @@ public struct LapMessage: ProfiledMessage {
         case repetitionNum = 61
         case minAltitude = 62
         case minHeartRate = 63
-        case wktStepIndex = 71
+        case workoutStepIndex = 71
         case opponentScore = 74
         case strokeCount = 75
         case zoneCount = 76
@@ -197,7 +197,7 @@ public struct LapMessage: ProfiledMessage {
             case .repetitionNum: IndexField(name: "Repetition Number", baseType: .uint16)
             case .minAltitude: DistanceField(name: "Min Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
             case .minHeartRate: IntegerField(name: "Min Heart Rate", baseType: .uint8, unitSymbol: "bpm")
-            case .wktStepIndex: IndexField(name: "Workout Step Index", baseType: .uint8)
+            case .workoutStepIndex: CompositeField<MessageIndex>(name: "Workout Step Index", baseType: .uint16)
             case .opponentScore: IntegerField(name: "Opponent Score", baseType: .uint16)
             case .strokeCount: MultipleValueField(singleFieldDefinition: IntegerField(name: "Stroke Count", baseType: .uint16))
             case .zoneCount: MultipleValueField(singleFieldDefinition: IntegerField(name: "Zone Count", baseType: .uint16))

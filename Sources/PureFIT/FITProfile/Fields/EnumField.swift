@@ -31,7 +31,6 @@ extension FITEnum where RawValue == UInt8 {
 
 extension FITEnum where RawValue == UInt16 {
     public static func rawValue(from fitValue: FITValue) -> UInt16? {
-        print("rawValue: \(fitValue)")
         if case .uint16(let rawValue) = fitValue {
             return rawValue
         }
