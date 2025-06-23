@@ -18,7 +18,7 @@ public struct DeviceInfoMessage: ProfiledMessage {
         case product               =   4
         case softwareVersion       =   5
         case hardwareVersion       =   6
-        case cumOperatingTime      =   7
+        case cumulativeOperatingTime =   7
         case batteryVoltage        =  10
         case batteryStatus         =  11
         case sensorPosition        =  18
@@ -46,8 +46,8 @@ public struct DeviceInfoMessage: ProfiledMessage {
                 return IntegerField(name: "Software Version", baseType: .uint16, scale: 100)
             case .hardwareVersion:
                 return IntegerField(name: "Hardware Version", baseType: .uint8)
-            case .cumOperatingTime:
-                return DurationField(name: "Cum Operating Time", baseType: .uint32, unit: .seconds, scale: 1, offset: 0)
+            case .cumulativeOperatingTime:
+                return DurationField(name: "Cumulative Operating Time", baseType: .uint32, unit: .seconds, scale: 1, offset: 0)
             case .batteryVoltage:
                 return IntegerField(name: "Battery Voltage", baseType: .uint16, unitSymbol: "V", scale: 256)
             case .batteryStatus:
