@@ -38,6 +38,15 @@ extension FITEnum where RawValue == UInt16 {
     }
 }
 
+extension FITEnum where RawValue == UInt32 {
+    public static func rawValue(from fitValue: FITValue) -> UInt32? {
+        if case .uint32(let rawValue) = fitValue {
+            return rawValue
+        }
+        return nil
+    }
+}
+
 public struct EnumField<T>: NamedFieldDefinition where T: RawRepresentable, T: FITEnum, T: Sendable {
     public struct Value: FieldValue {
         public let rawValue: T.RawValue

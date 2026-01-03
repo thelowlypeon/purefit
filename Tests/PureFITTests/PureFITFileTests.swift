@@ -201,6 +201,23 @@ struct PureFITFileTests {
         }
     }
 
+    @Test func readDeviceSettingsData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+
+        let deviceSettingsMessages = fit.messages.compactMap { $0 as? DeviceSettingsMessage }
+        #expect(deviceSettingsMessages.count == 1)
+        let deviceSettingsMessage = try #require(deviceSettingsMessages.first)
+        let timeOffset = (deviceSettingsMessage.standardFieldValue(for: .timeOffset) as? IntegerField.Value)?.value
+        #expect(timeOffset == 4294934776)
+        let timeMode = (deviceSettingsMessage.standardFieldValue(for: .timeMode) as? EnumField<TimeMode>.Value)?.enumValue
+        #expect(timeMode == .hour24)
+        let backlightMode = (deviceSettingsMessage.standardFieldValue(for: .backlightMode) as? EnumField<BacklightMode>.Value)?.enumValue
+        #expect(backlightMode == .autoBrightness)
+        let lactateThresholdAutoDetectEnabled = (deviceSettingsMessage.standardFieldValue(for: .lactateThresholdAutoDetectEnabled) as? BooleanField.Value)?.booleanValue
+        #expect(lactateThresholdAutoDetectEnabled == true)
+    }
+
     @Test func readHRVData() async throws {
         // NOTE: this test is important because it's one of the few cases where there are multiple values per field value
         let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
