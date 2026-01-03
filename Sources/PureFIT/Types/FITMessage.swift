@@ -80,6 +80,7 @@ internal struct FITMessageBuilder {
         case .record: return RecordMessage(fields: fields)
         case .event: return EventMessage(fields: fields)
         case .deviceSettings: return DeviceSettingsMessage(fields: fields)
+        case .userProfile: return UserProfileMessage(fields: fields)
         case .deviceInfo: return DeviceInfoMessage(fields: fields)
         case .activity: return ActivityMessage(fields: fields)
         case .hrv: return HRVMessage(fields: fields)
