@@ -1,0 +1,48 @@
+//
+//  Language.swift
+//  PureFIT
+//
+//  Created by Peter Compernolle on 1/3/26.
+//
+
+public enum Language: UInt8, FITEnum, Sendable {
+    case english = 0
+    case french = 1
+    case italian = 2
+    case german = 3
+    case spanish = 4
+    case croatian = 5
+    case czech = 6
+    case danish = 7
+    case dutch = 8
+    case finnish = 9
+    case greek = 10
+    case hungarian = 11
+    case norwegian = 12
+    case polish = 13
+    case portuguese = 14
+    case slovakian = 15
+    case slovenian = 16
+    case swedish = 17
+    case russian = 18
+    case turkish = 19
+    case latvian = 20
+    case ukrainian = 21
+    case arabic = 22
+    case farsi = 23
+    case bulgarian = 24
+    case romanian = 25
+    case chinese = 26
+    case japanese = 27
+    case korean = 28
+    case taiwanese = 29
+    case thai = 30
+    case hebrew = 31
+    case brazilianPortuguese = 32
+    case indonesian = 33
+    case malaysian = 34
+    case vietnamese = 35
+    case burmese = 36
+    case mongolian = 37
+    case custom = 254
+}
