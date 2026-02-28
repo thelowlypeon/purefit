@@ -291,6 +291,41 @@ struct PureFITFileTests {
         #expect((session.standardFieldValue(for: .messageIndex) as? CompositeField<MessageIndex>.Value)?.compositeValue.values == [.index(0)])
     }
 
+    @Test func readSportData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let sportMessages = fit.messages.compactMap { $0 as? SportMessage }
+        #expect(sportMessages.count == 1)
+    }
+
+    @Test func readDeviceInfoData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let deviceInfoMessages = fit.messages.compactMap { $0 as? DeviceInfoMessage }
+        #expect(deviceInfoMessages.count == 14)
+    }
+
+    @Test func readEventData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let eventMessages = fit.messages.compactMap { $0 as? EventMessage }
+        #expect(eventMessages.count == 53)
+    }
+
+    @Test func readFileCreatorData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let fileCreatorMessages = fit.messages.compactMap { $0 as? FileCreatorMessage }
+        #expect(fileCreatorMessages.count == 1)
+    }
+
+    @Test func readFileIDData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let fileIDMessages = fit.messages.compactMap { $0 as? FileIDMessage }
+        #expect(fileIDMessages.count == 1)
+    }
+
     @Test func readLapData() async throws {
         let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
@@ -345,6 +380,25 @@ struct PureFITFileTests {
         let timeInPowerZoneFieldValues = (timeInZoneMessage.standardFieldValue(for: .timeInPowerZone) as? MultipleValueField<DurationField>.Value)?.values
         let timeInPowerZoneValues = timeInPowerZoneFieldValues?.map { $0.duration * 1000 }
         #expect(timeInPowerZoneValues == [51003, 5996, 124004, 302113, 237997, 118007, 67991, 0, 0, 0])
+    }
+
+    @Test func readZonesTargetData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+
+        let zonesTargetMessages = fit.messages.compactMap { $0 as? ZonesTargetMessage }
+        #expect(zonesTargetMessages.count == 1)
+        let zonesTargetMessage = try #require(zonesTargetMessages.first)
+        let maxHeartRate = (zonesTargetMessage.standardFieldValue(for: .maxHeartRate) as? IntegerField.Value)?.value
+        #expect(maxHeartRate == 189)
+        let thresholdHeartRate = (zonesTargetMessage.standardFieldValue(for: .thresholdHeartRate) as? IntegerField.Value)?.value
+        #expect(thresholdHeartRate == 167)
+        let functionalThresholdPower = (zonesTargetMessage.standardFieldValue(for: .functionalThresholdPower) as? PowerField.Value)?.measurement.converted(to: .watts).value
+        #expect(functionalThresholdPower == 213)
+        let hrCalcType = (zonesTargetMessage.standardFieldValue(for: .hrCalcType) as? EnumField<HrZoneCalc>.Value)?.enumValue
+        #expect(hrCalcType == .percentLactateThreshold)
+        let pwrCalcType = (zonesTargetMessage.standardFieldValue(for: .pwrCalcType) as? EnumField<PwrZoneCalc>.Value)?.enumValue
+        #expect(pwrCalcType == .percentFtp)
     }
 
     @Test func readRecordData() async throws {
