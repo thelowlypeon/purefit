@@ -22,21 +22,21 @@ public struct RecordMessage: ProfiledMessage {
         case resistance = 10
         case timeFromCourse = 11
         case temperature = 13
-        //case accumulatedPower = 29
-        //case leftRightBalance = 30
-        case leftTorqueEffectiveness = 43
-        case rightTorqueEffectiveness = 44
-        //case leftPedalSmoothness = 45
-        //case rightPedalSmoothness = 46
+        case accumulatedPower = 29
+        case leftRightBalance = 30
         case verticalOscillation = 39
         case stanceTime = 41
+        case leftTorqueEffectiveness = 43
+        case rightTorqueEffectiveness = 44
+        case leftPedalSmoothness = 45
+        case rightPedalSmoothness = 46
         case fractionalCadence = 53
         //61 not part of profile, looks similar to altitude in value
         //66 not part of profile
         case enhancedSpeed = 73
         case enhancedAltitude = 78
         case performanceCondition = 90
-        //case enhancedRespiratoryRate = 108
+        case enhancedRespiratoryRate = 108
         case timestamp = 253
 
         public var fieldDefinition: any FieldDefinition {
@@ -54,19 +54,24 @@ public struct RecordMessage: ProfiledMessage {
             case .resistance: IntegerField(name: "Resistance", baseType: .uint8, scale: 1)
             case .timeFromCourse: DurationField(name: "Time from course", baseType: .sint32, unit: .seconds, scale: 1000, offset: 0)
             case .temperature: TemperatureField(name: "Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)
-            case .leftTorqueEffectiveness: IntegerField(name: "Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .rightTorqueEffectiveness: IntegerField(name: "Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .accumulatedPower: PowerField(name: "Accumulated Power", baseType: .uint32, scale: 1, offset: 0)
+            case .leftRightBalance: IntegerField(name: "Left/Right Balance", baseType: .uint8, unitSymbol: "%")
             case .verticalOscillation: DistanceField(name: "Vertical Oscillation", baseType: .uint16, unit: .millimeters, scale: 10, offset: 0)
             case .stanceTime: if #available(iOS 13.0, macOS 10.15, *) {
                 DurationField(name: "Stance Time", baseType: .uint16, unit: .milliseconds, scale: 10, offset: 0)
             } else {
                 DurationField(name: "Stance Time", baseType: .uint16, unit: .seconds, scale: 0.01, offset: 0)
             }
+            case .leftTorqueEffectiveness: IntegerField(name: "Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .rightTorqueEffectiveness: IntegerField(name: "Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .leftPedalSmoothness: IntegerField(name: "Left Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .rightPedalSmoothness: IntegerField(name: "Right Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
             case .fractionalCadence: IntegerField(name: "Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
             case .enhancedSpeed: SpeedField(name: "Enhanced Speed", baseType: .uint32, unit: .metersPerSecond, scale: 1000, offset: 0)
             case .enhancedAltitude: DistanceField(name: "Enhanced Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
             // NOTE: performanceCondition is not documented in profile.xlsx
             case .performanceCondition: IntegerField(name: "Performance Condition", baseType: .sint8)
+            case .enhancedRespiratoryRate: IntegerField(name: "Enhanced Respiratory Rate", baseType: .uint16, unitSymbol: "breaths/min", scale: 100)
             case .timestamp: DateField(name: "Timestamp")
             }
         }
