@@ -87,6 +87,7 @@ internal struct FITMessageBuilder {
         case .sport: return SportMessage(fields: fields)
         case .timeInZone: return TimeInZoneMessage(fields: fields)
         case .userProfile: return UserProfileMessage(fields: fields)
+        case .zonesTarget: return ZonesTargetMessage(fields: fields)
         default: return UnprofiledMessage(globalMessageNumber: globalMessageNumber, fields: fields)
         }
     }
