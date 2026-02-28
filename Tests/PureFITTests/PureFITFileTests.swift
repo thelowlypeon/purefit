@@ -291,6 +291,41 @@ struct PureFITFileTests {
         #expect((session.standardFieldValue(for: .messageIndex) as? CompositeField<MessageIndex>.Value)?.compositeValue.values == [.index(0)])
     }
 
+    @Test func readSportData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let sportMessages = fit.messages.compactMap { $0 as? SportMessage }
+        #expect(sportMessages.count == 1)
+    }
+
+    @Test func readDeviceInfoData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let deviceInfoMessages = fit.messages.compactMap { $0 as? DeviceInfoMessage }
+        #expect(deviceInfoMessages.count == 14)
+    }
+
+    @Test func readEventData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let eventMessages = fit.messages.compactMap { $0 as? EventMessage }
+        #expect(eventMessages.count == 53)
+    }
+
+    @Test func readFileCreatorData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let fileCreatorMessages = fit.messages.compactMap { $0 as? FileCreatorMessage }
+        #expect(fileCreatorMessages.count == 1)
+    }
+
+    @Test func readFileIDData() async throws {
+        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let fit = try PureFITFile(url: url)
+        let fileIDMessages = fit.messages.compactMap { $0 as? FileIDMessage }
+        #expect(fileIDMessages.count == 1)
+    }
+
     @Test func readLapData() async throws {
         let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
