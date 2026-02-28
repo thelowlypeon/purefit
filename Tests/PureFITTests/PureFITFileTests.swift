@@ -406,10 +406,9 @@ struct PureFITFileTests {
         let fit = try PureFITFile(url: url)
         let records = fit.messages.compactMap { $0 as? RecordMessage }
         #expect(records.count == 11389)
-        let firstRecord = try #require(records.first)
-        #expect(firstRecord.fields[.standard(90)] == nil) // first record doesn't have performance condition
-        let record = try #require(records.last)
-        #expect(record.fields.keys.sorted() == [
+
+        let lastRecord = try #require(records.last)
+        #expect(lastRecord.fields.keys.sorted() == [
             .standard(0), // lat
             .standard(1), // lon
             .standard(2), // alt
@@ -432,10 +431,34 @@ struct PureFITFileTests {
             .standard(108), // enhanced respiration rate
             .standard(253) // timestamp
         ])
-        #expect((record.standardFieldValue(for: .performanceCondition) as? IntegerField.Value)?.value == 8)
+        #expect((lastRecord.standardFieldValue(for: .performanceCondition) as? IntegerField.Value)?.value == 8)
         if #available(iOS 15.0, *) {
-            #expect((record.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T13:46:41Z")
+            #expect((lastRecord.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T13:46:41Z")
         }
+
+        let firstRecord = try #require(records.first)
+        #expect(firstRecord.fields[.standard(90)] == nil) // first record doesn't have performance condition
+        if #available(iOS 15.0, *) {
+            #expect((firstRecord.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T10:34:55Z")
+        }
+        #expect((firstRecord.standardFieldValue(for: .latitude) as? AngleField.Value)?.measurement.converted(to: .degrees).value == 41.94262119010091)
+        #expect((firstRecord.standardFieldValue(for: .longitude) as? AngleField.Value)?.measurement.converted(to: .degrees).value == -87.65265975147486)
+        #expect((firstRecord.standardFieldValue(for: .altitude) as? DistanceField.Value)?.measurement.converted(to: .meters).value.rounded() == 188)
+        #expect((firstRecord.standardFieldValue(for: .heartRate) as? IntegerField.Value)?.value == 109)
+        #expect((firstRecord.standardFieldValue(for: .cadence) as? IntegerField.Value)?.value == 39)
+        #expect((firstRecord.standardFieldValue(for: .distance) as? DistanceField.Value)?.measurement.converted(to: .meters).value == 4.49)
+        #expect((firstRecord.standardFieldValue(for: .speed) as? SpeedField.Value)?.measurement.converted(to: .metersPerSecond).value == 4.264)
+        #expect((firstRecord.standardFieldValue(for: .power) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
+        #expect((firstRecord.standardFieldValue(for: .temperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value == 25)
+        #expect((firstRecord.standardFieldValue(for: .accumulatedPower) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
+        #expect((firstRecord.standardFieldValue(for: .leftRightBalance) as? IntegerField.Value)?.value == 178)
+        #expect((firstRecord.standardFieldValue(for: .leftTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .rightTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .leftPedalSmoothness) as? IntegerField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .rightPedalSmoothness) as? IntegerField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .fractionalCadence) as? IntegerField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .enhancedRespiratoryRate) as? IntegerField.Value)?.value == 36)
+
     }
 
     @Test func readSessionDeveloperFieldData() async throws {
