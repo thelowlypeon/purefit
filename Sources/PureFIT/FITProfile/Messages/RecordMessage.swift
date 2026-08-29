@@ -41,7 +41,7 @@ public struct RecordMessage: ProfiledMessage {
 
         public var fieldDefinition: any FieldDefinition {
             switch self {
-            case .latitude: AngleField(name: "Longitude", baseType: .sint32, scale: 1, offset: 0)
+            case .latitude: AngleField(name: "Latitude", baseType: .sint32, scale: 1, offset: 0)
             case .longitude: AngleField(name: "Longitude", baseType: .sint32, scale: 1, offset: 0)
             case .altitude: DistanceField(name: "Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
             case .heartRate: IntegerField(name: "Heart Rate", baseType: .uint8, unitSymbol: "bpm", scale: 1)
