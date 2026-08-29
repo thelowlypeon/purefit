@@ -34,7 +34,7 @@ There are three main ways to use this library: reading and manipulating specific
 If you need a value of a specific kind of message for a specific field, such all record messages' power values:
 
 ```swift
-let fit = PureFITFile(url: url)
+let fit = try PureFITFile(url: url)
 let recordMessages = fit.messages.compactMap { $0 as? RecordMessage }
 let powerFieldValues = recordMessages.map { $0.standardFieldValue(for: .power) as? PowerField.Value }
 let powerValues = powerFieldValues.map { $0?.measurement.converted(to: .watts).value }
@@ -47,14 +47,14 @@ in the official FIT Profile. As a result, many fields disappear when sharing fro
 This API is intended to show you what is in the FIT file _even if_ you aren't sure what the field represents (yet).
 
 ```swift
-let fit = PureFITFile(url: url)
+let fit = try PureFITFile(url: url)
 let developerFieldDefinitions = fit.developerFields
 for message in fit.messages {
   for (fieldDefinitionNumber, values) in message.fields {
     if let fieldDefinition = message.fieldDefinition(for: fieldDefinitionNumber, developerFieldDefinitions: developerFieldDefinitions) {
-      print("\(fieldDefinition.name)": \(fieldDefinition.format(values: values))"
+      print("\(fieldDefinition.name): \(fieldDefinition.parse(values: values)?.format(locale: .current) ?? "")")
     } else {
-      print("Unrecognized field \(fieldDefinitionNumber): \(values")
+      print("Unrecognized field \(fieldDefinitionNumber): \(values)")
     }
   }
 }
@@ -66,7 +66,7 @@ PureFIT reads developer field definitions from the message, and includes some st
 More standard field definitions are on the way.
 
 ```swift
-let fit = PureFITFile(url: url)
+let fit = try PureFITFile(url: url)
 let developerFields = fit.developerFields
 if let speed = developerFields[.developer(0, 5)] {
   print(speed.name) // "Speed"
@@ -77,34 +77,43 @@ if let speed = developerFields[.developer(0, 5)] {
   print(speed.nativeMessageNumber) // 5
   
   // use the field definition to parse raw FIT values
-  print(speed.parse(.float32(123))?.format(locale: .current)) // 123.0 M/S
+  print(speed.parse(values: [.float32(123)])?.format(locale: .current)) // 123.0 M/S
 }
 ```
 
 ### FIT Details
 
-Simply pass your `Data` instance into `RawFITFile(data: data)`:
+`PureFITFile` also exposes `undefinedDataRecords`: any data records for which no preceding definition record was found, so you can inspect (or count) bytes the parser couldn't attribute to a message.
+
+For lower-level access to the raw FIT structure (header, records, CRC) without interpreting the FIT profile, use `RawFITFile` directly:
 
 ```swift
-let fitFileURL = URL(...)!
-if let rawFitFile = RawFITFile(url: url) {
-  let protocolVersion = rawFitFile.header.protocolVersion
-  //...
-}
+let rawFitFile = try RawFITFile(url: url)
+let protocolVersion = rawFitFile.header.protocolVersion
+//...
 
 // or from Data
-if let rawFitFile = RawFITFile(data: data) {
-  //...
+let rawFitFile = try RawFITFile(data: data)
 ```
 
 ### CRC Validation
 
+CRC validation is a `RawFITFile` concern (`PureFITFile` doesn't expose CRC state directly).
 By default, CRCs (both header and file) are validated if they are present, and if they are absent, parsing works fine.
 Optionally pass in `validationMethod: .requireValidCRC` to raise if the CRC is invalid or not present,
 or `validationMethod: .skipCRCValidation` if you want to skip CRC validation entirely.
 
-You can manually validate the CRC with `fitFile.isHeaderCRCValid(fileData: data)` or `fitFile.isCRCValid(fileData: data)` if you skip during parsing.
+You can manually validate the CRC with `rawFitFile.isHeaderCRCValid(fileData: data)` or `rawFitFile.isCRCValid(fileData: data)` if you skip during parsing.
 Note that the data passed in to either of these functions must be the entire file data, not the header or record message slice; this data is not retained after parsing.
+
+## Tests
+
+The core RawFIT decoding layer (header parsing, definition/data records, CRC validation) and the developer-field system are thoroughly covered.
+Message and field type coverage is broad — 14 of 15 profiled message types and all but one field type (`EnergyField`, used for calorie/work fields) have direct or indirect test coverage.
+Most of the ~33 FIT profile enums (19 of them) have no direct test reference; these are simple `rawValue` mappings and are low-risk, but unverified.
+`PureFITFile.undefinedDataRecords` is currently untested.
+
+If you're contributing, tests for `EnergyField`, the untested enums, and `undefinedDataRecords` are gaps worth filling.
 
 ## Contribution guidelines
 
