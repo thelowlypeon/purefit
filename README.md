@@ -140,10 +140,10 @@ PureFIT is stands out against Garmin's library most when it comes to developer f
 
 | Fixture | Developer field values | Parse | Reading developer fields |
 | --- | --- | --- | --- |
-| `cyclingActivityFromGarmin.fit` | 0 | 1.25x | 1.10x |
-| `activity_developerdata.fit` | 3,602 | 2.61x | 5.05x |
-| `fitfile1.fit` | 21,355 | 5.32x | 8.49x |
-| `stryd-run.fit` | 81,940 | 6.26x | 9.16x |
+| `garmin-cycling-unprofiled-messages.fit` | 0 | 1.25x | 1.10x |
+| `garmin-sdk-cycling-developer-fields.fit` | 3,602 | 2.61x | 5.05x |
+| `workoutdoors-running-developer-fields.fit` | 21,355 | 5.32x | 8.49x |
+| `stryd-running-developer-fields.fit` | 81,940 | 6.26x | 9.16x |
 
 On a file with no developer data the two libraries are close. On a Stryd run with 82k developer
 values, PureFIT reads them in 78 ms against 719 ms — and does it while materializing every message,

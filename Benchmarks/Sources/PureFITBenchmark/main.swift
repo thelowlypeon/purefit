@@ -5,7 +5,7 @@ import Foundation
 var iterations = 10
 var warmup = 3
 var format = "table"
-var fixtureNames: [String]? = ["cyclingActivityFromGarmin.fit"]
+var fixtureNames: [String]? = ["garmin-cycling-unprofiled-messages.fit"]
 var budgetPath: String?
 
 var arguments = Array(CommandLine.arguments.dropFirst())
@@ -32,7 +32,7 @@ while let argument = arguments.first {
 
           --iterations N   timed runs per scenario (default 10)
           --warmup N       untimed runs before timing (default 3)
-          --fixture NAMES  comma-separated fixtures (default cyclingActivityFromGarmin.fit)
+          --fixture NAMES  comma-separated fixtures (default garmin-cycling-unprofiled-messages.fit)
           --all            benchmark every fixture
           --format FORMAT  table (default), markdown, or json
           --check FILE     compare against a ratio budget and exit non-zero if exceeded
