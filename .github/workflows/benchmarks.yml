@@ -1,0 +1,44 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  benchmark:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache benchmark build
+        uses: actions/cache@v4
+        with:
+          path: Benchmarks/.build
+          key: benchmarks-${{ runner.os }}-${{ hashFiles('Benchmarks/Package.resolved') }}
+          restore-keys: benchmarks-${{ runner.os }}-
+
+      - name: Run benchmarks and check for regressions
+        working-directory: Benchmarks
+        run: |
+          # Without pipefail the gate's exit code is swallowed by tee.
+          set -o pipefail
+          # Two fixtures: the first has no developer fields at all, so the second
+          # is what actually covers developer-field handling.
+          swift run -c release PureFITBenchmark \
+            --iterations 15 \
+            --fixture cyclingActivityFromGarmin.fit,activity_developerdata.fit \
+            --check budget.json \
+            | tee result.txt
+
+      - name: Summarize
+        if: always()
+        working-directory: Benchmarks
+        run: |
+          {
+            echo '## Benchmark results'
+            echo '```'
+            cat result.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

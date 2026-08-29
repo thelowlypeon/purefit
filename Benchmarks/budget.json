@@ -1,0 +1,23 @@
+{
+  "_comment": "Ceiling on PureFIT's own median time, in milliseconds, per fixture and scenario. Absolute rather than measured against the Garmin SDK, so a release of theirs can never move our pass mark. CI runs 2-3x slower than a local M-series Mac and varies enormously run to run: Parse measured 65.9 / 84.5 / 97.7 / 107.6 ms across four runs of identical code, a 63% spread between fastest and slowest. Budgets are ~1.6x the slowest observation. That is a coarse gate by necessity — it catches a gross regression, not a 20% one. Do not tighten toward the median; the spread is the constraint. Two fixtures are gated: cyclingActivityFromGarmin.fit has no developer fields at all, so activity_developerdata.fit is what actually covers developer-field handling.",
+  "maxMedianMilliseconds": {
+    "cyclingActivityFromGarmin.fit": {
+      "Parse": 175,
+      "Parse + validate CRC": 180,
+      "Parse + extract GPS": 200,
+      "Parse from Data": 175,
+      "Read developer fields": 180,
+      "Count messages by type": 175,
+      "Raw parse (no profile)": 15
+    },
+    "activity_developerdata.fit": {
+      "Parse": 35,
+      "Parse + validate CRC": 35,
+      "Parse + extract GPS": 35,
+      "Parse from Data": 35,
+      "Read developer fields": 35,
+      "Count messages by type": 35,
+      "Raw parse (no profile)": 5
+    }
+  }
+}

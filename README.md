@@ -108,18 +108,64 @@ Note that the data passed in to either of these functions must be the entire fil
 
 ## Tests
 
-The core RawFIT decoding layer (header parsing, definition/data records, CRC validation) and the developer-field system are thoroughly covered.
-Message and field type coverage is broad — 14 of 15 profiled message types and all but one field type (`EnergyField`, used for calorie/work fields) have direct or indirect test coverage.
-Most of the ~33 FIT profile enums (19 of them) have no direct test reference; these are simple `rawValue` mappings and are low-risk, but unverified.
-`PureFITFile.undefinedDataRecords` is currently untested.
+Raw decoding (header, definition/data records, CRC) and developer fields are well covered.
+14 of 15 profiled message types and every field type but `EnergyField` have coverage.
 
-If you're contributing, tests for `EnergyField`, the untested enums, and `undefinedDataRecords` are gaps worth filling.
+Known gaps, if you're looking for somewhere to contribute: `EnergyField`,
+`PureFITFile.undefinedDataRecords`, and 19 of the ~33 profile enums, which are simple `rawValue`
+mappings and low-risk but unverified.
+
+## Benchmarks
+
+Against Garmin's [fit-objective-c-sdk](https://github.com/garmin/fit-objective-c-sdk) 21.214.0,
+release build, median of 25 runs on an M-series Mac, parsing a 609 KB file of 11,389 records:
+
+| Scenario | PureFIT | Garmin SDK |
+| --- | --- | --- |
+| Parse | 32.6 ms | 40.0 ms |
+| Parse + validate CRC | 33.8 ms | 71.4 ms |
+| Parse + extract GPS | 37.0 ms | 41.9 ms |
+| Read developer fields | 32.9 ms | 36.6 ms |
+| Parse from `Data` | 31.8 ms | — decodes from a file path only |
+| Count messages by type | 32.2 ms | — no equivalent |
+| Raw parse (no profile) | 1.9 ms | — no equivalent |
+
+PureFIT was faster in every compared scenario on all four test fixtures. Both libraries read
+identical record, GPS coordinate, and developer field counts, which the benchmark asserts on every
+run.
+
+### Why PureFIT is so awesome
+
+PureFIT is stands out against Garmin's library most when it comes to developer fields:
+
+| Fixture | Developer field values | Parse | Reading developer fields |
+| --- | --- | --- | --- |
+| `cyclingActivityFromGarmin.fit` | 0 | 1.25x | 1.10x |
+| `activity_developerdata.fit` | 3,602 | 2.61x | 5.05x |
+| `fitfile1.fit` | 21,355 | 5.32x | 8.49x |
+| `stryd-run.fit` | 81,940 | 6.26x | 9.16x |
+
+On a file with no developer data the two libraries are close. On a Stryd run with 82k developer
+values, PureFIT reads them in 78 ms against 719 ms — and does it while materializing every message,
+where the Garmin decoder is streaming and retaining nothing.
+
+Two smaller notes. The CRC gap is an API difference, not a speed one — Garmin's `checkIntegrity:` is
+a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms shows the cost is profile
+interpretation, not record decoding, if you only need `RawFITFile`.
+
+Run benchmarks using:
+
+```sh
+cd Benchmarks && swift run -c release PureFITBenchmark --all
+```
 
 ## Contribution guidelines
 
-Pull requests are welcome! GitHub's "Contribute" button on this repo will fork it and set up the PR for you automatically, so there's no manual forking step to worry about. If something isn't working right, feel free to open an issue instead.
+Pull requests are welcome — GitHub's "Contribute" button forks the repo and sets up the PR for you.
+If something isn't working right, open an issue instead.
 
-Tests run automatically via GitHub Actions on every pull request; PRs from outside collaborators require manual approval before checks run.
+Tests and benchmarks run on every pull request. PRs from outside collaborators need manual approval
+before checks run.
 
 ## License
 
