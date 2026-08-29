@@ -1,0 +1,13 @@
+{
+  "_comment": "Ceiling on PureFIT's own median time, in milliseconds, per fixture and scenario. Absolute rather than measured against the Garmin SDK, so a release of theirs can never move our pass mark. CI runs roughly 3x slower than a local M-series Mac, and shared runners vary, so these sit well above observed CI times and catch gross regressions rather than small drift. Tighten once there are enough CI runs to know the real spread.",
+  "maxMedianMilliseconds": {
+    "cyclingActivityFromGarmin.fit": {
+      "Parse": 175,
+      "Parse + validate CRC": 180,
+      "Parse + extract GPS": 200,
+      "Parse from Data": 175,
+      "Count messages by type": 175,
+      "Raw parse (no profile)": 15
+    }
+  }
+}

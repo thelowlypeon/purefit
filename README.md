@@ -108,53 +108,47 @@ Note that the data passed in to either of these functions must be the entire fil
 
 ## Tests
 
-The core RawFIT decoding layer (header parsing, definition/data records, CRC validation) and the developer-field system are thoroughly covered.
-Message and field type coverage is broad — 14 of 15 profiled message types and all but one field type (`EnergyField`, used for calorie/work fields) have direct or indirect test coverage.
-Most of the ~33 FIT profile enums (19 of them) have no direct test reference; these are simple `rawValue` mappings and are low-risk, but unverified.
-`PureFITFile.undefinedDataRecords` is currently untested.
+Raw decoding (header, definition/data records, CRC) and developer fields are well covered.
+14 of 15 profiled message types and every field type but `EnergyField` have coverage.
 
-If you're contributing, tests for `EnergyField`, the untested enums, and `undefinedDataRecords` are gaps worth filling.
+Known gaps, if you're looking for somewhere to contribute: `EnergyField`,
+`PureFITFile.undefinedDataRecords`, and 19 of the ~33 profile enums, which are simple `rawValue`
+mappings and low-risk but unverified.
 
 ## Benchmarks
 
-Measured against Garmin's [fit-objective-c-sdk](https://github.com/garmin/fit-objective-c-sdk) 21.214.0,
-release build, median of 25 runs on an M-series Mac:
+Against Garmin's [fit-objective-c-sdk](https://github.com/garmin/fit-objective-c-sdk) 21.214.0,
+release build, median of 25 runs on an M-series Mac, parsing a 609 KB file of 11,389 records:
 
-**`cyclingActivityFromGarmin.fit`** (609 KB, 11,389 record messages)
+| Scenario | PureFIT | Garmin SDK |
+| --- | --- | --- |
+| Parse | 32.6 ms | 40.0 ms |
+| Parse + validate CRC | 33.8 ms | 71.4 ms |
+| Parse + extract GPS | 37.0 ms | 41.9 ms |
+| Parse from `Data` | 31.8 ms | — decodes from a file path only |
+| Count messages by type | 32.2 ms | — no equivalent |
+| Raw parse (no profile) | 1.9 ms | — no equivalent |
 
-| Scenario | PureFIT | Garmin SDK | Relative |
-| --- | --- | --- | --- |
-| Parse | 31.5 ms | 39.9 ms | 1.26x faster |
-| Parse + validate CRC | 34.2 ms | 69.6 ms | 2.04x faster |
-| Parse + extract GPS | 37.6 ms | 41.8 ms | 1.11x faster |
-| Parse from `Data` | 32.4 ms | — | Garmin decodes from a file path only |
-| Raw parse (no profile) | 1.9 ms | — | no equivalent layer |
+PureFIT was faster on all four test fixtures, by 1.07x to 6.56x. Both libraries decoded identical
+record and GPS coordinate counts, which the benchmark asserts on every run.
 
-PureFIT was faster in every comparable scenario across all four test fixtures, by between 1.07x and
-6.56x depending on the file. Both libraries decoded identical record counts and identical GPS
-coordinate counts on every fixture, which the benchmark asserts on each run.
+Two things are worth more than the headline. The CRC gap is an API difference, not a speed one —
+Garmin's `checkIntegrity:` is a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms
+shows the cost is profile interpretation, not record decoding, if you only need `RawFITFile`.
 
-Two results worth reading past the headline. The CRC gap is an API difference more than a speed one:
-Garmin's `checkIntegrity:` is a separate pass, so validating means reading the file twice. And raw
-parsing at 1.9 ms against 31.5 ms for a full parse shows the cost here is profile interpretation, not
-record decoding — worth knowing if you only need `RawFITFile`.
-
-These are one machine and four files; treat them as a shape, not a specification. The harness lives
-in [`Benchmarks/`](Benchmarks/) as its own SwiftPM package, so the library itself takes on no
-dependency on the Garmin SDK:
+One machine, four files. Run them yourself, and see [`Benchmarks/`](Benchmarks/) for what CI enforces:
 
 ```sh
 cd Benchmarks && swift run -c release PureFITBenchmark --all
 ```
 
-CI checks each PR against a per-scenario budget on the PureFIT/Garmin ratio, rather than absolute
-timings that shared runners are too noisy to support. See [`Benchmarks/README.md`](Benchmarks/README.md).
-
 ## Contribution guidelines
 
-Pull requests are welcome! GitHub's "Contribute" button on this repo will fork it and set up the PR for you automatically, so there's no manual forking step to worry about. If something isn't working right, feel free to open an issue instead.
+Pull requests are welcome — GitHub's "Contribute" button forks the repo and sets up the PR for you.
+If something isn't working right, open an issue instead.
 
-Tests run automatically via GitHub Actions on every pull request; PRs from outside collaborators require manual approval before checks run.
+Tests and benchmarks run on every pull request. PRs from outside collaborators need manual approval
+before checks run.
 
 ## License
 

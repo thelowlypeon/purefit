@@ -1,8 +1,0 @@
-{
-  "_comment": "Maximum allowed ratio of PureFIT median time to Garmin SDK median time, per scenario. Below 1.0 means PureFIT is faster. Ratios rather than absolute timings because CI is roughly 3x slower than a local M-series Mac (107ms vs 31ms for Parse), while the ratio between the two libraries stays comparable. Observed local / CI: Parse 0.80 / 1.02, CRC 0.49 / 0.50, GPS 0.89 / 0.88. CRC and GPS barely move across machines; Parse drifts most, so it has the widest budget. Tune these if a scenario proves flaky over a few runs.",
-  "maxRatios": {
-    "Parse": 1.30,
-    "Parse + validate CRC": 0.90,
-    "Parse + extract GPS": 1.40
-  }
-}

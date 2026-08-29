@@ -106,6 +106,21 @@ let allScenarios: [Scenario] = [
     ),
 
     Scenario(
+        name: "Count messages by type",
+        note: "PureFIT only: the Garmin listener buckets known messages by type during decode and drops the rest, so there's nothing equivalent to time. Counts are distinct message types found.",
+        pureFIT: { url in
+            let raw = try RawFITFile(url: url, validationMethod: .skipCRCValidation)
+            let file = try PureFITFile(rawFITFile: raw)
+            var counts = [FITGlobalMessageNumber: Int]()
+            for message in file.messages {
+                counts[message.globalMessageNumber, default: 0] += 1
+            }
+            return counts.count
+        },
+        garmin: nil
+    ),
+
+    Scenario(
         name: "Raw parse (no profile)",
         note: "PureFIT only: decodes records without interpreting them against the FIT profile. Counts are raw records.",
         pureFIT: { url in

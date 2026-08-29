@@ -175,9 +175,11 @@ default:
 
 // MARK: - Regression gate
 
+// Budgets are absolute PureFIT timings, per fixture and scenario. Deliberately not measured
+// against the Garmin SDK: a release of theirs shouldn't be able to move our pass mark.
 if let budgetPath {
     struct Budget: Codable {
-        let maxRatios: [String: Double]
+        let maxMedianMilliseconds: [String: [String: Double]]
     }
     let budget = try JSONDecoder().decode(
         Budget.self,
@@ -185,15 +187,22 @@ if let budgetPath {
     )
 
     var failures = [String]()
+    var checked = 0
     for row in rows {
-        guard let ratio = row.ratio, let limit = budget.maxRatios[row.scenario] else { continue }
-        let status = ratio <= limit ? "ok" : "OVER"
-        print(String(format: "check %@ %@: %.2fx (limit %.2fx) %@",
-                     row.fixture, row.scenario, ratio, limit, status))
-        if ratio > limit {
-            failures.append(String(format: "%@ / %@: %.2fx exceeds %.2fx",
-                                   row.fixture, row.scenario, ratio, limit))
+        guard let limit = budget.maxMedianMilliseconds[row.fixture]?[row.scenario] else { continue }
+        checked += 1
+        let median = row.pureFITMedian * 1000
+        let status = median <= limit ? "ok" : "OVER"
+        print(String(format: "check %@ %@: %.1f ms (limit %.0f ms) %@",
+                     row.fixture, row.scenario, median, limit, status))
+        if median > limit {
+            failures.append(String(format: "%@ / %@: %.1f ms exceeds %.0f ms",
+                                   row.fixture, row.scenario, median, limit))
         }
+    }
+
+    if checked == 0 {
+        fail("Budget file matched no scenario that was run")
     }
 
     if !failures.isEmpty {
@@ -201,5 +210,5 @@ if let budgetPath {
         failures.forEach { print("  \($0)") }
         exit(1)
     }
-    print("\nAll ratios within budget.")
+    print("\nAll \(checked) scenarios within budget.")
 }

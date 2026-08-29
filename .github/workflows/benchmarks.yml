@@ -19,8 +19,6 @@ jobs:
           key: benchmarks-${{ runner.os }}-${{ hashFiles('Benchmarks/Package.resolved') }}
           restore-keys: benchmarks-${{ runner.os }}-
 
-      # The gate compares PureFIT against the Garmin SDK measured in the same run,
-      # so runner-to-runner speed differences cancel out instead of causing flakes.
       - name: Run benchmarks and check for regressions
         working-directory: Benchmarks
         run: |
@@ -28,7 +26,7 @@ jobs:
           set -o pipefail
           swift run -c release PureFITBenchmark \
             --iterations 15 \
-            --check ratio-budget.json \
+            --check budget.json \
             | tee result.txt
 
       - name: Summarize

@@ -1,54 +1,44 @@
 # PureFIT Benchmarks
 
-A standalone SwiftPM package that compares PureFIT against Garmin's
-[fit-objective-c-sdk](https://github.com/garmin/fit-objective-c-sdk). It's kept out of the root
-package so the library itself picks up no dependency on the Garmin SDK.
+Compares PureFIT against Garmin's [fit-objective-c-sdk](https://github.com/garmin/fit-objective-c-sdk).
+Kept as its own package so the library picks up no dependency on the Garmin SDK.
 
 ```sh
-cd Benchmarks
-swift run -c release PureFITBenchmark            # primary fixture
-swift run -c release PureFITBenchmark --all      # every fixture
+swift run -c release PureFITBenchmark          # primary fixture
+swift run -c release PureFITBenchmark --all    # every fixture
 swift run -c release PureFITBenchmark --help
 ```
 
-Always build `-c release`. Debug builds measure the optimizer's absence, not the parsers.
+Always `-c release`. Debug builds measure the optimizer's absence.
 
-## What it measures
+## Scenarios
 
 | Scenario | PureFIT | Garmin SDK |
 | --- | --- | --- |
 | Parse | `RawFITFile` + `PureFITFile`, CRC skipped | `decodeFile:` |
-| Parse + validate CRC | `validationMethod: .requireValidCRC` | `checkIntegrity:` then `decodeFile:` |
-| Parse + extract GPS | lat/long off every `RecordMessage`, converted to degrees | `getPositionLat/Long` off every record, converted to degrees |
-| Parse from Data | `RawFITFile(data:)` | — (decodes from a file path only) |
-| Raw parse (no profile) | `RawFITFile` alone | — (no equivalent layer) |
+| Parse + validate CRC | `.requireValidCRC` | `checkIntegrity:` then `decodeFile:` |
+| Parse + extract GPS | lat/long off every `RecordMessage`, to degrees | `getPositionLat/Long`, to degrees |
+| Parse from Data | `RawFITFile(data:)` | — decodes from a file path only |
+| Count messages by type | group `messages` by global message number | — listener pre-buckets known types, drops the rest |
+| Raw parse (no profile) | `RawFITFile` alone | — no equivalent layer |
 
-Fixtures are shared with the test target (`Tests/PureFITTests/Fixtures`) rather than duplicated.
+Fixtures come from `Tests/PureFITTests/Fixtures` rather than being duplicated here.
 
-## Keeping it honest
-
-Two things make the comparison meaningful rather than decorative:
-
-- **Both sides materialize messages.** The Garmin decoder runs with a `FITListener` attached, so it
-  builds message objects like PureFIT does. Decoding without a delegate would let it skip that work
-  and look artificially fast.
-- **Counts are asserted to match.** Every scenario returns a count — records parsed, coordinates
-  found — and the harness fails if the two libraries disagree, or if a library isn't stable across
-  iterations. A benchmark where one side quietly parses less isn't measuring anything.
-
-Timing is the median of N runs after warmup, which discards first-run page-fault and cache noise.
+Two details keep the comparison fair. The Garmin decoder runs with a `FITListener` attached so it
+builds message objects like PureFIT does — without a delegate it skips that work and looks faster
+than it is. And every scenario returns a count that the harness checks, so a library that quietly
+parses less fails instead of winning.
 
 ## Regression gate
 
-`ratio-budget.json` caps how slow PureFIT may be *relative to the Garmin SDK*, per scenario:
+`budget.json` caps PureFIT's own median time per scenario:
 
 ```sh
-swift run -c release PureFITBenchmark --check ratio-budget.json
+swift run -c release PureFITBenchmark --check budget.json
 ```
 
-Ratios rather than absolute milliseconds, because shared CI runners vary far too much for a wall
-clock threshold to mean anything. Both libraries run back to back on the same machine and absorb the
-same noise, so the ratio between them stays stable even when the absolute numbers wander.
+Budgets are absolute, not measured against the Garmin SDK — a release of theirs shouldn't be able to
+move our pass mark. CI runs about 3x slower than a local M-series Mac and shared runners vary, so the
+numbers sit well above observed CI times and catch gross regressions, not drift.
 
-Raise a budget when a change is a deliberate trade (correctness or features bought with time), and
-say so in the PR. Don't raise one to make a red build go green.
+Raise one only for a deliberate trade, and say so in the PR.
