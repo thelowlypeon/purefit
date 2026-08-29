@@ -11,25 +11,22 @@ import Foundation
 
 struct RawFITFileTests {
     @Test func parseFITFileTest() async throws {
-        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
-        let fit = try RawFITFile(url: url)
+        let fit = try Fixture.workoutdoorsRunning.rawFITFile()
         let crcSize = fit.header.crc == nil ? 0 : 2
         #expect(Int(fit.header.dataSize) + Int(fit.header.headerSize) + crcSize == 193162)
         #expect(fit.records.count == 4301)
     }
 
     @Test func parseGarminFITFileTest() async throws {
-        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
-        let fit = try RawFITFile(url: url)
+        let fit = try Fixture.garminCycling.rawFITFile()
         let crcSize = fit.header.crc == nil ? 0 : 2
         #expect(Int(fit.header.dataSize) + Int(fit.header.headerSize) + crcSize == 624016)
         #expect(fit.records.count == 23324)
     }
 
     @Test func parseInvalidFile() async throws {
-        let url = Bundle.module.url(forResource: "not-a-fit-file", withExtension: "fit", subdirectory: "Fixtures")!
         #expect(throws: FITHeader.DecodeError.invalidLength) {
-            let _ = try RawFITFile(url: url)
+            let _ = try Fixture.notAFITFile.rawFITFile()
         }
     }
 }

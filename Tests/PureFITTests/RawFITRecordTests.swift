@@ -11,8 +11,7 @@ import Foundation
 
 struct RawFITRecordTests {
     @Test func parseDefinitionAndSubsequentDataRecordTest() async throws {
-        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
-        let data = try Data(contentsOf: url)
+        let data = try Fixture.workoutdoorsRunning.data
 
         var definitions: [UInt16: RawFITDefinitionRecord] = [:]
         var offset = 14 // skip the header
@@ -50,8 +49,7 @@ struct RawFITRecordTests {
     }
 
     @Test func parseSecondDefinitionAndSubsequentDataRecord() async throws {
-        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
-        let data = try Data(contentsOf: url)
+        let data = try Fixture.workoutdoorsRunning.data
 
         var definitions: [UInt16: RawFITDefinitionRecord] = [:]
         var offset = 14 + 30 // header + fileId header and record
@@ -93,8 +91,7 @@ struct RawFITRecordTests {
     }
 
     @Test func parseManyRecordsTest() async throws {
-        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
-        let data = try Data(contentsOf: url)
+        let data = try Fixture.workoutdoorsRunning.data
 
         var definitions: [UInt16: RawFITDefinitionRecord] = [:]
         var offset = 14

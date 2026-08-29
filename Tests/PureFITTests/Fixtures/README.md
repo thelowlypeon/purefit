@@ -10,4 +10,6 @@ Real FIT files used by the tests and the benchmarks. Named `<writer>-<sport>-<wh
 | `stryd-running-developer-fields.fit` | 533 KB | Stryd | The developer-field extreme: 12 definitions, 81,940 values, and 14,901 more with no definition at all. |
 | `not-a-fit-file.fit` | 14 B | — | 14 bytes of junk. Covers the error path. |
 
+Tests load these through the `Fixture` enum in `../Fixture.swift` — `try Fixture.strydRunning.pureFITFile()`, or `.rawFITFile()`, `.data`, `.url`.
+
 The benchmarks read from this directory rather than keeping copies, and skip `not-a-fit-file.fit`.

@@ -11,8 +11,7 @@ import Testing
 
 struct PureFITEnumFieldTests {
     @Test func enumStandardFieldValueTest() async throws {
-        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
-        let fit = try PureFITFile(url: url)
+        let fit = try Fixture.garminCycling.pureFITFile()
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         #expect(activityMessage.values(at: .standard(2)) == [.enum(0)])
         let activityType = try #require(activityMessage.standardFieldValue(for: .type) as? EnumField<Activity>.Value)
@@ -28,8 +27,7 @@ struct PureFITEnumFieldTests {
     }
 
     @Test func enumUInt16StandardFieldValueTest() async throws {
-        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
-        let fit = try PureFITFile(url: url)
+        let fit = try Fixture.garminCycling.pureFITFile()
         let deviceInfoMessage = try #require(fit.messages.compactMap { $0 as? DeviceInfoMessage }.first)
         #expect(deviceInfoMessage.values(at: .standard(2)) == [.uint16(1)])
         let manufacturer = try #require(deviceInfoMessage.standardFieldValue(for: .manufacturer) as? EnumField<Manufacturer>.Value)
