@@ -115,6 +115,41 @@ Most of the ~33 FIT profile enums (19 of them) have no direct test reference; th
 
 If you're contributing, tests for `EnergyField`, the untested enums, and `undefinedDataRecords` are gaps worth filling.
 
+## Benchmarks
+
+Measured against Garmin's [fit-objective-c-sdk](https://github.com/garmin/fit-objective-c-sdk) 21.214.0,
+release build, median of 25 runs on an M-series Mac:
+
+**`cyclingActivityFromGarmin.fit`** (609 KB, 11,389 record messages)
+
+| Scenario | PureFIT | Garmin SDK | Relative |
+| --- | --- | --- | --- |
+| Parse | 31.5 ms | 39.9 ms | 1.26x faster |
+| Parse + validate CRC | 34.2 ms | 69.6 ms | 2.04x faster |
+| Parse + extract GPS | 37.6 ms | 41.8 ms | 1.11x faster |
+| Parse from `Data` | 32.4 ms | — | Garmin decodes from a file path only |
+| Raw parse (no profile) | 1.9 ms | — | no equivalent layer |
+
+PureFIT was faster in every comparable scenario across all four test fixtures, by between 1.07x and
+6.56x depending on the file. Both libraries decoded identical record counts and identical GPS
+coordinate counts on every fixture, which the benchmark asserts on each run.
+
+Two results worth reading past the headline. The CRC gap is an API difference more than a speed one:
+Garmin's `checkIntegrity:` is a separate pass, so validating means reading the file twice. And raw
+parsing at 1.9 ms against 31.5 ms for a full parse shows the cost here is profile interpretation, not
+record decoding — worth knowing if you only need `RawFITFile`.
+
+These are one machine and four files; treat them as a shape, not a specification. The harness lives
+in [`Benchmarks/`](Benchmarks/) as its own SwiftPM package, so the library itself takes on no
+dependency on the Garmin SDK:
+
+```sh
+cd Benchmarks && swift run -c release PureFITBenchmark --all
+```
+
+CI checks each PR against a per-scenario budget on the PureFIT/Garmin ratio, rather than absolute
+timings that shared runners are too noisy to support. See [`Benchmarks/README.md`](Benchmarks/README.md).
+
 ## Contribution guidelines
 
 Pull requests are welcome! GitHub's "Contribute" button on this repo will fork it and set up the PR for you automatically, so there's no manual forking step to worry about. If something isn't working right, feel free to open an issue instead.

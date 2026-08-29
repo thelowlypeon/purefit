@@ -1,0 +1,43 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  benchmark:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache benchmark build
+        uses: actions/cache@v4
+        with:
+          path: Benchmarks/.build
+          key: benchmarks-${{ runner.os }}-${{ hashFiles('Benchmarks/Package.resolved') }}
+          restore-keys: benchmarks-${{ runner.os }}-
+
+      # The gate compares PureFIT against the Garmin SDK measured in the same run,
+      # so runner-to-runner speed differences cancel out instead of causing flakes.
+      - name: Run benchmarks and check for regressions
+        working-directory: Benchmarks
+        run: |
+          # Without pipefail the gate's exit code is swallowed by tee.
+          set -o pipefail
+          swift run -c release PureFITBenchmark \
+            --iterations 15 \
+            --check ratio-budget.json \
+            | tee result.txt
+
+      - name: Summarize
+        if: always()
+        working-directory: Benchmarks
+        run: |
+          {
+            echo '## Benchmark results'
+            echo '```'
+            cat result.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
