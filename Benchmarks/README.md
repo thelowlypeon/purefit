@@ -23,10 +23,10 @@ Always `-c release`. Debug builds measure the optimizer's absence.
 | Count messages by type | group `messages` by global message number | — listener pre-buckets known types, drops the rest |
 | Raw parse (no profile) | `RawFITFile` alone | — no equivalent layer |
 
-`cyclingActivityFromGarmin.fit` contains no developer fields, so `activity_developerdata.fit` is the
-fixture that actually exercises them. CI runs both for that reason.
-
-Fixtures come from `Tests/PureFITTests/Fixtures` rather than being duplicated here.
+Fixtures come from `Tests/PureFITTests/Fixtures` rather than being duplicated here; see the
+[README there](../Tests/PureFITTests/Fixtures/README.md) for what each one is. CI gates on two of
+them: `garmin-cycling-unprofiled-messages.fit` has no developer fields at all, so
+`garmin-sdk-cycling-developer-fields.fit` is what actually exercises them.
 
 ## Regression check
 

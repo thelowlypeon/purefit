@@ -11,7 +11,7 @@ import Foundation
 
 struct RawFITFileTests {
     @Test func parseFITFileTest() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try RawFITFile(url: url)
         let crcSize = fit.header.crc == nil ? 0 : 2
         #expect(Int(fit.header.dataSize) + Int(fit.header.headerSize) + crcSize == 193162)
@@ -19,7 +19,7 @@ struct RawFITFileTests {
     }
 
     @Test func parseGarminFITFileTest() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try RawFITFile(url: url)
         let crcSize = fit.header.crc == nil ? 0 : 2
         #expect(Int(fit.header.dataSize) + Int(fit.header.headerSize) + crcSize == 624016)

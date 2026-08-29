@@ -11,14 +11,14 @@ import Testing
 
 struct PureFITFileTests {
     @Test func initWithDataTest() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
         let fit = try PureFITFile(data: data)
         #expect(fit.messages.count == 4285)
     }
 
     @Test func fieldsPresentIncludeDeveloperFields() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let recordMessageDefinitions = try #require(fieldDefinitions[GlobalMessageType.record.rawValue])
@@ -45,7 +45,7 @@ struct PureFITFileTests {
     }
 
     @Test func fieldDefinitionsIncludeStandardFields() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let recordMessageFieldDefinitions = try #require(fieldDefinitions[GlobalMessageType.record.rawValue])
@@ -54,7 +54,7 @@ struct PureFITFileTests {
     }
 
     @Test func fieldDefinitionsIncludeDeveloperFields() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let recordMessageFieldDefinitions = try #require(fieldDefinitions[GlobalMessageType.record.rawValue])
@@ -66,7 +66,7 @@ struct PureFITFileTests {
     }
 
     @Test func fieldDefinitionsIncludeUndefinedFields() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let message324Definitions = try #require(fieldDefinitions[324])
@@ -77,7 +77,7 @@ struct PureFITFileTests {
     }
 
     @Test func fieldDefinitionsExcludeAbsentFields() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let recordMessageFieldDefinitions = try #require(fieldDefinitions[GlobalMessageType.record.rawValue])
@@ -86,7 +86,7 @@ struct PureFITFileTests {
     }
 
     @Test func fieldsPresentUnion() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let recordMessageFields = try #require(fieldDefinitions[GlobalMessageType.record.rawValue])
@@ -94,7 +94,7 @@ struct PureFITFileTests {
     }
 
     @Test func fieldsPresentIncludeUnrecognizedMessages() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let message324Fields = try #require(fieldDefinitions[324])
@@ -102,7 +102,7 @@ struct PureFITFileTests {
     }
 
     @Test func developerFields() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let developerFields = fit.developerFields
         #expect(developerFields.count == 5)
@@ -144,7 +144,7 @@ struct PureFITFileTests {
     }
 
     @Test func standardFieldValue() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessages = fit.messages.compactMap { $0 as? ActivityMessage }
         #expect(activityMessages.count == 1)
@@ -158,7 +158,7 @@ struct PureFITFileTests {
     }
 
     @Test func developerFieldValue() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let airPowerField = try #require(fit.developerFields[.developer(0, 11)])
         #expect(airPowerField.name == "Air Power")
@@ -178,7 +178,7 @@ struct PureFITFileTests {
     }
 
     @Test func uuidFieldValue() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let developerDataIDMessage = try #require(fit.messages.filter { $0.globalMessageNumber == GlobalMessageType.developerDataID.rawValue }.first)
         let applicationIDFITValue = try #require(developerDataIDMessage.values(at: 1)?.first)
@@ -187,7 +187,7 @@ struct PureFITFileTests {
     }
 
     @Test func readActivityData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activities = fit.messages.compactMap { $0 as? ActivityMessage }
         #expect(activities.count == 1)
@@ -202,7 +202,7 @@ struct PureFITFileTests {
     }
 
     @Test func readDeviceSettingsData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
 
         let deviceSettingsMessages = fit.messages.compactMap { $0 as? DeviceSettingsMessage }
@@ -219,7 +219,7 @@ struct PureFITFileTests {
     }
 
     @Test func readUserProfileData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
 
         let userProfileMessages = fit.messages.compactMap { $0 as? UserProfileMessage }
@@ -263,7 +263,7 @@ struct PureFITFileTests {
 
     @Test func readHRVData() async throws {
         // NOTE: this test is important because it's one of the few cases where there are multiple values per field value
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let hrvMessages = fit.messages.compactMap { $0 as? HRVMessage }
         let hrvMessage = try #require(hrvMessages.first)
@@ -274,7 +274,7 @@ struct PureFITFileTests {
     }
 
     @Test func readSessionData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let sessions = fit.messages.compactMap { $0 as? SessionMessage }
         #expect(sessions.count == 1)
@@ -292,42 +292,42 @@ struct PureFITFileTests {
     }
 
     @Test func readSportData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let sportMessages = fit.messages.compactMap { $0 as? SportMessage }
         #expect(sportMessages.count == 1)
     }
 
     @Test func readDeviceInfoData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let deviceInfoMessages = fit.messages.compactMap { $0 as? DeviceInfoMessage }
         #expect(deviceInfoMessages.count == 14)
     }
 
     @Test func readEventData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let eventMessages = fit.messages.compactMap { $0 as? EventMessage }
         #expect(eventMessages.count == 53)
     }
 
     @Test func readFileCreatorData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fileCreatorMessages = fit.messages.compactMap { $0 as? FileCreatorMessage }
         #expect(fileCreatorMessages.count == 1)
     }
 
     @Test func readFileIDData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fileIDMessages = fit.messages.compactMap { $0 as? FileIDMessage }
         #expect(fileIDMessages.count == 1)
     }
 
     @Test func readLapData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let laps = fit.messages.compactMap { $0 as? LapMessage }
         #expect(laps.count == 13)
@@ -356,7 +356,7 @@ struct PureFITFileTests {
     }
 
     @Test func compositeFieldDefinition() async throws {
-        let url = Bundle.module.url(forResource: "stryd-run", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "stryd-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let laps = fit.messages.compactMap { $0 as? LapMessage }
         let lap = try #require(laps.first)
@@ -368,7 +368,7 @@ struct PureFITFileTests {
     }
 
     @Test func readTimeInZoneData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
 
         let timeInZoneMessages = fit.messages.compactMap { $0 as? TimeInZoneMessage }
@@ -383,7 +383,7 @@ struct PureFITFileTests {
     }
 
     @Test func readZonesTargetData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
 
         let zonesTargetMessages = fit.messages.compactMap { $0 as? ZonesTargetMessage }
@@ -402,7 +402,7 @@ struct PureFITFileTests {
     }
 
     @Test func readRecordData() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let records = fit.messages.compactMap { $0 as? RecordMessage }
         #expect(records.count == 11389)
@@ -462,7 +462,7 @@ struct PureFITFileTests {
     }
 
     @Test func readSessionDeveloperFieldData() async throws {
-        let url = Bundle.module.url(forResource: "activity_developerdata", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-sdk-cycling-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let developerFields = fit.developerFields
         let doughnutsEarnedField = try #require(developerFields[.developer(0, 0)])
@@ -475,7 +475,7 @@ struct PureFITFileTests {
     }
 
     @Test func parsingGarminFITFile() async throws {
-        let url = Bundle.module.url(forResource: "cyclingActivityFromGarmin", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-cycling-unprofiled-messages", withExtension: "fit", subdirectory: "Fixtures")!
         let raw = try RawFITFile(url: url)
         let fit = try PureFITFile(rawFITFile: raw)
         #expect(fit.messages.count == 23291)
@@ -490,14 +490,14 @@ struct PureFITFileTests {
 
     @Test func parsingActivityWithDeveloperData() async throws {
         // this file from garmin's FIT cookbook
-        let url = Bundle.module.url(forResource: "activity_developerdata", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "garmin-sdk-cycling-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let raw = try RawFITFile(url: url)
         let fit = try PureFITFile(rawFITFile: raw)
         #expect(fit.messages.count == 3611)
     }
 
     @Test func parsingFITFile() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
 
         // fileId message

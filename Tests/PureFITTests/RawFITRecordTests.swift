@@ -11,7 +11,7 @@ import Foundation
 
 struct RawFITRecordTests {
     @Test func parseDefinitionAndSubsequentDataRecordTest() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: RawFITDefinitionRecord] = [:]
@@ -50,7 +50,7 @@ struct RawFITRecordTests {
     }
 
     @Test func parseSecondDefinitionAndSubsequentDataRecord() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: RawFITDefinitionRecord] = [:]
@@ -93,7 +93,7 @@ struct RawFITRecordTests {
     }
 
     @Test func parseManyRecordsTest() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
 
         var definitions: [UInt16: RawFITDefinitionRecord] = [:]

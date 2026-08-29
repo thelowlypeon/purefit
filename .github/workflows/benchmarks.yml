@@ -28,7 +28,7 @@ jobs:
           # is what actually covers developer-field handling.
           swift run -c release PureFITBenchmark \
             --iterations 15 \
-            --fixture cyclingActivityFromGarmin.fit,activity_developerdata.fit \
+            --fixture garmin-cycling-unprofiled-messages.fit,garmin-sdk-cycling-developer-fields.fit \
             --check budget.json \
             | tee result.txt
 

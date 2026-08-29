@@ -11,7 +11,7 @@ import Testing
 
 struct PureFITDurationFieldTests {
     @Test func durationStandardFieldValue() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let durationValue = try #require(activityMessage.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)
@@ -19,7 +19,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationStandardFieldValueFormatted() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let durationValue = try #require(activityMessage.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)
@@ -27,7 +27,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationStandardFieldValueFormattedWitLocale() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let durationValue = try #require(activityMessage.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)
@@ -35,7 +35,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationRawValuesFormat() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let durationFieldDefinition = ActivityMessage.Field.totalTimerTime.fieldDefinition
@@ -44,7 +44,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationRawValueFormat() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let durationFieldDefinition = ActivityMessage.Field.totalTimerTime.fieldDefinition
@@ -53,7 +53,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationRawValue() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let rawValue = try #require(activityMessage.value(at: .totalTimerTime))
@@ -61,7 +61,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationAtFieldPath() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let activityMessage = try #require(fit.messages.compactMap { $0 as? ActivityMessage }.first)
         let rawValue = try #require(activityMessage.value(at: .standard(0)))
@@ -69,7 +69,7 @@ struct PureFITDurationFieldTests {
     }
 
     @Test func durationInAllFieldDefinitions() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let fit = try PureFITFile(url: url)
         let fieldDefinitions = fit.fieldDefinitions
         let definition = try #require(fieldDefinitions[GlobalMessageType.activity.rawValue]?[.standard(0)] as? DurationField)

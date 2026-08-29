@@ -11,7 +11,7 @@ import Foundation
 
 struct FITHeaderParsingTests {
     @Test func parseHeaderTest() async throws {
-        let url = Bundle.module.url(forResource: "fitfile1", withExtension: "fit", subdirectory: "Fixtures")!
+        let url = Bundle.module.url(forResource: "workoutdoors-running-developer-fields", withExtension: "fit", subdirectory: "Fixtures")!
         let data = try Data(contentsOf: url)
         var offset = 0
         let header = try #require(FITHeader(data: data, offset: &offset))
