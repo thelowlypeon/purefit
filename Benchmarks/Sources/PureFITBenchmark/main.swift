@@ -63,7 +63,7 @@ let allFixtures = ((try? FileManager.default.contentsOfDirectory(
 
 let fixtures: [URL]
 if let fixtureNames {
-    fixtures = try fixtureNames.map { name in
+    fixtures = fixtureNames.map { name in
         guard let match = allFixtures.first(where: { $0.lastPathComponent == name }) else {
             fail("No fixture named \(name) in \(fixturesDirectory.path)")
         }
