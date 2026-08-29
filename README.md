@@ -129,8 +129,9 @@ release build, median of 25 runs on an M-series Mac, parsing a 609 KB file of 11
 | Count messages by type | 32.2 ms | — no equivalent |
 | Raw parse (no profile) | 1.9 ms | — no equivalent |
 
-PureFIT was faster on all four test fixtures, by 1.07x to 6.56x. Both libraries decoded identical
-record and GPS coordinate counts, which the benchmark asserts on every run.
+PureFIT was faster in all 12 compared scenarios across the four test fixtures, by roughly 1.1x to 7x
+depending on the file. Both libraries decoded identical record and GPS coordinate counts, which the
+benchmark asserts on every run.
 
 Two things are worth more than the headline. The CRC gap is an API difference, not a speed one —
 Garmin's `checkIntegrity:` is a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms
