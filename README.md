@@ -134,10 +134,9 @@ PureFIT was faster in every compared scenario on all four test fixtures. Both li
 identical record, GPS coordinate, and developer field counts, which the benchmark asserts on every
 run.
 
-### Where PureFIT shines
+### Why PureFIT is so awesome
 
-The margin isn't uniform, and what drives it is developer fields — the thing the library exists for.
-Across the fixtures, PureFIT's advantage tracks developer field density almost exactly:
+PureFIT is stands out against Garmin's library most when it comes to developer fields:
 
 | Fixture | Developer field values | Parse | Reading developer fields |
 | --- | --- | --- | --- |
@@ -154,7 +153,7 @@ Two smaller notes. The CRC gap is an API difference, not a speed one — Garmin'
 a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms shows the cost is profile
 interpretation, not record decoding, if you only need `RawFITFile`.
 
-One machine, four files. Run them yourself, and see [`Benchmarks/`](Benchmarks/) for what CI enforces:
+Run benchmarks using:
 
 ```sh
 cd Benchmarks && swift run -c release PureFITBenchmark --all
