@@ -1,5 +1,7 @@
 # PureFIT
 
+[![Tests](https://github.com/thelowlypeon/purefit/actions/workflows/tests.yml/badge.svg)](https://github.com/thelowlypeon/purefit/actions/workflows/tests.yml)
+
 PureFIT is a super simple FIT file parsing library written entirely in Swift.
 
 ## Why?
@@ -106,4 +108,10 @@ Note that the data passed in to either of these functions must be the entire fil
 
 ## Contribution guidelines
 
-Feel free to fork and pull request, or create an issue if something isn't working right.
+Pull requests are welcome! GitHub's "Contribute" button on this repo will fork it and set up the PR for you automatically, so there's no manual forking step to worry about. If something isn't working right, feel free to open an issue instead.
+
+Tests run automatically via GitHub Actions on every pull request; PRs from outside collaborators require manual approval before checks run.
+
+## License
+
+PureFIT is available under the MIT license. See [LICENSE](LICENSE) for details.
