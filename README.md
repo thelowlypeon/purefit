@@ -125,17 +125,34 @@ release build, median of 25 runs on an M-series Mac, parsing a 609 KB file of 11
 | Parse | 32.6 ms | 40.0 ms |
 | Parse + validate CRC | 33.8 ms | 71.4 ms |
 | Parse + extract GPS | 37.0 ms | 41.9 ms |
+| Read developer fields | 32.9 ms | 36.6 ms |
 | Parse from `Data` | 31.8 ms | — decodes from a file path only |
 | Count messages by type | 32.2 ms | — no equivalent |
 | Raw parse (no profile) | 1.9 ms | — no equivalent |
 
-PureFIT was faster in all 12 compared scenarios across the four test fixtures, by roughly 1.1x to 7x
-depending on the file. Both libraries decoded identical record and GPS coordinate counts, which the
-benchmark asserts on every run.
+PureFIT was faster in every compared scenario on all four test fixtures. Both libraries read
+identical record, GPS coordinate, and developer field counts, which the benchmark asserts on every
+run.
 
-Two things are worth more than the headline. The CRC gap is an API difference, not a speed one —
-Garmin's `checkIntegrity:` is a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms
-shows the cost is profile interpretation, not record decoding, if you only need `RawFITFile`.
+### Where PureFIT shines
+
+The margin isn't uniform, and what drives it is developer fields — the thing the library exists for.
+Across the fixtures, PureFIT's advantage tracks developer field density almost exactly:
+
+| Fixture | Developer field values | Parse | Reading developer fields |
+| --- | --- | --- | --- |
+| `cyclingActivityFromGarmin.fit` | 0 | 1.25x | 1.10x |
+| `activity_developerdata.fit` | 3,602 | 2.61x | 5.05x |
+| `fitfile1.fit` | 21,355 | 5.32x | 8.49x |
+| `stryd-run.fit` | 81,940 | 6.26x | 9.16x |
+
+On a file with no developer data the two libraries are close. On a Stryd run with 82k developer
+values, PureFIT reads them in 78 ms against 719 ms — and does it while materializing every message,
+where the Garmin decoder is streaming and retaining nothing.
+
+Two smaller notes. The CRC gap is an API difference, not a speed one — Garmin's `checkIntegrity:` is
+a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms shows the cost is profile
+interpretation, not record decoding, if you only need `RawFITFile`.
 
 One machine, four files. Run them yourself, and see [`Benchmarks/`](Benchmarks/) for what CI enforces:
 

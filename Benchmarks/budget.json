@@ -1,13 +1,23 @@
 {
-  "_comment": "Ceiling on PureFIT's own median time, in milliseconds, per fixture and scenario. Absolute rather than measured against the Garmin SDK, so a release of theirs can never move our pass mark. CI runs roughly 3x slower than a local M-series Mac and varies a lot run to run: Parse measured 84.5 / 97.7 / 107.6 ms across three runs of identical code, a 27% spread. Budgets are ~1.6x the slowest observation, so they catch gross regressions rather than drift. Tighten only with more samples than that.",
+  "_comment": "Ceiling on PureFIT's own median time, in milliseconds, per fixture and scenario. Absolute rather than measured against the Garmin SDK, so a release of theirs can never move our pass mark. CI runs roughly 3x slower than a local M-series Mac and varies a lot run to run: Parse measured 84.5 / 97.7 / 107.6 ms across three runs of identical code, a 27% spread. Budgets are ~1.6x the slowest observation, so they catch gross regressions rather than drift. Tighten only with more samples than that. Two fixtures are gated: cyclingActivityFromGarmin.fit has no developer fields at all, so activity_developerdata.fit is what actually covers developer-field handling.",
   "maxMedianMilliseconds": {
     "cyclingActivityFromGarmin.fit": {
       "Parse": 175,
       "Parse + validate CRC": 180,
       "Parse + extract GPS": 200,
       "Parse from Data": 175,
+      "Read developer fields": 180,
       "Count messages by type": 175,
       "Raw parse (no profile)": 15
+    },
+    "activity_developerdata.fit": {
+      "Parse": 35,
+      "Parse + validate CRC": 35,
+      "Parse + extract GPS": 35,
+      "Parse from Data": 35,
+      "Read developer fields": 35,
+      "Count messages by type": 35,
+      "Raw parse (no profile)": 5
     }
   }
 }

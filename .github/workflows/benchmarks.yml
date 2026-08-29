@@ -24,8 +24,11 @@ jobs:
         run: |
           # Without pipefail the gate's exit code is swallowed by tee.
           set -o pipefail
+          # Two fixtures: the first has no developer fields at all, so the second
+          # is what actually covers developer-field handling.
           swift run -c release PureFITBenchmark \
             --iterations 15 \
+            --fixture cyclingActivityFromGarmin.fit,activity_developerdata.fit \
             --check budget.json \
             | tee result.txt
 

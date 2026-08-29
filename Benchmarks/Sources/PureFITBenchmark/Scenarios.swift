@@ -34,6 +34,26 @@ private func garminDecode(_ url: URL) -> FITListener {
     return listener
 }
 
+/// Counts developer field values as messages stream past, without retaining them.
+///
+/// `FITListener` buckets only messages the profile knows about, so it can't answer
+/// "every developer value in the file" — this can, and it's the streaming API's
+/// natural idiom for the job.
+private final class DeveloperFieldCounter: NSObject, FITMesgDelegate {
+    var values = 0
+
+    func onMesg(_ mesg: ObjcFIT.FITMessage) {
+        for field in mesg.getDeveloperFields() {
+            // Module-qualified: PureFIT has a FITDeveloperField of its own.
+            guard let field = field as? ObjcFIT.FITDeveloperField else { continue }
+            // Declared nonnull in the header but returns nil for an invalid raw value,
+            // so bind through an optional rather than trusting the annotation.
+            let value: NSNumber? = field.getValueFor(0)
+            if value != nil { values += 1 }
+        }
+    }
+}
+
 let allScenarios: [Scenario] = [
     Scenario(
         name: "Parse",
@@ -103,6 +123,34 @@ let allScenarios: [Scenario] = [
             return pureFITRecordCount(try PureFITFile(rawFITFile: raw))
         },
         garmin: nil
+    ),
+
+    Scenario(
+        name: "Read developer fields",
+        note: "Counts are developer field values read. Garmin counts them streaming, without retaining messages, so it does strictly less work here than PureFIT — which has to materialize the file before it can walk it.",
+        pureFIT: { url in
+            let raw = try RawFITFile(url: url, validationMethod: .skipCRCValidation)
+            let file = try PureFITFile(rawFITFile: raw)
+            let definitions = file.developerFields
+            var values = 0
+            for message in file.messages {
+                for (number, rawValues) in message.fields {
+                    guard case .developer = number,
+                          let definition = definitions[number],
+                          definition.parse(values: rawValues) != nil
+                    else { continue }
+                    values += 1
+                }
+            }
+            return values
+        },
+        garmin: { url in
+            let decoder = FITDecoder()
+            let counter = DeveloperFieldCounter()
+            decoder.mesgDelegate = counter
+            _ = decoder.decodeFile(url.path)
+            return counter.values
+        }
     ),
 
     Scenario(

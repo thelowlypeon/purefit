@@ -18,9 +18,13 @@ Always `-c release`. Debug builds measure the optimizer's absence.
 | Parse | `RawFITFile` + `PureFITFile`, CRC skipped | `decodeFile:` |
 | Parse + validate CRC | `.requireValidCRC` | `checkIntegrity:` then `decodeFile:` |
 | Parse + extract GPS | lat/long off every `RecordMessage`, to degrees | `getPositionLat/Long`, to degrees |
+| Read developer fields | walk `messages`, parse each developer value | custom delegate counting values as they stream |
 | Parse from Data | `RawFITFile(data:)` | — decodes from a file path only |
 | Count messages by type | group `messages` by global message number | — listener pre-buckets known types, drops the rest |
 | Raw parse (no profile) | `RawFITFile` alone | — no equivalent layer |
+
+`cyclingActivityFromGarmin.fit` contains no developer fields, so `activity_developerdata.fit` is the
+fixture that actually exercises them. CI runs both for that reason.
 
 Fixtures come from `Tests/PureFITTests/Fixtures` rather than being duplicated here.
 

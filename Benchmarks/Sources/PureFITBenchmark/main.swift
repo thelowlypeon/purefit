@@ -5,7 +5,7 @@ import Foundation
 var iterations = 10
 var warmup = 3
 var format = "table"
-var fixtureName: String? = "cyclingActivityFromGarmin.fit"
+var fixtureNames: [String]? = ["cyclingActivityFromGarmin.fit"]
 var budgetPath: String?
 
 var arguments = Array(CommandLine.arguments.dropFirst())
@@ -23,8 +23,8 @@ while let argument = arguments.first {
     case "--iterations": iterations = Int(value()) ?? iterations
     case "--warmup": warmup = Int(value()) ?? warmup
     case "--format": format = value()
-    case "--fixture": fixtureName = value()
-    case "--all": fixtureName = nil
+    case "--fixture": fixtureNames = value().split(separator: ",").map(String.init)
+    case "--all": fixtureNames = nil
     case "--check": budgetPath = value()
     case "--help", "-h":
         print("""
@@ -32,7 +32,7 @@ while let argument = arguments.first {
 
           --iterations N   timed runs per scenario (default 10)
           --warmup N       untimed runs before timing (default 3)
-          --fixture NAME   fixture to benchmark (default cyclingActivityFromGarmin.fit)
+          --fixture NAMES  comma-separated fixtures (default cyclingActivityFromGarmin.fit)
           --all            benchmark every fixture
           --format FORMAT  table (default), markdown, or json
           --check FILE     compare against a ratio budget and exit non-zero if exceeded
@@ -62,11 +62,13 @@ let allFixtures = ((try? FileManager.default.contentsOfDirectory(
     .sorted { $0.lastPathComponent < $1.lastPathComponent }
 
 let fixtures: [URL]
-if let fixtureName {
-    guard let match = allFixtures.first(where: { $0.lastPathComponent == fixtureName }) else {
-        fail("No fixture named \(fixtureName) in \(fixturesDirectory.path)")
+if let fixtureNames {
+    fixtures = try fixtureNames.map { name in
+        guard let match = allFixtures.first(where: { $0.lastPathComponent == name }) else {
+            fail("No fixture named \(name) in \(fixturesDirectory.path)")
+        }
+        return match
     }
-    fixtures = [match]
 } else {
     fixtures = allFixtures
 }
