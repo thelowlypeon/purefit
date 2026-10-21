@@ -85,6 +85,8 @@ internal struct FITMessageBuilder {
         case .length: return LengthMessage(fields: fields)
         case .record: return RecordMessage(fields: fields)
         case .session: return SessionMessage(fields: fields)
+        case .split: return SplitMessage(fields: fields)
+        case .splitSummary: return SplitSummaryMessage(fields: fields)
         case .sport: return SportMessage(fields: fields)
         case .timeInZone: return TimeInZoneMessage(fields: fields)
         case .userProfile: return UserProfileMessage(fields: fields)
