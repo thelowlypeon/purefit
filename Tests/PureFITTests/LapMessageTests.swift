@@ -35,4 +35,15 @@ struct LapMessageTests {
         let averageTemperatures = laps.map { ($0.standardFieldValue(for: .avgTemperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value }
         #expect(averageTemperatures == [22.0, 20.0, 20.0, 20.0, 21.0, 21.0, 20.0, 21.0, 22.0, 22.0, 22.0, 23.0, 24.0])
     }
+
+    @Test func lapCadence() throws {
+        let fit = try Fixture.garminCycling.pureFITFile()
+        let lap = try #require(fit.messages.compactMap { $0 as? LapMessage }.first)
+        let avgCadence = try #require(lap.standardFieldValue(for: .avgCadence) as? IntegerField.Value)
+        #expect(avgCadence.value == 91)
+        #expect(avgCadence.unitSymbol == "rpm")
+        let maxCadence = try #require(lap.standardFieldValue(for: .maxCadence) as? IntegerField.Value)
+        #expect(maxCadence.value == 103)
+        #expect(maxCadence.unitSymbol == "rpm")
+    }
 }
