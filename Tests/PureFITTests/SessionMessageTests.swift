@@ -24,4 +24,15 @@ struct SessionMessageTests {
         #expect((session.standardFieldValue(for: .totalDistance) as? DistanceField.Value)?.measurement.converted(to: .meters).value == 100346.79)
         #expect((session.standardFieldValue(for: .messageIndex) as? CompositeField<MessageIndex>.Value)?.compositeValue.values == [.index(0)])
     }
+
+    @Test func sessionCadence() throws {
+        let fit = try Fixture.garminCycling.pureFITFile()
+        let session = try #require(fit.messages.compactMap { $0 as? SessionMessage }.first)
+        let avgCadence = try #require(session.standardFieldValue(for: .avgCadence) as? IntegerField.Value)
+        #expect(avgCadence.value == 88)
+        #expect(avgCadence.unitSymbol == "rpm")
+        let maxCadence = try #require(session.standardFieldValue(for: .maxCadence) as? IntegerField.Value)
+        #expect(maxCadence.value == 142)
+        #expect(maxCadence.unitSymbol == "rpm")
+    }
 }
