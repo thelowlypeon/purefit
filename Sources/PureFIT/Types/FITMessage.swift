@@ -76,6 +76,7 @@ internal struct FITMessageBuilder {
         case .activity: return ActivityMessage(fields: fields)
         case .deviceInfo: return DeviceInfoMessage(fields: fields)
         case .deviceSettings: return DeviceSettingsMessage(fields: fields)
+        case .diveSummary: return DiveSummaryMessage(fields: fields)
         case .event: return EventMessage(fields: fields)
         case .fieldDescription: return FieldDescriptionMessage(fields: fields)
         case .fileCreator: return FileCreatorMessage(fields: fields)
