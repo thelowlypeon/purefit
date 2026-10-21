@@ -43,13 +43,13 @@ public struct DeviceInfoMessage: ProfiledMessage {
             case .product:
                 return IntegerField(name: "Product", baseType: .uint16)
             case .softwareVersion:
-                return IntegerField(name: "Software Version", baseType: .uint16, scale: 100)
+                return DoubleField(name: "Software Version", baseType: .uint16, scale: 100)
             case .hardwareVersion:
                 return IntegerField(name: "Hardware Version", baseType: .uint8)
             case .cumulativeOperatingTime:
                 return DurationField(name: "Cumulative Operating Time", baseType: .uint32, unit: .seconds, scale: 1, offset: 0)
             case .batteryVoltage:
-                return IntegerField(name: "Battery Voltage", baseType: .uint16, unitSymbol: "V", scale: 256)
+                return DoubleField(name: "Battery Voltage", baseType: .uint16, unitSymbol: "V", scale: 256)
             case .batteryStatus:
                 return EnumField<BatteryStatus>(name: "Battery Status", baseType: .uint8, enumType: BatteryStatus.unknown)
             case .sensorPosition:

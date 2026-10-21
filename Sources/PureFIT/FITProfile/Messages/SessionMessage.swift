@@ -63,7 +63,7 @@ public struct SessionMessage: ProfiledMessage {
             case .maxPower: PowerField(name: "Max Power", baseType: .uint16, scale: 1, offset: 0)
             case .totalAscent: DistanceField(name: "Total Ascent", baseType: .uint16, unit: .meters, scale: 1, offset: 0)
             case .totalDescent: DistanceField(name: "Total Descent", baseType: .uint16, unit: .meters, scale: 1, offset: 0)
-            case .totalTrainingEffect: IntegerField(name: "Total Training Effect", baseType: .uint8, scale: 10)
+            case .totalTrainingEffect: DoubleField(name: "Total Training Effect", baseType: .uint8, scale: 10)
             case .firstLapIndex: IntegerField(name: "First Lap Index", baseType: .uint16)
             case .numLaps: IntegerField(name: "Num Laps", baseType: .uint16)
             case .normalizedPower: PowerField(name: "Normalized Power", baseType: .uint16, scale: 1, offset: 0)

@@ -44,14 +44,14 @@ public struct RecordMessage: ProfiledMessage {
             case .latitude: AngleField(name: "Latitude", baseType: .sint32, scale: 1, offset: 0)
             case .longitude: AngleField(name: "Longitude", baseType: .sint32, scale: 1, offset: 0)
             case .altitude: DistanceField(name: "Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
-            case .heartRate: IntegerField(name: "Heart Rate", baseType: .uint8, unitSymbol: "bpm", scale: 1)
-            case .cadence: IntegerField(name: "Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 1)
+            case .heartRate: IntegerField(name: "Heart Rate", baseType: .uint8, unitSymbol: "bpm")
+            case .cadence: IntegerField(name: "Cadence", baseType: .uint8, unitSymbol: "rpm")
             case .distance: DistanceField(name: "Distance", baseType: .uint32, unit: .meters, scale: 100, offset: 0)
             case .speed: SpeedField(name: "Speed", baseType: .uint16, unit: .metersPerSecond, scale: 1000, offset: 0)
             case .power: PowerField(name: "Power", baseType: .uint16, scale: 1, offset: 0)
             // 8: compressed speed distance. data? bytes? is this a two-value field?
-            case .grade: IntegerField(name: "Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
-            case .resistance: IntegerField(name: "Resistance", baseType: .uint8, scale: 1)
+            case .grade: DoubleField(name: "Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
+            case .resistance: IntegerField(name: "Resistance", baseType: .uint8)
             case .timeFromCourse: DurationField(name: "Time from course", baseType: .sint32, unit: .seconds, scale: 1000, offset: 0)
             case .temperature: TemperatureField(name: "Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)
             case .accumulatedPower: PowerField(name: "Accumulated Power", baseType: .uint32, scale: 1, offset: 0)
@@ -62,16 +62,16 @@ public struct RecordMessage: ProfiledMessage {
             } else {
                 DurationField(name: "Stance Time", baseType: .uint16, unit: .seconds, scale: 0.01, offset: 0)
             }
-            case .leftTorqueEffectiveness: IntegerField(name: "Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .rightTorqueEffectiveness: IntegerField(name: "Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .leftPedalSmoothness: IntegerField(name: "Left Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .rightPedalSmoothness: IntegerField(name: "Right Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .fractionalCadence: IntegerField(name: "Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
+            case .leftTorqueEffectiveness: DoubleField(name: "Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .rightTorqueEffectiveness: DoubleField(name: "Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .leftPedalSmoothness: DoubleField(name: "Left Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .rightPedalSmoothness: DoubleField(name: "Right Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .fractionalCadence: DoubleField(name: "Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
             case .enhancedSpeed: SpeedField(name: "Enhanced Speed", baseType: .uint32, unit: .metersPerSecond, scale: 1000, offset: 0)
             case .enhancedAltitude: DistanceField(name: "Enhanced Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
             // NOTE: performanceCondition is not documented in profile.xlsx
             case .performanceCondition: IntegerField(name: "Performance Condition", baseType: .sint8)
-            case .enhancedRespiratoryRate: IntegerField(name: "Enhanced Respiratory Rate", baseType: .uint16, unitSymbol: "breaths/min", scale: 100)
+            case .enhancedRespiratoryRate: DoubleField(name: "Enhanced Respiratory Rate", baseType: .uint16, unitSymbol: "breaths/min", scale: 100)
             case .timestamp: DateField(name: "Timestamp")
             }
         }

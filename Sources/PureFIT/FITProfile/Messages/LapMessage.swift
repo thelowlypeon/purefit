@@ -178,11 +178,11 @@ public struct LapMessage: ProfiledMessage {
             case .avgAltitude: DistanceField(name: "Average Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
             case .maxAltitude: DistanceField(name: "Max Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
             case .gpsAccuracy: DistanceField(name: "GPS Accuracy", baseType: .uint8, unit: .meters, scale: 1, offset: 0)
-            case .avgGrade: IntegerField(name: "Average Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
-            case .avgPosGrade: IntegerField(name: "Average Positive Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
-            case .avgNegGrade: IntegerField(name: "Average Negative Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
-            case .maxPosGrade: IntegerField(name: "Max Positive Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
-            case .maxNegGrade: IntegerField(name: "Max Negative Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
+            case .avgGrade: DoubleField(name: "Average Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
+            case .avgPosGrade: DoubleField(name: "Average Positive Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
+            case .avgNegGrade: DoubleField(name: "Average Negative Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
+            case .maxPosGrade: DoubleField(name: "Max Positive Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
+            case .maxNegGrade: DoubleField(name: "Max Negative Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
             case .avgTemperature: TemperatureField(name: "Average Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)
             case .maxTemperature: TemperatureField(name: "Max Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)
             case .totalMovingTime: DurationField(name: "Total Moving Time", baseType: .uint32, unit: .seconds, scale: 1000, offset: 0)
@@ -202,15 +202,15 @@ public struct LapMessage: ProfiledMessage {
             case .strokeCount: MultipleValueField(singleFieldDefinition: IntegerField(name: "Stroke Count", baseType: .uint16))
             case .zoneCount: MultipleValueField(singleFieldDefinition: IntegerField(name: "Zone Count", baseType: .uint16))
             case .avgVerticalOscillation: DistanceField(name: "Average Vertical Oscillation", baseType: .uint16, unit: .millimeters, scale: 10, offset: 0)
-            case .avgStanceTimePercent: IntegerField(name: "Average Stance Time Percent", baseType: .uint16, unitSymbol: "%", scale: 100)
+            case .avgStanceTimePercent: DoubleField(name: "Average Stance Time Percent", baseType: .uint16, unitSymbol: "%", scale: 100)
             case .avgStanceTime: if #available(iOS 13.0, macOS 10.15, *) {
                 DurationField(name: "Average Stance Time", baseType: .uint16, unit: .milliseconds, scale: 10, offset: 0)
             } else {
                 DurationField(name: "Average Stance Time", baseType: .uint16, unit: .seconds, scale: 0.01, offset: 0)
             }
-            case .avgFractionalCadence: IntegerField(name: "Average Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
-            case .maxFractionalCadence: IntegerField(name: "Max Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
-            case .totalFractionalCycles: IntegerField(name: "Total Fractional Cycles", baseType: .uint8, scale: 128)
+            case .avgFractionalCadence: DoubleField(name: "Average Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
+            case .maxFractionalCadence: DoubleField(name: "Max Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
+            case .totalFractionalCycles: DoubleField(name: "Total Fractional Cycles", baseType: .uint8, scale: 128)
             case .playerScore: IntegerField(name: "Player Score", baseType: .uint16)
             // case .avgTotalHemoglobinConc:
             // case .minTotalHemoglobinConc:
@@ -218,11 +218,11 @@ public struct LapMessage: ProfiledMessage {
             // case .avgSaturatedHemoglobinPercent:
             // case .minSaturatedHemoglobinPercent:
             // case .maxSaturatedHemoglobinPercent:
-            case .avgLeftTorqueEffectiveness: IntegerField(name: "Average Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .avgRightTorqueEffectiveness: IntegerField(name: "Average Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .avgLeftPedalSmoothness: IntegerField(name: "Average Left Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .avgRightPedalSmoothness: IntegerField(name: "Average Right Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
-            case .avgCombinedPedalSmoothness: IntegerField(name: "Average Combined Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .avgLeftTorqueEffectiveness: DoubleField(name: "Average Left Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .avgRightTorqueEffectiveness: DoubleField(name: "Average Right Torque Effectiveness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .avgLeftPedalSmoothness: DoubleField(name: "Average Left Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .avgRightPedalSmoothness: DoubleField(name: "Average Right Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
+            case .avgCombinedPedalSmoothness: DoubleField(name: "Average Combined Pedal Smoothness", baseType: .uint8, unitSymbol: "%", scale: 2)
             case .timeStanding: DurationField(name: "Time Standing", baseType: .uint32, unit: .seconds, scale: 1000, offset: 0)
             // case .standCount:
             // case .avgLeftPco:

@@ -42,7 +42,7 @@ public struct DeviceSettingsMessage: ProfiledMessage {
             case .utcOffset: IntegerField(name: "UTC Offset", baseType: .uint32)
             case .timeOffset: IntegerField(name: "Time Offset", baseType: .uint32, unitSymbol: "s")
             case .timeMode: EnumField<TimeMode>(name: "Time Mode", baseType: .uint8, enumType: .utc)
-            case .timeZoneOffset: IntegerField(name: "TimeZone Offset", baseType: .sint8, unitSymbol: "hr", scale: 4)
+            case .timeZoneOffset: DoubleField(name: "TimeZone Offset", baseType: .sint8, unitSymbol: "hr", scale: 4)
             case .backlightMode: EnumField<BacklightMode>(name: "Backlight Mode", baseType: .uint8, enumType: .autoBrightness)
             case .activityTrackerEnabled: BooleanField(name: "Activity Tracker Enabled")
             case .clockTime: DateField(name: "Clock Time")
