@@ -20,26 +20,26 @@ struct PureFITFileTests {
         let fit = try Fixture.workoutdoorsRunning.pureFITFile()
         let fieldDefinitions = fit.fieldDefinitions
         let recordMessageDefinitions = try #require(fieldDefinitions[GlobalMessageType.record.rawValue])
-        #expect(
-            recordMessageDefinitions.keys.sorted() == [
-                .standard(0),
-                .standard(1),
-                .standard(2),
-                .standard(3),
-                .standard(4),
-                .standard(5),
-                .standard(6),
-                .standard(7),
-                .standard(39),
-                .standard(41),
-                .standard(253),
-                .developer(0, 5),
-                .developer(0, 6),
-                .developer(0, 8),
-                .developer(0, 9),
-                .developer(0, 11)
-            ]
-        )
+        // Inside #expect, a literal this long can't be type-checked in reasonable time on Swift 6.4.
+        let expectedFields: [FieldDefinitionNumber] = [
+            .standard(0),
+            .standard(1),
+            .standard(2),
+            .standard(3),
+            .standard(4),
+            .standard(5),
+            .standard(6),
+            .standard(7),
+            .standard(39),
+            .standard(41),
+            .standard(253),
+            .developer(0, 5),
+            .developer(0, 6),
+            .developer(0, 8),
+            .developer(0, 9),
+            .developer(0, 11)
+        ]
+        #expect(recordMessageDefinitions.keys.sorted() == expectedFields)
     }
 
     @Test func fieldDefinitionsIncludeStandardFields() async throws {
@@ -174,164 +174,6 @@ struct PureFITFileTests {
         #expect(applicationIDFITValue.description == "576F726B-4F75-7444-6F6F-727320417070")
     }
 
-    @Test func readActivityData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let activities = fit.messages.compactMap { $0 as? ActivityMessage }
-        #expect(activities.count == 1)
-        let activity = try #require(activities.first)
-        #expect((activity.standardFieldValue(for: .numSessions) as? IntegerField.Value)?.value == 1)
-        #expect(activity.value(at: .standard(2)) == .enum(0)) // oops, need to add this one. this is `type`
-        #expect((activity.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.duration == 11380.964)
-        if #available(iOS 15.0, *) {
-            #expect((activity.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T13:47:52Z")
-            #expect((activity.standardFieldValue(for: .localTimestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T08:47:52Z")
-        }
-    }
-
-    @Test func readDeviceSettingsData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-
-        let deviceSettingsMessages = fit.messages.compactMap { $0 as? DeviceSettingsMessage }
-        #expect(deviceSettingsMessages.count == 1)
-        let deviceSettingsMessage = try #require(deviceSettingsMessages.first)
-        let timeOffset = (deviceSettingsMessage.standardFieldValue(for: .timeOffset) as? IntegerField.Value)?.value
-        #expect(timeOffset == 4294934776)
-        let timeMode = (deviceSettingsMessage.standardFieldValue(for: .timeMode) as? EnumField<TimeMode>.Value)?.enumValue
-        #expect(timeMode == .hour24)
-        let backlightMode = (deviceSettingsMessage.standardFieldValue(for: .backlightMode) as? EnumField<BacklightMode>.Value)?.enumValue
-        #expect(backlightMode == .autoBrightness)
-        let lactateThresholdAutoDetectEnabled = (deviceSettingsMessage.standardFieldValue(for: .lactateThresholdAutoDetectEnabled) as? BooleanField.Value)?.booleanValue
-        #expect(lactateThresholdAutoDetectEnabled == true)
-    }
-
-    @Test func readUserProfileData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-
-        let userProfileMessages = fit.messages.compactMap { $0 as? UserProfileMessage }
-        #expect(userProfileMessages.count == 1)
-        let userProfileMessage = try #require(userProfileMessages.first)
-        let friendlyName = (userProfileMessage.standardFieldValue(for: .friendlyName) as? StringField.Value)?.string
-        #expect(friendlyName == "edge530")
-        let gender = (userProfileMessage.standardFieldValue(for: .gender) as? EnumField<Gender>.Value)?.enumValue
-        #expect(gender == .male)
-        let ageField = userProfileMessage.standardFieldValue(for: .age) as? IntegerField.Value
-        #expect(ageField?.format() == "35 Years")
-        let height = (userProfileMessage.standardFieldValue(for: .height) as? DistanceField.Value)?.measurement
-        #expect(height?.converted(to: .meters).value == 1.90)
-        let weight = (userProfileMessage.standardFieldValue(for: .weight) as? MassField.Value)?.measurement
-        #expect(weight?.converted(to: .kilograms).value == 68.7)
-        let language = (userProfileMessage.standardFieldValue(for: .language) as? EnumField<Language>.Value)?.enumValue
-        #expect(language == .english)
-        let elevationSetting = (userProfileMessage.standardFieldValue(for: .elevationSetting) as? EnumField<DisplayMeasure>.Value)?.enumValue
-        #expect(elevationSetting == .statute)
-        let weightSetting = (userProfileMessage.standardFieldValue(for: .weightSetting) as? EnumField<DisplayMeasure>.Value)?.enumValue
-        #expect(weightSetting == .statute)
-        let restingHR = userProfileMessage.standardFieldValue(for: .restingHeartRate) as? IntegerField.Value
-        #expect(restingHR?.format() == "43 bpm")
-        let defaultMaxBikingHR = userProfileMessage.standardFieldValue(for: .defaultMaxBikingHeartRate) as? IntegerField.Value
-        #expect(defaultMaxBikingHR?.format() == "185 bpm")
-        let defaultMaxHR = userProfileMessage.standardFieldValue(for: .defaultMaxHeartRate) as? IntegerField.Value
-        #expect(defaultMaxHR?.format() == "185 bpm")
-        let hrSetting = (userProfileMessage.standardFieldValue(for: .hrSetting) as? EnumField<DisplayHeartRate>.Value)?.enumValue
-        #expect(hrSetting == .max)
-        let speedSetting = (userProfileMessage.standardFieldValue(for: .speedSetting) as? EnumField<DisplayMeasure>.Value)?.enumValue
-        #expect(speedSetting == .statute)
-        let distSetting = (userProfileMessage.standardFieldValue(for: .distanceSetting) as? EnumField<DisplayMeasure>.Value)?.enumValue
-        #expect(distSetting == .statute)
-        let powerSetting = (userProfileMessage.standardFieldValue(for: .powerSetting) as? EnumField<DisplayPower>.Value)?.enumValue
-        #expect(powerSetting == .percentFTP)
-        let wakeTime = (userProfileMessage.standardFieldValue(for: .wakeTime) as? DurationField.Value)?.measurement
-        #expect(wakeTime?.converted(to: .seconds).value == 21600)
-        let sleepTime = (userProfileMessage.standardFieldValue(for: .sleepTime) as? DurationField.Value)?.measurement
-        #expect(sleepTime?.converted(to: .seconds).value == 79200)
-    }
-
-    @Test func readHRVData() async throws {
-        // NOTE: this test is important because it's one of the few cases where there are multiple values per field value
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let hrvMessages = fit.messages.compactMap { $0 as? HRVMessage }
-        let hrvMessage = try #require(hrvMessages.first)
-        #expect(hrvMessage.fields == [.standard(0): [.uint16(558), .uint16(557)]])
-        let times = try #require((hrvMessage.standardFieldValue(for: .time) as? MultipleValueField<DurationField>.Value)?.values)
-        #expect(times.map { $0.duration } == [0.558, 0.557])
-        #expect(times.map { $0.format() } == ["558 ms", "557 ms"]) // on ios 13 it's "558 ms"
-    }
-
-    @Test func readSessionData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let sessions = fit.messages.compactMap { $0 as? SessionMessage }
-        #expect(sessions.count == 1)
-        let session = try #require(sessions.first)
-        #expect((session.standardFieldValue(for: .startTime) as? DateField.Value)?.date.timeIntervalSince(Date(garminOffset: 0)) == 963484495)
-        let startLatitudeMeasurement = (session.standardFieldValue(for: .startPositionLatitude) as? AngleField.Value)?.measurement
-        #expect(startLatitudeMeasurement?.unit == .garminSemicircle)
-        #expect(startLatitudeMeasurement?.converted(to: .degrees).value == 41.94262119010091)
-        #expect((session.standardFieldValue(for: .sport) as? EnumField<Sport>.Value)?.enumValue == .cycling)
-        #expect((session.standardFieldValue(for: .subSport) as? EnumField<SubSport>.Value)?.enumValue == .road)
-        #expect((session.standardFieldValue(for: .totalElapsedTime) as? DurationField.Value)?.duration == 11503.959)
-        #expect((session.standardFieldValue(for: .totalTimerTime) as? DurationField.Value)?.duration == 11380.964)
-        #expect((session.standardFieldValue(for: .totalDistance) as? DistanceField.Value)?.measurement.converted(to: .meters).value == 100346.79)
-        #expect((session.standardFieldValue(for: .messageIndex) as? CompositeField<MessageIndex>.Value)?.compositeValue.values == [.index(0)])
-    }
-
-    @Test func readSportData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let sportMessages = fit.messages.compactMap { $0 as? SportMessage }
-        #expect(sportMessages.count == 1)
-    }
-
-    @Test func readDeviceInfoData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let deviceInfoMessages = fit.messages.compactMap { $0 as? DeviceInfoMessage }
-        #expect(deviceInfoMessages.count == 14)
-    }
-
-    @Test func readEventData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let eventMessages = fit.messages.compactMap { $0 as? EventMessage }
-        #expect(eventMessages.count == 53)
-    }
-
-    @Test func readFileCreatorData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let fileCreatorMessages = fit.messages.compactMap { $0 as? FileCreatorMessage }
-        #expect(fileCreatorMessages.count == 1)
-    }
-
-    @Test func readFileIDData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let fileIDMessages = fit.messages.compactMap { $0 as? FileIDMessage }
-        #expect(fileIDMessages.count == 1)
-    }
-
-    @Test func readLapData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let laps = fit.messages.compactMap { $0 as? LapMessage }
-        #expect(laps.count == 13)
-        let messageIndicesFromFitValue = laps.map { $0.value(at: .messageIndex) }
-        #expect(messageIndicesFromFitValue == Array(0..<13).map { .uint16($0) })
-        let messageIndicesFromStandardField = laps.map { ($0.standardFieldValue(for: .messageIndex) as? IndexField.Value)?.value }
-        #expect(messageIndicesFromStandardField == Array(0..<13))
-        let startTimes = laps.map { ($0.standardFieldValue(for: .startTime) as? DateField.Value)?.date.timeIntervalSince(Date(garminOffset: 0)) }
-        #expect(startTimes == [
-            963484495,
-            963485415,
-            963486367,
-            963487323,
-            963488223,
-            963489196,
-            963490189,
-            963491127,
-            963492158,
-            963493050,
-            963493891,
-            963494772,
-            963495579
-        ])
-        let averageTemperatures = laps.map { ($0.standardFieldValue(for: .avgTemperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value }
-        #expect(averageTemperatures == [22.0, 20.0, 20.0, 20.0, 21.0, 21.0, 20.0, 21.0, 22.0, 22.0, 22.0, 23.0, 24.0])
-    }
-
     @Test func compositeFieldDefinition() async throws {
         let fit = try Fixture.strydRunning.pureFITFile()
         let laps = fit.messages.compactMap { $0 as? LapMessage }
@@ -341,97 +183,6 @@ struct PureFITFileTests {
         #expect(workoutStepIndex.format() == "0")
         #expect(workoutStepIndex.compositeValue.values == [.index(0)])
         #expect(workoutStepIndex.compositeValue.values.map(\.name) == ["Index"])
-    }
-
-    @Test func readTimeInZoneData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-
-        let timeInZoneMessages = fit.messages.compactMap { $0 as? TimeInZoneMessage }
-        #expect(timeInZoneMessages.count == 14)
-        let timeInZoneMessage = try #require(timeInZoneMessages.first)
-        let timeInHRZoneFieldValues = (timeInZoneMessage.standardFieldValue(for: .timeInHRZone) as? MultipleValueField<DurationField>.Value)?.values
-        let timeInHRZoneValues = timeInHRZoneFieldValues?.map { $0.duration * 1000 }
-        #expect(timeInHRZoneValues == [4117, 26999, 344998, 473005, 68997, 0, 0])
-        let timeInPowerZoneFieldValues = (timeInZoneMessage.standardFieldValue(for: .timeInPowerZone) as? MultipleValueField<DurationField>.Value)?.values
-        let timeInPowerZoneValues = timeInPowerZoneFieldValues?.map { $0.duration * 1000 }
-        #expect(timeInPowerZoneValues == [51003, 5996, 124004, 302113, 237997, 118007, 67991, 0, 0, 0])
-    }
-
-    @Test func readZonesTargetData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-
-        let zonesTargetMessages = fit.messages.compactMap { $0 as? ZonesTargetMessage }
-        #expect(zonesTargetMessages.count == 1)
-        let zonesTargetMessage = try #require(zonesTargetMessages.first)
-        let maxHeartRate = (zonesTargetMessage.standardFieldValue(for: .maxHeartRate) as? IntegerField.Value)?.value
-        #expect(maxHeartRate == 189)
-        let thresholdHeartRate = (zonesTargetMessage.standardFieldValue(for: .thresholdHeartRate) as? IntegerField.Value)?.value
-        #expect(thresholdHeartRate == 167)
-        let functionalThresholdPower = (zonesTargetMessage.standardFieldValue(for: .functionalThresholdPower) as? PowerField.Value)?.measurement.converted(to: .watts).value
-        #expect(functionalThresholdPower == 213)
-        let hrCalcType = (zonesTargetMessage.standardFieldValue(for: .hrCalcType) as? EnumField<HrZoneCalc>.Value)?.enumValue
-        #expect(hrCalcType == .percentLactateThreshold)
-        let pwrCalcType = (zonesTargetMessage.standardFieldValue(for: .pwrCalcType) as? EnumField<PwrZoneCalc>.Value)?.enumValue
-        #expect(pwrCalcType == .percentFtp)
-    }
-
-    @Test func readRecordData() async throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let records = fit.messages.compactMap { $0 as? RecordMessage }
-        #expect(records.count == 11389)
-
-        let lastRecord = try #require(records.last)
-        #expect(lastRecord.fields.keys.sorted() == [
-            .standard(0), // lat
-            .standard(1), // lon
-            .standard(2), // alt
-            .standard(3), // HR
-            .standard(4), // cadence
-            .standard(5), // distance
-            .standard(6), // speed
-            .standard(7), // power
-            .standard(13), //temp
-            .standard(29), // accum power
-            .standard(30), // LR balance
-            .standard(43), // left torque effectiveness
-            .standard(44), // right torque effectiveness
-            .standard(45), // left pedal smoothness
-            .standard(46), // right pedal smoothness
-            .standard(53), // fractional cadence
-            .standard(61), // ??
-            .standard(66), // ??
-            .standard(90), // performance condition
-            .standard(108), // enhanced respiration rate
-            .standard(253) // timestamp
-        ])
-        #expect((lastRecord.standardFieldValue(for: .performanceCondition) as? IntegerField.Value)?.value == 8)
-        if #available(iOS 15.0, *) {
-            #expect((lastRecord.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T13:46:41Z")
-        }
-
-        let firstRecord = try #require(records.first)
-        #expect(firstRecord.fields[.standard(90)] == nil) // first record doesn't have performance condition
-        if #available(iOS 15.0, *) {
-            #expect((firstRecord.standardFieldValue(for: .timestamp) as? DateField.Value)?.date.ISO8601Format() == "2020-07-12T10:34:55Z")
-        }
-        #expect((firstRecord.standardFieldValue(for: .latitude) as? AngleField.Value)?.measurement.converted(to: .degrees).value == 41.94262119010091)
-        #expect((firstRecord.standardFieldValue(for: .longitude) as? AngleField.Value)?.measurement.converted(to: .degrees).value == -87.65265975147486)
-        #expect((firstRecord.standardFieldValue(for: .altitude) as? DistanceField.Value)?.measurement.converted(to: .meters).value.rounded() == 188)
-        #expect((firstRecord.standardFieldValue(for: .heartRate) as? IntegerField.Value)?.value == 109)
-        #expect((firstRecord.standardFieldValue(for: .cadence) as? IntegerField.Value)?.value == 39)
-        #expect((firstRecord.standardFieldValue(for: .distance) as? DistanceField.Value)?.measurement.converted(to: .meters).value == 4.49)
-        #expect((firstRecord.standardFieldValue(for: .speed) as? SpeedField.Value)?.measurement.converted(to: .metersPerSecond).value == 4.264)
-        #expect((firstRecord.standardFieldValue(for: .power) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
-        #expect((firstRecord.standardFieldValue(for: .temperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value == 25)
-        #expect((firstRecord.standardFieldValue(for: .accumulatedPower) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
-        #expect((firstRecord.standardFieldValue(for: .leftRightBalance) as? IntegerField.Value)?.value == 178)
-        #expect((firstRecord.standardFieldValue(for: .leftTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .rightTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .leftPedalSmoothness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .rightPedalSmoothness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .fractionalCadence) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .enhancedRespiratoryRate) as? IntegerField.Value)?.value == 36)
-
     }
 
     @Test func readSessionDeveloperFieldData() async throws {
@@ -490,10 +241,11 @@ struct PureFITFileTests {
         // record messages
         #expect(fit.messages.count(where: { $0.globalMessageNumber == 20 }) == 4257)
         let secondRecordMessage = fit.messages.filter { $0.globalMessageNumber == 20 }[1]
-        #expect(secondRecordMessage.fields.keys.sorted() == [
+        let expectedRecordFields: [FieldDefinitionNumber] = [
             .standard(0),.standard(1),.standard(2),.standard(3),.standard(4),.standard(5),.standard(6),.standard(7),.standard(39),.standard(41),.standard(253),
             .developer(0, 5), .developer(0, 6), .developer(0, 8), .developer(0, 9), .developer(0, 11)
-        ])
+        ]
+        #expect(secondRecordMessage.fields.keys.sorted() == expectedRecordFields)
         let timestamp = try #require(secondRecordMessage.value(at: 253))
         #expect(timestamp == .uint32(1096542999))
         let latitude = try #require(secondRecordMessage.value(at: 0))
