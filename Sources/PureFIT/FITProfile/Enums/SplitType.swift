@@ -1,0 +1,28 @@
+//
+//  SplitType.swift
+//  PureFIT
+//
+
+public enum SplitType: UInt8, FITEnum, Sendable {
+    case ascentSplit = 1
+    case descentSplit = 2
+    case intervalActive = 3
+    case intervalRest = 4
+    case intervalWarmup = 5
+    case intervalCooldown = 6
+    case intervalRecovery = 7
+    case intervalOther = 8
+    case climbActive = 9
+    case climbRest = 10
+    case surfActive = 11
+    case runActive = 12
+    case runRest = 13
+    case workoutRound = 14
+    case rwdRun = 17
+    case rwdWalk = 18
+    case windsurfActive = 21
+    case rwdStand = 22
+    case transition = 23
+    case skiLiftSplit = 28
+    case skiRunSplit = 29
+}
