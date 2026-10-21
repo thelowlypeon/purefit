@@ -35,6 +35,8 @@ public struct RecordMessage: ProfiledMessage {
         //66 not part of profile
         case enhancedSpeed = 73
         case enhancedAltitude = 78
+        case stanceTimeBalance = 84
+        case stepLength = 85
         case performanceCondition = 90
         case enhancedRespiratoryRate = 108
         case timestamp = 253
@@ -69,6 +71,8 @@ public struct RecordMessage: ProfiledMessage {
             case .fractionalCadence: DoubleField(name: "Fractional Cadence", baseType: .uint8, unitSymbol: "rpm", scale: 128)
             case .enhancedSpeed: SpeedField(name: "Enhanced Speed", baseType: .uint32, unit: .metersPerSecond, scale: 1000, offset: 0)
             case .enhancedAltitude: DistanceField(name: "Enhanced Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
+            case .stanceTimeBalance: DoubleField(name: "Stance Time Balance", baseType: .uint16, unitSymbol: "%", scale: 100)
+            case .stepLength: DistanceField(name: "Step Length", baseType: .uint16, unit: .millimeters, scale: 10, offset: 0)
             // NOTE: performanceCondition is not documented in profile.xlsx
             case .performanceCondition: IntegerField(name: "Performance Condition", baseType: .sint8)
             case .enhancedRespiratoryRate: DoubleField(name: "Enhanced Respiratory Rate", baseType: .uint16, unitSymbol: "breaths/min", scale: 100)
