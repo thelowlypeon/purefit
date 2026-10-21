@@ -74,6 +74,7 @@ internal struct FITMessageBuilder {
         let messageType = GlobalMessageType(rawValue: globalMessageNumber)
         switch messageType {
         case .activity: return ActivityMessage(fields: fields)
+        case .climbPro: return ClimbProMessage(fields: fields)
         case .deviceInfo: return DeviceInfoMessage(fields: fields)
         case .deviceSettings: return DeviceSettingsMessage(fields: fields)
         case .event: return EventMessage(fields: fields)
