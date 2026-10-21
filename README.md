@@ -153,10 +153,32 @@ Two smaller notes. The CRC gap is an API difference, not a speed one — Garmin'
 a second pass over the file. And raw parsing at 1.9 ms against 32.6 ms shows the cost is profile
 interpretation, not record decoding, if you only need `RawFITFile`.
 
+### Memory
+
+Peak live heap during one parse. It's counted at every allocation, so PureFIT's is exact and
+identical from run to run:
+
+| Fixture | PureFIT | `RawFITFile` only | Garmin, collecting messages | Garmin, streaming |
+| --- | --- | --- | --- | --- |
+| `garmin-cycling-unprofiled-messages.fit` (609 KB) | 25.4 MB | 3.4 MB | 22.8 MB | 24 KB |
+| `garmin-sdk-cycling-developer-fields.fit` (63 KB) | 3.3 MB | 531 KB | 7.5 MB | 693 KB |
+| `stryd-running-developer-fields.fit` (533 KB) | 15.8 MB | 1.8 MB | 86.9 MB | 18.6 MB |
+| `workoutdoors-running-developer-fields.fit` (188 KB) | 6.8 MB | 790 KB | 26.4 MB | 4.2 MB |
+
+PureFIT materializes the whole file before you can look at it, so its peak scales with the file,
+at roughly 30–55x its size. Collecting messages with Garmin's `FITListener` does the same, at a
+comparable or higher peak and 2–67x the allocations. Streaming through a Garmin delegate and
+keeping nothing is nearly flat, which PureFIT doesn't offer. If raw records are enough,
+`RawFITFile` alone peaks at 11–16% of a full parse.
+
+[`Benchmarks/README.md`](Benchmarks/README.md) has every scenario, allocation counts, and
+physical footprint.
+
 Run benchmarks using:
 
 ```sh
 cd Benchmarks && swift run -c release PureFITBenchmark --all
+cd Benchmarks && swift run -c release PureFITBenchmark --memory --all  # adds memory
 ```
 
 ## Contribution guidelines
