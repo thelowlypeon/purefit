@@ -237,9 +237,9 @@ public struct LapMessage: ProfiledMessage {
             // case .maxCadencePosition:
             case .enhancedAvgSpeed: SpeedField(name: "Enhanced Average Speed", baseType: .uint32, unit: .metersPerSecond, scale: 1000, offset: 0)
             case .enhancedMaxSpeed: SpeedField(name: "Enhanced Max Speed", baseType: .uint32, unit: .metersPerSecond, scale: 1000, offset: 0)
-            case .enhancedAvgAltitude: DistanceField(name: "Enhanced Average Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 0)
-            case .enhancedMinAltitude: DistanceField(name: "Enhanced Min Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 0)
-            case .enhancedMaxAltitude: DistanceField(name: "Enhanced Max Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 0)
+            case .enhancedAvgAltitude: DistanceField(name: "Enhanced Average Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
+            case .enhancedMinAltitude: DistanceField(name: "Enhanced Min Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
+            case .enhancedMaxAltitude: DistanceField(name: "Enhanced Max Altitude", baseType: .uint32, unit: .meters, scale: 5, offset: 500)
             // case .avgLevMotorPower: IntegerField(name: "avg_lev_motor_power", baseType: .uint16, scale: 1, unitSymbol: "watts")
             // case .maxLevMotorPower: IntegerField(name: "max_lev_motor_power", baseType: .uint16, scale: 1, unitSymbol: "watts")
             // case .levBatteryConsumption: UndefinedField(globalMessageNumber: .lap, fieldDefinitionNumber: .standard(117))
