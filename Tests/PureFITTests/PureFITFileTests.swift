@@ -278,4 +278,25 @@ struct PureFITFileTests {
         #expect(secondRecordMessage.value(at: .developer(0, 9)) == .float32(11.25))
         #expect(secondRecordMessage.value(at: .developer(0, 11)) == .uint16(5))
     }
+
+    @Test(arguments: [
+        (GlobalMessageType.length, LengthMessage.self as any FITMessage.Type),
+        (.split, SplitMessage.self),
+        (.splitSummary, SplitSummaryMessage.self),
+        (.segmentLap, SegmentLapMessage.self),
+        (.set, SetMessage.self),
+        (.climbPro, ClimbProMessage.self),
+        (.jump, JumpMessage.self),
+        (.diveSummary, DiveSummaryMessage.self),
+        (.weatherConditions, WeatherConditionsMessage.self),
+    ])
+    func buildsProfiledMessage(globalMessageType: GlobalMessageType, expected: any FITMessage.Type) throws {
+        let number = globalMessageType.rawValue
+        let message = try FITMessageBuilder.buildMessage(
+            definitionRecord: RawFITDefinitionRecord(architecture: .littleEndian, localMessageNumber: 0, globalMessageNumber: number, fieldCount: 0, fields: [], developerFields: []),
+            dataRecord: RawFITDataRecord(localMessageNumber: 0, globalMessageNumber: number, fieldsData: [], developerFieldsData: []),
+            developerFieldDefinitions: []
+        )
+        #expect(type(of: message) == expected)
+    }
 }

@@ -15,6 +15,7 @@ public struct FileIDMessage: ProfiledMessage {
         case product = 2
         case serialNumber = 3
         case timeCreated = 4
+        case number = 5
         case productName = 8
 
         public var fieldDefinition: any FieldDefinition {
@@ -24,6 +25,7 @@ public struct FileIDMessage: ProfiledMessage {
             case .manufacturer: return EnumField<Manufacturer>(name: "Manufacturer", baseType: .uint16, enumType: .garmin)
             case .serialNumber: return IntegerField(name: "Serial Number", baseType: .uint32z)
             case .timeCreated: return DateField(name: "Time Created")
+            case .number: return IntegerField(name: "Number", baseType: .uint16)
             case .productName: return StringField(name: "Product Name")
             }
         }

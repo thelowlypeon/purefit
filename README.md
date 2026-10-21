@@ -109,7 +109,7 @@ Note that the data passed in to either of these functions must be the entire fil
 ## Tests
 
 Raw decoding (header, definition/data records, CRC) and developer fields are well covered.
-14 of 15 profiled message types and every field type but `EnergyField` have coverage.
+23 of 24 profiled message types and every field type but `EnergyField` have coverage.
 
 Known gaps, if you're looking for somewhere to contribute: `EnergyField`,
 `PureFITFile.undefinedDataRecords`, and 19 of the ~33 profile enums, which are simple `rawValue`
