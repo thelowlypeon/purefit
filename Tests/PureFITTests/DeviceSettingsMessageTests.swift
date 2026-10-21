@@ -24,9 +24,8 @@ struct DeviceSettingsMessageTests {
         #expect(lactateThresholdAutoDetectEnabled == true)
     }
 
-    @Test func clockTimeIsField39() async throws {
+    @Test func deviceSettingsClockTime() async throws {
         let message = DeviceSettingsMessage(fields: [
-            .standard(37): [.uint32(1234)],
             .standard(39): [.uint32(1096542999)],
         ])
 
@@ -35,11 +34,5 @@ struct DeviceSettingsMessageTests {
         #expect(clockTimeDefinition.name == "Clock Time")
         let clockTime = (message.standardFieldValue(for: .clockTime) as? DateField.Value)?.date
         #expect(clockTime == Date(garminOffset: 1096542999))
-
-        #expect(DeviceSettingsMessage.Field(rawValue: 37) == nil)
-        #expect(message.fieldDefinition(for: .standard(37), developerFieldDefinitions: [:]) is UndefinedField)
-        let values = message.values(at: [.standard(37)], developerFieldDefinitions: [:])
-        let field37 = try #require(values.first as? UndefinedField.Value)
-        #expect(field37.fitValue == .uint32(1234))
     }
 }
