@@ -168,7 +168,7 @@ public struct LapMessage: ProfiledMessage {
             case .eventGroup: IntegerField(name: "Event Group", baseType: .uint8)
             case .numLengths: IntegerField(name: "Num Lengths", baseType: .uint16, unitSymbol: nil)
             case .normalizedPower: PowerField(name: "Normalized Power", baseType: .uint16, scale: 1, offset: 0)
-            case .leftRightBalance: IntegerField(name: "Left/Right Balance", baseType: .uint8, unitSymbol: "%")
+            case .leftRightBalance: IntegerField(name: "Left/Right Balance", baseType: .uint16, unitSymbol: "%", scale: 100)
             case .firstLengthIndex: IndexField(name: "First Length Index", baseType: .uint16)
             case .avgStrokeDistance: DistanceField(name: "Average Stroke Distance", baseType: .uint16, unit: .meters, scale: 100, offset: 0)
             // case .swimStroke:
@@ -177,7 +177,7 @@ public struct LapMessage: ProfiledMessage {
             case .totalWork: EnergyField(name: "Total Work", baseType: .uint32, unit: .joules, scale: 1, offset: 0)
             case .avgAltitude: DistanceField(name: "Average Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
             case .maxAltitude: DistanceField(name: "Max Altitude", baseType: .uint16, unit: .meters, scale: 5, offset: 500)
-            case .gpsAccuracy: DistanceField(name: "GPS Accuracy", baseType: .uint16, unit: .meters, scale: 1, offset: 0)
+            case .gpsAccuracy: DistanceField(name: "GPS Accuracy", baseType: .uint8, unit: .meters, scale: 1, offset: 0)
             case .avgGrade: IntegerField(name: "Average Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
             case .avgPosGrade: IntegerField(name: "Average Positive Grade", baseType: .sint16, unitSymbol: "%", scale: 100)
             case .avgNegGrade: IntegerField(name: "Average Negative Grade", baseType: .sint16, unitSymbol: "%", scale: 100)

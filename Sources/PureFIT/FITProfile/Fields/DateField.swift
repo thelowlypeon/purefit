@@ -29,7 +29,7 @@ public struct DateField: NamedFieldDefinition {
     }
 
     public func parse(values: [FITValue]) -> Value? {
-        guard let doubleValue = values.first?.doubleValue(from: baseType) else { return nil }
+        guard let doubleValue = values.first?.doubleValue else { return nil }
         return Value(date: Date(garminOffset: doubleValue))
     }
 }

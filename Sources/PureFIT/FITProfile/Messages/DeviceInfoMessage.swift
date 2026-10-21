@@ -57,9 +57,9 @@ public struct DeviceInfoMessage: ProfiledMessage {
             case .descriptor:
                 return StringField(name: "Descriptor")
             case .antTransmissionType:
-                return IntegerField(name: "ANT Transmission Type", baseType: .uint8)
+                return IntegerField(name: "ANT Transmission Type", baseType: .uint8z)
             case .antDeviceNumber:
-                return IntegerField(name: "ANT Device Number", baseType: .uint16)
+                return IntegerField(name: "ANT Device Number", baseType: .uint16z)
             case .antNetwork:
                 return IntegerField(name: "ANT Network", baseType: .uint8)
             case .sourceType:
