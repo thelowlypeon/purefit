@@ -30,7 +30,7 @@ extension FieldDefinitionNumber: Comparable {
         case .developer(let leftDev, let leftField):
             switch rhs {
             case .standard(_): return false
-            case .developer(let rightDev, let rightField): return leftDev < rightDev || leftField < rightField
+            case .developer(let rightDev, let rightField): return (leftDev, leftField) < (rightDev, rightField)
             }
         }
     }
