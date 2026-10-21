@@ -23,4 +23,16 @@ struct DeviceSettingsMessageTests {
         let lactateThresholdAutoDetectEnabled = (deviceSettingsMessage.standardFieldValue(for: .lactateThresholdAutoDetectEnabled) as? BooleanField.Value)?.booleanValue
         #expect(lactateThresholdAutoDetectEnabled == true)
     }
+
+    @Test func deviceSettingsClockTime() async throws {
+        let message = DeviceSettingsMessage(fields: [
+            .standard(39): [.uint32(1096542999)],
+        ])
+
+        #expect(DeviceSettingsMessage.Field.clockTime.rawValue == 39)
+        let clockTimeDefinition = try #require(message.fieldDefinition(for: .standard(39), developerFieldDefinitions: [:]) as? DateField)
+        #expect(clockTimeDefinition.name == "Clock Time")
+        let clockTime = (message.standardFieldValue(for: .clockTime) as? DateField.Value)?.date
+        #expect(clockTime == Date(garminOffset: 1096542999))
+    }
 }
