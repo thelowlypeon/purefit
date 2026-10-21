@@ -82,6 +82,7 @@ internal struct FITMessageBuilder {
         case .fileID: return FileIDMessage(fields: fields)
         case .hrv: return HRVMessage(fields: fields)
         case .lap: return LapMessage(fields: fields)
+        case .length: return LengthMessage(fields: fields)
         case .record: return RecordMessage(fields: fields)
         case .session: return SessionMessage(fields: fields)
         case .sport: return SportMessage(fields: fields)
