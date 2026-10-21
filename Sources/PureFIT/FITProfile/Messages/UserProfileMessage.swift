@@ -31,7 +31,7 @@ public struct UserProfileMessage: ProfiledMessage {
         case positionSetting = 18
         case temperatureSetting = 21
         case localId = 22
-        // case globalId = 23 // byte array of length 6
+        case globalId = 23
         case wakeTime = 28 // Typical wake time
         case sleepTime = 29 // Typical bed time
         case heightSetting = 30
@@ -63,6 +63,7 @@ public struct UserProfileMessage: ProfiledMessage {
             case .positionSetting: EnumField<DisplayPosition>(name: "Position Setting", baseType: .uint8, enumType: .degree)
             case .temperatureSetting: EnumField<DisplayMeasure>(name: "Temperature Setting", baseType: .uint8, enumType: .metric)
             case .localId: EnumField<UserLocalID>(name: "Local ID", baseType: .uint16, enumType: .localMax)
+            case .globalId: BytesField(name: "Global ID")
             case .wakeTime: DurationField(name: "Wake Time", baseType: .uint32, unit: .seconds, scale: 1, offset: 0) // number of seconds into the day since local 00:00:00
             case .sleepTime: DurationField(name: "Sleep Time", baseType: .uint32, unit: .seconds, scale: 1, offset: 0) // number of seconds into the day since local 00:00:00
             case .heightSetting: EnumField<DisplayMeasure>(name: "Height Setting", baseType: .uint8, enumType: .metric)

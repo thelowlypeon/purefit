@@ -49,4 +49,11 @@ struct UserProfileMessageTests {
         let sleepTime = (userProfileMessage.standardFieldValue(for: .sleepTime) as? DurationField.Value)?.measurement
         #expect(sleepTime?.converted(to: .seconds).value == 79200)
     }
+
+    @Test func globalID() throws {
+        let message = UserProfileMessage(fields: [.standard(UserProfileMessage.Field.globalId.rawValue): [.bytes([0x01, 0x02, 0x0A, 0xB0, 0xFF, 0x00])]])
+        let globalID = try #require(message.standardFieldValue(for: .globalId) as? BytesField.Value)
+        #expect(globalID.bytes == [0x01, 0x02, 0x0A, 0xB0, 0xFF, 0x00])
+        #expect(globalID.format() == "01020AB0FF00")
+    }
 }
