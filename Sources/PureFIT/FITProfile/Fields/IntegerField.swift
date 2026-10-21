@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// An unscaled integer. Fields with a profile scale other than 1 are `DoubleField`s.
 public struct IntegerField: NamedFieldDefinition {
     public struct Value: FieldValue {
         public let value: Int
@@ -21,17 +22,15 @@ public struct IntegerField: NamedFieldDefinition {
     public let name: String
     public let baseType: FITBaseType
     public let unitSymbol: String?
-    public let scale: Int
 
-    public init(name: String, baseType: FITBaseType, unitSymbol: String? = nil, scale: Int = 1) {
+    public init(name: String, baseType: FITBaseType, unitSymbol: String? = nil) {
         self.name = name
         self.baseType = baseType
         self.unitSymbol = unitSymbol
-        self.scale = scale
     }
 
     public func parse(values: [FITValue]) -> Value? {
         guard let integerValue = values.first?.integerValue else { return nil }
-        return Value(value: integerValue / scale, unitSymbol: unitSymbol)
+        return Value(value: integerValue, unitSymbol: unitSymbol)
     }
 }

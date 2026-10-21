@@ -61,12 +61,19 @@ struct RecordMessageTests {
         #expect((firstRecord.standardFieldValue(for: .accumulatedPower) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
         #expect(firstRecord.value(at: .leftRightBalance) == .uint8(178))
         #expect((firstRecord.standardFieldValue(for: .leftRightBalance) as? CompositeField<LeftRightBalance>.Value)?.compositeValue.values == [.contribution(50), .isRight(true)])
-        #expect((firstRecord.standardFieldValue(for: .leftTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .rightTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .leftPedalSmoothness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .rightPedalSmoothness) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .fractionalCadence) as? IntegerField.Value)?.value == 0)
-        #expect((firstRecord.standardFieldValue(for: .enhancedRespiratoryRate) as? IntegerField.Value)?.value == 36)
+        #expect((firstRecord.standardFieldValue(for: .leftTorqueEffectiveness) as? DoubleField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .rightTorqueEffectiveness) as? DoubleField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .leftPedalSmoothness) as? DoubleField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .rightPedalSmoothness) as? DoubleField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .fractionalCadence) as? DoubleField.Value)?.value == 0)
+        #expect((firstRecord.standardFieldValue(for: .enhancedRespiratoryRate) as? DoubleField.Value)?.value == 36.58)
+    }
+
+    @Test func recordFractionalValues() throws {
+        let fit = try Fixture.garminCycling.pureFITFile()
+        let record = fit.messages.compactMap { $0 as? RecordMessage }[2]
+        #expect(record.value(at: .leftTorqueEffectiveness) == .uint8(191))
+        #expect((record.standardFieldValue(for: .leftTorqueEffectiveness) as? DoubleField.Value)?.value == 95.5)
     }
 
     @Test func recordLeftRightBalanceWithoutSide() throws {

@@ -66,4 +66,11 @@ struct LapMessageTests {
         let balance = try #require(lap.standardFieldValue(for: .leftRightBalance) as? CompositeField<LeftRightBalance100>.Value)
         #expect(balance.compositeValue.values == [.contribution(45.4)])
     }
+
+    @Test func lapFractionalValues() throws {
+        let fit = try Fixture.garminCycling.pureFITFile()
+        let lap = try #require(fit.messages.compactMap { $0 as? LapMessage }.first)
+        #expect((lap.standardFieldValue(for: .avgLeftTorqueEffectiveness) as? DoubleField.Value)?.value == 74.5)
+        #expect((lap.standardFieldValue(for: .avgFractionalCadence) as? DoubleField.Value)?.value == 0.421875)
+    }
 }
