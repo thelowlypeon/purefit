@@ -73,4 +73,27 @@ struct LapMessageTests {
         #expect((lap.standardFieldValue(for: .avgLeftTorqueEffectiveness) as? DoubleField.Value)?.value == 74.5)
         #expect((lap.standardFieldValue(for: .avgFractionalCadence) as? DoubleField.Value)?.value == 0.421875)
     }
+
+    // No fixture has lap enhanced altitudes, so these build the message from raw values.
+    @Test(arguments: [
+        (LapMessage.Field.enhancedAvgAltitude.rawValue, UInt32(7500), 1000.0),
+        (LapMessage.Field.enhancedMinAltitude.rawValue, 2000, -100),
+        (LapMessage.Field.enhancedMaxAltitude.rawValue, 10000, 1500),
+    ])
+    func lapEnhancedAltitude(fieldNumber: UInt8, raw: UInt32, meters: Double) throws {
+        let field = try #require(LapMessage.Field(rawValue: fieldNumber))
+        let lap = LapMessage(fields: [.standard(fieldNumber): [.uint32(raw)]])
+        let value = try #require(lap.standardFieldValue(for: field) as? DistanceField.Value)
+        #expect(value.measurement.converted(to: .meters).value == meters)
+    }
+
+    @Test func lapEnhancedAltitudeMatchesAltitude() throws {
+        let lap = LapMessage(fields: [
+            .standard(LapMessage.Field.avgAltitude.rawValue): [.uint16(7500)],
+            .standard(LapMessage.Field.enhancedAvgAltitude.rawValue): [.uint32(7500)],
+        ])
+        let altitude = try #require(lap.standardFieldValue(for: .avgAltitude) as? DistanceField.Value)
+        let enhancedAltitude = try #require(lap.standardFieldValue(for: .enhancedAvgAltitude) as? DistanceField.Value)
+        #expect(enhancedAltitude.measurement == altitude.measurement)
+    }
 }
