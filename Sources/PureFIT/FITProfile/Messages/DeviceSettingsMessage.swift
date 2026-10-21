@@ -18,7 +18,7 @@ public struct DeviceSettingsMessage: ProfiledMessage {
         case timeZoneOffset = 5 // timezone offset in 1/4 hour increments
         case backlightMode = 12 // Mode for backlight
         case activityTrackerEnabled = 36 // Enabled state of the activity tracker functionality
-        case clockTime = 37 // UTC timestamp used to set the devices clock and date
+        case clockTime = 39 // UTC timestamp used to set the devices clock and date
         case pagesEnabled = 40 // Bitfield to configure enabled screens for each supported loop
         case moveAlertEnabled = 46 // Enabled state of the move alert
         case dateMode = 47 // Display mode for the date
