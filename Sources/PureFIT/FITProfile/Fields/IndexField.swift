@@ -20,7 +20,7 @@ public struct IndexField: NamedFieldDefinition {
     public let baseType: FITBaseType
 
     public func parse(values: [FITValue]) -> Value? {
-        guard let integerValue = values.first?.integerValue(from: baseType) else { return nil }
+        guard let integerValue = values.first?.integerValue else { return nil }
         return Value(value: integerValue)
     }
 }

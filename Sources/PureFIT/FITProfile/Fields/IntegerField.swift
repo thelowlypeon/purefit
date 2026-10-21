@@ -31,7 +31,7 @@ public struct IntegerField: NamedFieldDefinition {
     }
 
     public func parse(values: [FITValue]) -> Value? {
-        guard let integerValue = values.first?.integerValue(from: baseType) else { return nil }
+        guard let integerValue = values.first?.integerValue else { return nil }
         return Value(value: integerValue / scale, unitSymbol: unitSymbol)
     }
 }
