@@ -1,5 +1,9 @@
 import Foundation
 
+if CommandLine.arguments.dropFirst().first == footprintChildFlag {
+    runFootprintChild(Array(CommandLine.arguments.dropFirst(2)))
+}
+
 // MARK: - Arguments
 
 var iterations = 10
@@ -7,6 +11,8 @@ var warmup = 3
 var format = "table"
 var fixtureNames: [String]? = ["garmin-cycling-unprofiled-messages.fit"]
 var budgetPath: String?
+var measureMemory = false
+var footprintSamples = 5
 
 var arguments = Array(CommandLine.arguments.dropFirst())
 while let argument = arguments.first {
@@ -26,6 +32,8 @@ while let argument = arguments.first {
     case "--fixture": fixtureNames = value().split(separator: ",").map(String.init)
     case "--all": fixtureNames = nil
     case "--check": budgetPath = value()
+    case "--memory": measureMemory = true
+    case "--footprint-samples": footprintSamples = max(Int(value()) ?? footprintSamples, 1)
     case "--help", "-h":
         print("""
         purefit-benchmark [options]
@@ -35,7 +43,10 @@ while let argument = arguments.first {
           --fixture NAMES  comma-separated fixtures (default garmin-cycling-unprofiled-messages.fit)
           --all            benchmark every fixture
           --format FORMAT  table (default), markdown, or json
-          --check FILE     compare against a ratio budget and exit non-zero if exceeded
+          --memory         also measure heap allocations and peak physical footprint
+          --footprint-samples N
+                           fresh processes per footprint measurement (default 5)
+          --check FILE     compare against a budget and exit non-zero if exceeded
         """)
         exit(0)
     default:
@@ -87,6 +98,8 @@ struct Row: Codable {
     let garminMedian: Double?
     let garminBest: Double?
     let garminCount: Int?
+    let pureFITMemory: MemoryResult?
+    let garminMemory: MemoryResult?
 
     /// How many times slower PureFIT is than the Garmin SDK. Below 1.0 means faster.
     var ratio: Double? {
@@ -115,6 +128,20 @@ for fixture in fixtures {
                 { try garminBody(fixture) }
             )
         }
+        let pureMemory = measureMemory ? MemoryResult(
+            heap: try measureHeap(warmup: warmup) { try scenario.pureFIT(fixture) },
+            footprintSamples: measureFootprint(
+                scenario: scenario.name, implementation: "purefit", fixture: fixture, samples: footprintSamples
+            )
+        ) : nil
+        let garminMemory = try scenario.garmin.flatMap { garminBody in
+            measureMemory ? MemoryResult(
+                heap: try measureHeap(warmup: warmup) { try garminBody(fixture) },
+                footprintSamples: measureFootprint(
+                    scenario: scenario.name, implementation: "garmin", fixture: fixture, samples: footprintSamples
+                )
+            ) : nil
+        }
         rows.append(Row(
             fixture: fixture.lastPathComponent,
             fixtureBytes: size,
@@ -125,7 +152,9 @@ for fixture in fixtures {
             pureFITCount: pure.checksum,
             garminMedian: garmin?.median,
             garminBest: garmin?.best,
-            garminCount: garmin?.checksum
+            garminCount: garmin?.checksum,
+            pureFITMemory: pureMemory,
+            garminMemory: garminMemory
         ))
     }
 }
@@ -137,6 +166,15 @@ func ratioDescription(_ row: Row) -> String {
     return ratio < 1
         ? String(format: "%.2fx faster", 1 / ratio)
         : String(format: "%.2fx slower", ratio)
+}
+
+func memoryColumns(_ memory: MemoryResult?) -> [String] {
+    guard let memory else { return ["—", "—", "—"] }
+    return [
+        formatBytes(memory.heap.peakBytes),
+        memory.heap.allocations.formatted(),
+        formatBytes(memory.footprintMedian),
+    ]
 }
 
 switch format {
@@ -156,6 +194,14 @@ case "markdown":
             let garmin = row.garminMedian.map(formatMilliseconds) ?? "—"
             print("| \(row.scenario) | \(formatMilliseconds(row.pureFITMedian)) | \(garmin) | \(ratioDescription(row)) |")
         }
+        guard measureMemory else { continue }
+        print("\nMemory: peak live heap and allocations in one warm run; peak footprint growth, median of \(footprintSamples) fresh processes.\n")
+        print("| Scenario | PureFIT heap | PureFIT allocations | PureFIT footprint | Garmin heap | Garmin allocations | Garmin footprint |")
+        print("| --- | --- | --- | --- | --- | --- | --- |")
+        for row in fixtureRows {
+            let columns = [row.scenario] + memoryColumns(row.pureFITMemory) + memoryColumns(row.garminMemory)
+            print("| " + columns.joined(separator: " | ") + " |")
+        }
     }
 
 default:
@@ -172,35 +218,54 @@ default:
                 print("    note: PureFIT counted \(row.pureFITCount), Garmin counted \(garminCount)")
             }
         }
+        guard measureMemory else { continue }
+        print("  memory: peak heap, allocations, peak footprint (median of \(footprintSamples) processes)")
+        for row in fixtureRows {
+            let pure = memoryColumns(row.pureFITMemory)
+            let garmin = memoryColumns(row.garminMemory)
+            print("  \(padded(row.scenario, 24))"
+                + "PureFIT \(padded(pure[0], 9))\(padded(pure[1], 12))\(padded(pure[2], 10))"
+                + "Garmin \(padded(garmin[0], 9))\(padded(garmin[1], 12))\(garmin[2])")
+        }
     }
 }
 
 // MARK: - Regression gate
 
-// Budgets are absolute PureFIT timings, per fixture and scenario. Deliberately not measured
+// Budgets are absolute PureFIT numbers, per fixture and scenario. Deliberately not measured
 // against the Garmin SDK: a release of theirs shouldn't be able to move our pass mark.
 if let budgetPath {
     struct Budget: Codable {
         let maxMedianMilliseconds: [String: [String: Double]]
+        let maxPeakHeapKilobytes: [String: [String: Double]]?
     }
     let budget = try JSONDecoder().decode(
         Budget.self,
         from: try Data(contentsOf: URL(fileURLWithPath: budgetPath))
     )
+    if budget.maxPeakHeapKilobytes != nil && !measureMemory {
+        fail("\(budgetPath) has memory budgets; run with --memory to check them")
+    }
 
     var failures = [String]()
     var checked = 0
-    for row in rows {
-        guard let limit = budget.maxMedianMilliseconds[row.fixture]?[row.scenario] else { continue }
+    func check(_ row: Row, _ limits: [String: [String: Double]]?, _ value: Double?, unit: String) {
+        guard let limit = limits?[row.fixture]?[row.scenario], let value else { return }
         checked += 1
-        let median = row.pureFITMedian * 1000
-        let status = median <= limit ? "ok" : "OVER"
-        print(String(format: "check %@ %@: %.1f ms (limit %.0f ms) %@",
-                     row.fixture, row.scenario, median, limit, status))
-        if median > limit {
-            failures.append(String(format: "%@ / %@: %.1f ms exceeds %.0f ms",
-                                   row.fixture, row.scenario, median, limit))
+        let status = value <= limit ? "ok" : "OVER"
+        print(String(format: "check %@ %@: %.1f %@ (limit %.0f %@) %@",
+                     row.fixture, row.scenario, value, unit, limit, unit, status))
+        if value > limit {
+            failures.append(String(format: "%@ / %@: %.1f %@ exceeds %.0f %@",
+                                   row.fixture, row.scenario, value, unit, limit, unit))
         }
+    }
+    for row in rows {
+        check(row, budget.maxMedianMilliseconds, row.pureFITMedian * 1000, unit: "ms")
+    }
+    for row in rows {
+        let heapKilobytes = row.pureFITMemory.map { Double($0.heap.peakBytes) / 1024 }
+        check(row, budget.maxPeakHeapKilobytes, heapKilobytes, unit: "KB heap")
     }
 
     if checked == 0 {
@@ -212,5 +277,5 @@ if let budgetPath {
         failures.forEach { print("  \($0)") }
         exit(1)
     }
-    print("\nAll \(checked) scenarios within budget.")
+    print("\nAll \(checked) checks within budget.")
 }

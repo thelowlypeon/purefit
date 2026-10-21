@@ -19,5 +19,26 @@
       "Count messages by type": 35,
       "Raw parse (no profile)": 5
     }
+  },
+  "_heapComment": "Ceiling on PureFIT's peak live heap, in KB, during one warm run of each scenario (--memory). Unlike time this is deterministic: six local runs and the first CI run (macos-26-arm64) gave the identical byte count for every scenario. Budgets are ~10% over the measured value, which leaves room for allocator differences between macOS versions and catches any real regression of that size.",
+  "maxPeakHeapKilobytes": {
+    "garmin-cycling-unprofiled-messages.fit": {
+      "Parse": 28700,
+      "Parse + validate CRC": 28700,
+      "Parse + extract GPS": 28700,
+      "Parse from Data": 29400,
+      "Read developer fields": 28700,
+      "Count messages by type": 28700,
+      "Raw parse (no profile)": 3900
+    },
+    "garmin-sdk-cycling-developer-fields.fit": {
+      "Parse": 3700,
+      "Parse + validate CRC": 3700,
+      "Parse + extract GPS": 3700,
+      "Parse from Data": 3800,
+      "Read developer fields": 3700,
+      "Count messages by type": 3700,
+      "Raw parse (no profile)": 600
+    }
   }
 }
