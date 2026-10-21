@@ -55,7 +55,7 @@ public struct RecordMessage: ProfiledMessage {
             case .timeFromCourse: DurationField(name: "Time from course", baseType: .sint32, unit: .seconds, scale: 1000, offset: 0)
             case .temperature: TemperatureField(name: "Temperature", baseType: .sint8, unit: .celsius, scale: 1, offset: 0)
             case .accumulatedPower: PowerField(name: "Accumulated Power", baseType: .uint32, scale: 1, offset: 0)
-            case .leftRightBalance: IntegerField(name: "Left/Right Balance", baseType: .uint8, unitSymbol: "%")
+            case .leftRightBalance: CompositeField<LeftRightBalance>(name: "Left/Right Balance", baseType: .uint8)
             case .verticalOscillation: DistanceField(name: "Vertical Oscillation", baseType: .uint16, unit: .millimeters, scale: 10, offset: 0)
             case .stanceTime: if #available(iOS 13.0, macOS 10.15, *) {
                 DurationField(name: "Stance Time", baseType: .uint16, unit: .milliseconds, scale: 10, offset: 0)

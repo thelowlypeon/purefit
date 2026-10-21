@@ -168,7 +168,7 @@ public struct LapMessage: ProfiledMessage {
             case .eventGroup: IntegerField(name: "Event Group", baseType: .uint8)
             case .numLengths: IntegerField(name: "Num Lengths", baseType: .uint16, unitSymbol: nil)
             case .normalizedPower: PowerField(name: "Normalized Power", baseType: .uint16, scale: 1, offset: 0)
-            case .leftRightBalance: IntegerField(name: "Left/Right Balance", baseType: .uint16, unitSymbol: "%", scale: 100)
+            case .leftRightBalance: CompositeField<LeftRightBalance100>(name: "Left/Right Balance", baseType: .uint16)
             case .firstLengthIndex: IndexField(name: "First Length Index", baseType: .uint16)
             case .avgStrokeDistance: DistanceField(name: "Average Stroke Distance", baseType: .uint16, unit: .meters, scale: 100, offset: 0)
             // case .swimStroke:

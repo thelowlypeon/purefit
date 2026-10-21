@@ -59,12 +59,19 @@ struct RecordMessageTests {
         #expect((firstRecord.standardFieldValue(for: .power) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
         #expect((firstRecord.standardFieldValue(for: .temperature) as? TemperatureField.Value)?.measurement.converted(to: .celsius).value == 25)
         #expect((firstRecord.standardFieldValue(for: .accumulatedPower) as? PowerField.Value)?.measurement.converted(to: .watts).value == 172)
-        #expect((firstRecord.standardFieldValue(for: .leftRightBalance) as? IntegerField.Value)?.value == 178)
+        #expect(firstRecord.value(at: .leftRightBalance) == .uint8(178))
+        #expect((firstRecord.standardFieldValue(for: .leftRightBalance) as? CompositeField<LeftRightBalance>.Value)?.compositeValue.values == [.contribution(50), .isRight(true)])
         #expect((firstRecord.standardFieldValue(for: .leftTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
         #expect((firstRecord.standardFieldValue(for: .rightTorqueEffectiveness) as? IntegerField.Value)?.value == 0)
         #expect((firstRecord.standardFieldValue(for: .leftPedalSmoothness) as? IntegerField.Value)?.value == 0)
         #expect((firstRecord.standardFieldValue(for: .rightPedalSmoothness) as? IntegerField.Value)?.value == 0)
         #expect((firstRecord.standardFieldValue(for: .fractionalCadence) as? IntegerField.Value)?.value == 0)
         #expect((firstRecord.standardFieldValue(for: .enhancedRespiratoryRate) as? IntegerField.Value)?.value == 36)
+    }
+
+    @Test func recordLeftRightBalanceWithoutSide() throws {
+        let record = RecordMessage(fields: [.standard(RecordMessage.Field.leftRightBalance.rawValue): [.uint8(50)]])
+        let balance = try #require(record.standardFieldValue(for: .leftRightBalance) as? CompositeField<LeftRightBalance>.Value)
+        #expect(balance.compositeValue.values == [.contribution(50)])
     }
 }

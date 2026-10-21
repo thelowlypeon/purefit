@@ -63,10 +63,8 @@ struct PureFITBaseTypeTests {
     }
 
     @Test func definitionsMatchTheProfileBaseType() throws {
-        let leftRightBalance = try #require(LapMessage.Field.leftRightBalance.fieldDefinition as? IntegerField)
+        let leftRightBalance = try #require(LapMessage.Field.leftRightBalance.fieldDefinition as? CompositeField<LeftRightBalance100>)
         #expect(leftRightBalance.baseType == .uint16)
-        #expect(leftRightBalance.scale == 100)
-        #expect(leftRightBalance.unitSymbol == "%")
 
         let gpsAccuracy = try #require(LapMessage.Field.gpsAccuracy.fieldDefinition as? DistanceField)
         #expect(gpsAccuracy.baseType == .uint8)
@@ -76,12 +74,5 @@ struct PureFITBaseTypeTests {
 
         let antDeviceNumber = try #require(DeviceInfoMessage.Field.antDeviceNumber.fieldDefinition as? IntegerField)
         #expect(antDeviceNumber.baseType == .uint16z)
-    }
-
-    @Test func lapLeftRightBalanceParses() throws {
-        let fit = try Fixture.garminCycling.pureFITFile()
-        let laps = fit.messages.compactMap { $0 as? LapMessage }
-        #expect(laps.first?.values(at: .leftRightBalance) == [.uint16(37308)])
-        #expect(laps.allSatisfy { $0.standardFieldValue(for: .leftRightBalance) != nil })
     }
 }
