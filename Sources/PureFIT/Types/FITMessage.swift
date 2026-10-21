@@ -83,6 +83,7 @@ internal struct FITMessageBuilder {
         case .hrv: return HRVMessage(fields: fields)
         case .lap: return LapMessage(fields: fields)
         case .record: return RecordMessage(fields: fields)
+        case .segmentLap: return SegmentLapMessage(fields: fields)
         case .session: return SessionMessage(fields: fields)
         case .sport: return SportMessage(fields: fields)
         case .timeInZone: return TimeInZoneMessage(fields: fields)
