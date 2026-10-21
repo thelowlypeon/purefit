@@ -81,4 +81,20 @@ struct RecordMessageTests {
         let balance = try #require(record.standardFieldValue(for: .leftRightBalance) as? CompositeField<LeftRightBalance>.Value)
         #expect(balance.compositeValue.values == [.contribution(50)])
     }
+
+    @Test func recordRunningDynamics() throws {
+        let fit = try Fixture.strydRunning.pureFITFile()
+        let record = try #require(fit.messages.compactMap { $0 as? RecordMessage }.first { $0.value(at: .stepLength) != nil })
+        #expect(record.value(at: .stepLength) == .uint16(6657))
+        let stepLength = try #require(record.standardFieldValue(for: .stepLength) as? DistanceField.Value)
+        #expect(stepLength.measurement.converted(to: .millimeters).value == 665.7)
+        #expect((record.standardFieldValue(for: .stanceTimeBalance) as? DoubleField.Value)?.value == 0)
+    }
+
+    @Test func recordStanceTimeBalance() throws {
+        let record = RecordMessage(fields: [.standard(RecordMessage.Field.stanceTimeBalance.rawValue): [.uint16(4987)]])
+        let balance = try #require(record.standardFieldValue(for: .stanceTimeBalance) as? DoubleField.Value)
+        #expect(balance.value == 49.87)
+        #expect(balance.unitSymbol == "%")
+    }
 }
